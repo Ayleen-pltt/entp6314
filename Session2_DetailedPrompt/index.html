@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AHT STORE</title>
+<style>
+  :root {
+    --bg: #F7F4EB;
+    --surface: #FFFFFF;
+    --surface-warm: #FAF7F2;
+    --text-primary: #1F292B;
+    --text-secondary: #5A6567;
+    --accent: #233537;
+    --accent-text: #FFFFFF;
+    --pill-light-bg: #F3ECE1;
+    --pill-light-text: #1F292B;
+    --border: #DED8CB;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; }
+  ul { margin: 0; padding: 0; list-style: none; }
+
+  .container {
+    max-width: 1024px;
+    margin: 0 auto;
+    padding: 0 22px;
+  }
+
+  .mono {
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+  }
+
+  /* ---------- shared elements ---------- */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    white-space: nowrap;
+  }
+
+  .tag {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 7px 15px;
+  }
+
+  .tag-outline {
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    background: transparent;
+  }
+
+  .tag-cream {
+    background: var(--pill-light-bg);
+    color: var(--pill-light-text);
+  }
+
+  .btn-dark {
+    border: none;
+    background: var(--accent);
+    color: var(--accent-text);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    padding: 15px 28px;
+    transition: opacity .15s ease;
+  }
+
+  .btn-dark:hover { opacity: 0.88; }
+
+  .btn-cream {
+    display: block;
+    width: 100%;
+    text-align: center;
+    border: none;
+    background: var(--pill-light-bg);
+    color: var(--pill-light-text);
+    font-size: 13px;
+    font-weight: 700;
+    padding: 13px 18px;
+    transition: background .15s ease;
+  }
+
+  .btn-cream:hover { background: #ece3d4; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+  }
+
+  .section-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+  }
+
+  .section-heading {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    margin: 0 0 10px;
+  }
+
+  .lede {
+    color: var(--text-secondary);
+    font-size: 14.5px;
+    line-height: 1.7;
+    max-width: 640px;
+  }
+
+  /* ---------- header ---------- */
+  header.site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(247, 244, 235, 0.94);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 14px 22px;
+  }
+
+  .brand-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 0 0 auto;
+  }
+
+  .logo-mark {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 auto;
+    display: block;
+  }
+
+  .brand {
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    flex: 0 0 auto;
+  }
+
+  .nav-scroll {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    flex: 1 1 auto;
+  }
+
+  .nav-scroll::-webkit-scrollbar { display: none; }
+
+  .nav-btn {
+    flex: 0 0 auto;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    padding: 9px 14px;
+    border-radius: 9999px;
+    transition: background .15s ease, color .15s ease;
+  }
+
+  .nav-btn.active {
+    background: var(--accent);
+    color: var(--accent-text);
+  }
+
+  .btn-whatsapp {
+    flex: 0 0 auto;
+    background: var(--accent);
+    color: var(--accent-text);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 11px 18px;
+  }
+
+  main {
+    padding-top: 74px;
+  }
+
+  .view {
+    padding: 48px 0 64px;
+  }
+
+  /* ---------- hero (section 1) ---------- */
+  .hero {
+    text-align: center;
+    max-width: 680px;
+    margin: 0 auto;
+    padding-bottom: 44px;
+  }
+
+  .hero .tag {
+    margin-bottom: 20px;
+  }
+
+  .hero h1 {
+    font-size: clamp(36px, 7vw, 50px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0 0 18px;
+    text-transform: uppercase;
+  }
+
+  .hero p {
+    color: var(--text-secondary);
+    font-size: 15px;
+    line-height: 1.7;
+    margin: 0 0 28px;
+  }
+
+  .catalog-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  /* filter chips */
+  .filter-row {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin-bottom: 26px;
+  }
+
+  .filter-row::-webkit-scrollbar { display: none; }
+
+  .filter-pill {
+    flex: 0 0 auto;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 9px 18px;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+  }
+
+  .filter-pill.active {
+    background: var(--accent);
+    color: var(--accent-text);
+    border-color: var(--accent);
+  }
+
+  /* product grid */
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+  }
+
+  @media (max-width: 860px) {
+    .product-grid { grid-template-columns: 1fr; }
+  }
+
+  .product-card { overflow: hidden; display: flex; flex-direction: column; }
+  .product-card[hidden] { display: none; }
+
+  .product-banner {
+    position: relative;
+    background: var(--surface-warm);
+    padding: 20px 20px 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .icon-badge {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    background: rgba(31, 41, 43, 0.06);
+    color: var(--text-primary);
+    margin: 16px auto 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .icon-badge svg {
+    width: 44px;
+    height: 44px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .product-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  .brand-sub {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+  }
+
+  .product-body .tag-cream { margin-bottom: 14px; align-self: flex-start; }
+
+  .product-title {
+    font-size: 18px;
+    font-weight: 800;
+    margin: 0 0 10px;
+  }
+
+  .product-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0 0 18px;
+    flex-grow: 1;
+  }
+
+  /* ---------- generic rate / info card grids ---------- */
+  .rate-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin: 28px 0;
+  }
+
+  @media (max-width: 780px) {
+    .rate-grid { grid-template-columns: 1fr; }
+  }
+
+  .rate-card {
+    padding: 26px;
+  }
+
+  .rate-card .emoji {
+    font-size: 22px;
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .rate-card h4 {
+    margin: 0 0 4px;
+    font-size: 16px;
+    font-weight: 800;
+  }
+
+  .rate-figure {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 4px 0 8px;
+  }
+
+  .rate-figure .unit {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+
+  .rate-note {
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .callout-bar {
+    margin-top: 26px;
+    padding-top: 26px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .callout-bar p {
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    margin: 0;
+    font-weight: 600;
+  }
+
+  /* two-column breakdown modules */
+  .module-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin: 26px 0;
+  }
+
+  @media (max-width: 780px) {
+    .module-grid { grid-template-columns: 1fr; }
+  }
+
+  .module-card {
+    padding: 24px;
+    background: var(--surface);
+  }
+
+  .module-card .eyebrow {
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .module-card h4 {
+    font-size: 18px;
+    font-weight: 800;
+    margin: 0 0 12px;
+  }
+
+  .module-card ul li {
+    font-size: 13px;
+    padding: 8px 0;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .module-card ul li:first-child { border-top: none; }
+
+  .module-card ul li span:last-child {
+    font-weight: 700;
+    color: var(--text-primary);
+    flex: 0 0 auto;
+    text-align: right;
+  }
+
+  .badge-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 26px;
+  }
+
+  .info-badge {
+    padding: 18px 20px;
+    flex: 1 1 160px;
+  }
+
+  .info-badge .emoji { font-size: 18px; display: block; margin-bottom: 8px; }
+  .info-badge h5 { margin: 0 0 6px; font-size: 14px; font-weight: 800; }
+  .info-badge p { margin: 0; font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+
+  .dark-callout {
+    background: var(--accent);
+    color: var(--accent-text);
+    padding: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .dark-callout h4 { margin: 0 0 4px; font-size: 16px; font-weight: 800; }
+  .dark-callout p { margin: 0; font-size: 12px; color: rgba(255,255,255,0.7); }
+
+  .btn-light {
+    border: none;
+    background: var(--pill-light-bg);
+    color: var(--pill-light-text);
+    font-size: 13px;
+    font-weight: 700;
+    padding: 14px 24px;
+    flex: 0 0 auto;
+  }
+
+  /* personal shopper tiers */
+  .tier-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin: 24px 0 28px;
+  }
+
+  @media (max-width: 780px) {
+    .tier-grid { grid-template-columns: 1fr; }
+  }
+
+  .tier-card { padding: 24px; }
+  .tier-card h4 { margin: 0 0 10px; font-size: 15px; font-weight: 800; }
+  .tier-card p { margin: 0; font-size: 13px; color: var(--text-secondary); line-height: 1.7; }
+
+  .terms-card {
+    padding: 28px;
+    text-align: center;
+    background: var(--surface-warm);
+  }
+
+  .terms-card .emoji-circle {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--pill-light-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    margin: 0 auto 16px;
+  }
+
+  .terms-card h3 { margin: 0 0 10px; font-size: 18px; font-weight: 800; }
+  .terms-card p { font-size: 13px; color: var(--text-secondary); line-height: 1.7; margin: 0 0 18px; }
+
+  /* travelers rate grid */
+  .traveler-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin: 26px 0;
+  }
+
+  @media (max-width: 780px) {
+    .traveler-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .traveler-tile {
+    padding: 18px 14px;
+    text-align: center;
+    background: var(--surface-warm);
+  }
+
+  .traveler-tile .label {
+    display: block;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+  }
+
+  .traveler-tile .price {
+    font-size: 20px;
+    font-weight: 800;
+  }
+
+  .traveler-note {
+    padding: 18px 14px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .traveler-note span {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-secondary);
+  }
+
+  .notice-box {
+    padding: 20px 22px;
+    background: var(--surface-warm);
+    margin-bottom: 26px;
+  }
+
+  .notice-box p {
+    margin: 0;
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  .center { text-align: center; }
+
+  /* ---------- footer ---------- */
+  footer {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 48px 0;
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 40px;
+  }
+
+  @media (max-width: 780px) {
+    .footer-grid { grid-template-columns: 1fr; gap: 30px; }
+  }
+
+  .footer-brand-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .footer-brand-group .logo-mark {
+    width: 40px;
+    height: 40px;
+  }
+
+  .footer-brand {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .footer-desc {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    max-width: 340px;
+    line-height: 1.6;
+    margin: 0 0 22px;
+  }
+
+  .social-row { display: flex; gap: 10px; }
+
+  .social-pill {
+    width: 40px;
+    height: 40px;
+    background: var(--surface-warm);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    font-size: 11px;
+    font-weight: 700;
+    transition: background .15s ease, color .15s ease;
+  }
+
+  .social-pill:hover { background: var(--accent); color: var(--accent-text); }
+
+  .footer-col h5 {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin: 0 0 16px;
+  }
+
+  .footer-col li { margin-bottom: 12px; font-size: 13px; font-weight: 600; }
+  .footer-col li a:hover { color: var(--text-secondary); }
+
+  .footer-bottom {
+    margin-top: 36px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="ahtLogo" viewBox="0 0 200 200">
+      <path d="M17 70 A 88 88 0 0 1 183 70" fill="none" stroke="#1A1013" stroke-width="13" stroke-linecap="round" />
+      <path d="M17 130 A 88 88 0 0 0 183 130" fill="none" stroke="#1A1013" stroke-width="13" stroke-linecap="round" />
+      <text x="8" y="148" font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="146" fill="#3B0A17">A</text>
+      <text x="66" y="148" font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="146" fill="#C9A227">H</text>
+      <text x="124" y="148" font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="146" fill="#141414">T</text>
+    </symbol>
+  </defs>
+</svg>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="brand-group">
+      <svg class="logo-mark" viewBox="0 0 200 200" aria-label="AHT Store logo"><use href="#ahtLogo" /></svg>
+      <div class="brand">AHT STORE</div>
+    </div>
+    <nav class="nav-scroll" id="tabNav">
+      <button class="nav-btn active" data-tab="tienda" type="button">AHT Store</button>
+      <button class="nav-btn" data-tab="lujo" type="button">Artículos de Lujo</button>
+      <button class="nav-btn" data-tab="importacion" type="button">Importación &amp; Cajas</button>
+      <button class="nav-btn" data-tab="shopper" type="button">Personal Shopper</button>
+      <button class="nav-btn" data-tab="viajeros" type="button">Red de Viajeros</button>
+    </nav>
+    <a class="pill btn-whatsapp" href="https://wa.me/message/2DCJVPL3P3PEF1" target="_blank" rel="noopener">WHATSAPP SHOP</a>
+  </div>
+</header>
+
+<main>
+
+  <!-- ===================== SECTION 1: AHT STORE ===================== -->
+  <section id="tienda" class="view">
+    <div class="container">
+      <div class="hero">
+        <span class="pill tag tag-outline">PRODUCTOS 100% ORIGINALES IMPORTADOS DE EE. UU.</span>
+        <h1>AHT STORE</h1>
+        <p>Tu puerta de entrada directa a la moda, estilo de vida y accesorios de las firmas más deseadas de Estados Unidos. Curaduría exclusiva con disponibilidad inmediata y entregas garantizadas.</p>
+        <a class="pill btn-dark" href="https://wa.me/message/2DCJVPL3P3PEF1" target="_blank" rel="noopener">VER CATÁLOGO COMPLETO EN WHATSAPP →</a>
+      </div>
+
+      <div class="catalog-head">
+        <div>
+          <span class="section-label">SELECCIÓN ESPECIAL</span>
+          <h2 class="section-heading">Destacados en Stock</h2>
+        </div>
+      </div>
+
+      <div class="filter-row" id="filterRow">
+        <button class="pill filter-pill active" data-filter="todos" type="button">Todos</button>
+        <button class="pill filter-pill" data-filter="moda-infantil" type="button">Moda Infantil</button>
+        <button class="pill filter-pill" data-filter="linea-tecnica" type="button">Línea Técnica</button>
+        <button class="pill filter-pill" data-filter="lifestyle" type="button">Lifestyle</button>
+      </div>
+
+      <div class="product-grid" id="productGrid">
+
+        <!-- Card 1: Carter's -->
+        <article class="card product-card" data-category="moda-infantil">
+          <div class="product-banner">
+            <span class="pill tag tag-outline">ORIGINAL USA</span>
+            <div class="icon-badge">
+              <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M24 8 L24 16 L16 22 L16 34 L22 34 L22 56 L42 56 L42 34 L48 34 L48 22 L40 16 L40 8 Z" />
+                <path d="M24 8 Q32 14 40 8" />
+                <circle cx="32" cy="30" r="2.4" fill="currentColor" stroke="none" />
+              </svg>
+            </div>
+          </div>
+          <div class="product-body">
+            <div class="brand-sub">CARTER'S USA</div>
+            <span class="pill tag tag-cream">MODA INFANTIL</span>
+            <h3 class="product-title">Set Esenciales Carter's</h3>
+            <p class="product-desc">Prendas confeccionadas en algodón ultra suave e hipoalergénico. Diseños duraderos e importados desde la tienda oficial en EE. UU.</p>
+            <a class="pill btn-cream" href="https://wa.me/message/2DCJVPL3P3PEF1" target="_blank" rel="noopener">Consultar Disponible ➔</a>
+          </div>
+        </article>
+
+        <!-- Card 2: The North Face -->
+        <article class="card product-card" data-category="linea-tecnica">
+          <div class="product-banner">
+            <span class="pill tag tag-outline">ORIGINAL USA</span>
+            <div class="icon-badge">
+              <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M32 8 L24 14 L14 18 L16 30 L20 28 L20 56 L44 56 L44 28 L48 30 L50 18 L40 14 Z" />
+                <path d="M28 14 L28 22 L32 26 L36 22 L36 14" />
+                <line x1="32" y1="30" x2="32" y2="50" />
+              </svg>
+            </div>
+          </div>
+          <div class="product-body">
+            <div class="brand-sub">THE NORTH FACE</div>
+            <span class="pill tag tag-cream">LÍNEA TÉCNICA</span>
+            <h3 class="product-title">Casaca Antora Rain Jacket</h3>
+            <p class="product-desc">Protección cortavientos e impermeable de alta tecnología. Estilo contemporáneo directo desde outlets y flagship stores de EE. UU.</p>
+            <a class="pill btn-cream" href="https://wa.me/message/2DCJVPL3P3PEF1" target="_blank" rel="noopener">Consultar Disponible ➔</a>
+          </div>
+        </article>
+
+        <!-- Card 3: Stanley -->
+        <article class="card product-card" data-category="lifestyle">
+          <div class="product-banner">
+            <span class="pill tag tag-outline">ORIGINAL USA</span>
+            <div class="icon-badge">
+              <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M22 14 L42 14 L40 54 Q40 58 36 58 L28 58 Q24 58 24 54 Z" />
+                <line x1="22" y1="22" x2="42" y2="22" />
+                <path d="M42 24 L48 24 L48 34 L42 34" />
+                <line x1="30" y1="8" x2="30" y2="14" />
+                <line x1="34" y1="8" x2="34" y2="14" />
+              </svg>
+            </div>
+          </div>
+          <div class="product-body">
+            <div class="brand-sub">STANLEY USA</div>
+            <span class="pill tag tag-cream">LIFESTYLE &amp; ACCESORIOS</span>
+            <h3 class="product-title">Vaso Quencher H2.0 40oz</h3>
+            <p class="product-desc">El icónico vaso térmico de acero inoxidable con aislamiento al vacío de doble pared para mantener tus bebidas frías todo el día.</p>
+            <a class="pill btn-cream" href="https://wa.me/message/2DCJVPL3P3PEF1" target="_blank" rel="noopener">Consultar Disponible ➔</a>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SECTION 2: ARTÍCULOS DE LUJO ===================== -->
+  <section id="lujo" class="view" hidden>
+    <div class="container">
+      <span class="section-label">SERVICIO VIP &amp; MARCAS EXCLUSIVAS</span>
+      <h2 class="section-heading">Transporte de Artículos de Lujo USA</h2>
+      <p class="lede">Aprovecha nuestras promociones especiales en tus marcas favoritas como Gucci, Dior, Versace, Balenciaga, Louis Vuitton y Chanel. Garantizamos una experiencia refinada con custodia especial, empaque discreto y logística prioritaria.</p>
+
+      <div class="rate-grid">
+        <div class="card rate-card">
+          <span class="emoji">✨</span>
+          <h4>Costo de Servicio</h4>
+          <div class="rate-figure mono">15%</div>
+          <p class="rate-note">Del valor total del producto para la gestión de compra, verificación y custodia.</p>
+        </div>
+        <div class="card rate-card">
+          <span class="emoji">✈️</span>
+          <h4>Envío por Pieza</h4>
+          <div class="rate-figure mono">$50 <span class="unit">/ pieza</span></div>
+          <p class="rate-note">Tarifa plana de transporte internacional que ya incluye el impuesto (tax).</p>
+        </div>
+        <div class="card rate-card">
+          <span class="emoji">🛡️</span>
+          <h4>Desaduanaje</h4>
+          <div class="rate-figure mono">$5 <span class="unit">/ pieza</span></div>
+          <p class="rate-note">Cargo operativo para liberación prioritaria y trámites aduaneros.</p>
+        </div>
+      </div>
+
+      <div class="card callout-bar" style="padding:22px 26px;">
+        <p>Llegada a Lima con opción de despacho seguro a provincias.</p>
+        <a class="pill btn-dark" href="https://wa.me/message/2DCJVPL3P3PEF1" target="_blank" rel="noopener">Solicitar Ofertas Luxury VIP ➔</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SECTION 3: IMPORTACIÓN, ASESORÍA & CAJAS ===================== -->
+  <section id="importacion" class="view" hidden>
+    <div class="container">
+      <span class="section-label">ASESORÍA &amp; PROVEEDORES VERIFICADOS</span>
+      <h2 class="section-heading">Servicio de Importación, Asesoría &amp; Cajas</h2>
+      <p class="lede">Contamos con una red consolidada de proveedores oficiales en EE. UU. para compras en cualquier página web, especializándonos en tecnología, ropa, accesorios y envíos por volumen o cajas cerradas.</p>
+
+      <div class="module-grid">
+        <div class="card module-card">
+          <span class="eyebrow">Servicio de Cajas Cerradas</span>
+          <h4>Cajas por Categoría</h4>
+          <ul>
+            <li><span>Costo mínimo por caja</span><span class="mono">$200 (tax incluido)</span></li>
+            <li><span>Costo de envío</span><span class="mono">$60 / caja</span></li>
+            <li><span>Tiempo de entrega</span><span>15 días hábiles a Lima (salidas viernes)</span></li>
+          </ul>
+        </div>
+        <div class="card module-card">
+          <span class="eyebrow">Envíos Generales &amp; Paquetes</span>
+          <h4>Microenvíos &amp; Kilo</h4>
+          <ul>
+            <li><span>Microenvíos</span><span class="mono">$20 / kilo</span></li>
+            <li><span>Regulares / Personal Shopper</span><span class="mono">$25 / kilo</span></li>
+            <li><span>Demora a Perú</span><span>10 días hábiles</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="badge-row">
+        <div class="card info-badge">
+          <span class="emoji">💻</span>
+          <h5>Tecnología</h5>
+          <p>Laptops, celulares, tablets y componentes de distribuidores autorizados.</p>
+        </div>
+        <div class="card info-badge">
+          <span class="emoji">👕</span>
+          <h5>Ropa</h5>
+          <p>Prendas de marcas reconocidas para bebés, niños y adultos.</p>
+        </div>
+        <div class="card info-badge">
+          <span class="emoji">🕶️</span>
+          <h5>Accesorios</h5>
+          <p>Calzado, relojes, gafas de sol y artículos de estilo de vida.</p>
+        </div>
+      </div>
+
+      <div class="card dark-callout">
+        <div>
+          <h4>¿Deseas cotizar una importación o caja?</h4>
+          <p>Envíanos el link de tu producto o consulta por categorías de cajas disponibles.</p>
+        </div>
+        <a class="pill btn-light" href="https://wa.me/message/2DCJVPL3P3PEF1" target="_blank" rel="noopener">Solicitar Cotización ➔</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SECTION 4: PERSONAL SHOPPER ===================== -->
+  <section id="shopper" class="view" hidden>
+    <div class="container">
+      <span class="section-label">COMPRAS PRESENCIALES EN VIVO</span>
+      <h2 class="section-heading">Personal Shopper en USA</h2>
+      <p class="lede">Compramos de forma personalizada para ti directamente en tiendas de ofertas y outlets oficiales en Estados Unidos.</p>
+
+      <div class="tier-grid">
+        <div class="card tier-card">
+          <h4>Tiendas de Ofertas (TJ Maxx, Ross, Burlington)</h4>
+          <p>Precio por hora: <span class="mono">$45</span><br>Inversión mínima: <span class="mono">$300</span> (Tax 8.5% adicional)</p>
+        </div>
+        <div class="card tier-card">
+          <h4>Outlets de Marcas Top (Tommy, Coach, Polo, Nike, Guess)</h4>
+          <p>Precio por hora: <span class="mono">$50</span><br>Inversión mínima: <span class="mono">$600</span> (Tax 8.5% adicional)</p>
+        </div>
+      </div>
+
+      <div class="card terms-card">
+        <div class="emoji-circle">🛍️</div>
+        <h3>Condiciones del Servicio</h3>
+        <p>Abono para agendar: <span class="mono">$30</span>. Depósito de inversión hasta 2 horas antes de iniciar la compra. Muestras mediante fotos y videos en tiempo real.</p>
+        <a class="pill btn-dark" href="https://wa.me/message/2DCJVPL3P3PEF1" target="_blank" rel="noopener">Agendar Personal Shopper ➔</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SECTION 5: RED DE VIAJEROS ===================== -->
+  <section id="viajeros" class="view" hidden>
+    <div class="container">
+      <span class="section-label">SERVICIO EXPRESS EN EQUIPAJE</span>
+      <h2 class="section-heading">Red de Viajeros Frecuentes</h2>
+      <p class="lede">Transportamos artículos seleccionados en maleta o equipaje de viajero para entregas rápidas.</p>
+
+      <div class="traveler-grid">
+        <div class="card traveler-tile"><span class="label">Celulares</span><span class="price mono">$100</span></div>
+        <div class="card traveler-tile"><span class="label">Laptops</span><span class="price mono">$120</span></div>
+        <div class="card traveler-tile"><span class="label">Tablets</span><span class="price mono">$70</span></div>
+        <div class="card traveler-tile"><span class="label">Smartwatch / Audífonos</span><span class="price mono">$35</span></div>
+        <div class="card traveler-tile"><span class="label">Zapatillas</span><span class="price mono">$18</span></div>
+        <div class="card traveler-tile"><span class="label">Ropa por kilo</span><span class="price mono">$15</span></div>
+        <div class="card traveler-tile"><span class="label">Vitaminas</span><span class="price mono">$12</span></div>
+        <div class="card traveler-note"><span>Entrega en Surco o envíos vía courier local</span></div>
+      </div>
+
+      <div class="card notice-box">
+        <p><strong>Nota importante:</strong> Tiempo mínimo para separar espacio es de 2 semanas. El pago se realiza incluyendo comisión antes de la compra. Este precio no incluye delivery local ni tax de la ciudad del viajero.</p>
+      </div>
+
+      <div class="center">
+        <a class="pill btn-dark" href="https://wa.me/message/2DCJVPL3P3PEF1" target="_blank" rel="noopener">Consultar Cupo con Viajero ➔</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand-group">
+          <svg class="logo-mark" viewBox="0 0 200 200" aria-label="AHT Store logo"><use href="#ahtLogo" /></svg>
+          <div class="footer-brand">AHT STORE</div>
+        </div>
+        <p class="footer-desc">Soluciones integrales de compra, asesoría e importación directa desde EE. UU.</p>
+        <div class="social-row">
+          <a class="pill social-pill" href="https://www.instagram.com/aht_store/" target="_blank" rel="noopener">IG</a>
+          <a class="pill social-pill" href="https://www.facebook.com/AHT.storeperu/" target="_blank" rel="noopener">FB</a>
+          <a class="pill social-pill" href="https://www.tiktok.com/@shop_aht" target="_blank" rel="noopener">TK</a>
+          <a class="pill social-pill" href="https://wa.me/message/2DCJVPL3P3PEF1" target="_blank" rel="noopener">WA</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>Servicios</h5>
+        <ul>
+          <li><a href="#" data-goto="tienda">AHT Store</a></li>
+          <li><a href="#" data-goto="lujo">Artículos de Lujo</a></li>
+          <li><a href="#" data-goto="importacion">Importación &amp; Cajas</a></li>
+          <li><a href="#" data-goto="shopper">Personal Shopper</a></li>
+          <li><a href="#" data-goto="viajeros">Red de Viajeros</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Redes &amp; Contacto</h5>
+        <ul>
+          <li><a href="https://wa.me/message/2DCJVPL3P3PEF1" target="_blank" rel="noopener">WhatsApp Business</a></li>
+          <li><a href="https://www.instagram.com/aht_store/" target="_blank" rel="noopener">Instagram (@aht_store)</a></li>
+          <li><a href="https://www.facebook.com/AHT.storeperu/" target="_blank" rel="noopener">Facebook (AHT Store Perú)</a></li>
+          <li><a href="https://www.tiktok.com/@shop_aht" target="_blank" rel="noopener">TikTok (@shop_aht)</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">© AHT STORE — Todos los derechos reservados.</div>
+  </div>
+</footer>
+
+<script>
+  // --- Tab navigation ---
+  var views = document.querySelectorAll(".view");
+  var navBtns = document.querySelectorAll(".nav-btn");
+
+  function showTab(id) {
+    views.forEach(function (v) {
+      v.hidden = (v.id !== id);
+    });
+    navBtns.forEach(function (b) {
+      b.classList.toggle("active", b.getAttribute("data-tab") === id);
+    });
+    window.scrollTo(0, 0);
+  }
+
+  navBtns.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      showTab(btn.getAttribute("data-tab"));
+    });
+  });
+
+  document.querySelectorAll("[data-goto]").forEach(function (link) {
+    link.addEventListener("click", function (e) {
+      e.preventDefault();
+      showTab(link.getAttribute("data-goto"));
+    });
+  });
+
+  // --- Quick filter chips (Section 1) ---
+  var filterPills = document.querySelectorAll(".filter-pill");
+  var productCards = document.querySelectorAll(".product-card");
+
+  filterPills.forEach(function (pill) {
+    pill.addEventListener("click", function () {
+      filterPills.forEach(function (p) { p.classList.remove("active"); });
+      pill.classList.add("active");
+
+      var filter = pill.getAttribute("data-filter");
+      productCards.forEach(function (card) {
+        var category = card.getAttribute("data-category");
+        card.hidden = !(filter === "todos" || category === filter);
+      });
+    });
+  });
+</script>
+
+</body>
+</html>
