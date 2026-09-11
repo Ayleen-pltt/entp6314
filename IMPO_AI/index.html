@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IMPO AI — Foreign Trade Advisor</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <button class="lang-toggle" id="lang-toggle" type="button"></button>
+  <div class="brand">
+    <span class="brand-mark">IMPO</span><span class="brand-mark-accent">AI</span>
+  </div>
+  <p class="tagline" id="ui-tagline"></p>
+</header>
+
+<div class="disclaimer" id="ui-disclaimer"></div>
+
+<nav class="tabs" id="tabs">
+  <button class="tab-btn active" data-tab="chat" id="ui-tab-chat"></button>
+  <button class="tab-btn" data-tab="classifier" id="ui-tab-classifier"></button>
+  <button class="tab-btn" data-tab="calculator" id="ui-tab-calculator"></button>
+  <button class="tab-btn" data-tab="incoterms" id="ui-tab-incoterms"></button>
+  <button class="tab-btn" data-tab="directory" id="ui-tab-directory"></button>
+  <button class="tab-btn" data-tab="sources" id="ui-tab-sources"></button>
+</nav>
+
+<main>
+
+  <!-- ================= TAB 1: CHAT ADVISOR ================= -->
+  <section class="tab-panel active" id="panel-chat">
+    <h2 id="ui-chat-heading"></h2>
+    <p class="panel-intro" id="ui-chat-intro"></p>
+
+    <div class="quick-scenarios" id="quick-scenarios"></div>
+
+    <div class="chat-window" id="chat-window"></div>
+
+    <form class="chat-input-row" id="chat-form">
+      <input type="text" id="chat-input" autocomplete="off">
+      <button type="submit" class="btn-primary" id="ui-chat-send"></button>
+    </form>
+  </section>
+
+  <!-- ================= TAB 2: TARIFF CLASSIFIER ================= -->
+  <section class="tab-panel" id="panel-classifier">
+    <h2 id="ui-classifier-heading"></h2>
+    <p class="panel-intro" id="ui-classifier-intro"></p>
+
+    <div class="form-row">
+      <div class="form-field">
+        <label for="product-select" id="ui-classifier-label-product"></label>
+        <select id="product-select"></select>
+      </div>
+      <div class="form-field">
+        <label for="country-select" id="ui-classifier-label-country"></label>
+        <select id="country-select"></select>
+      </div>
+      <button class="btn-primary" id="classify-btn" type="button"></button>
+    </div>
+
+    <div class="result-card" id="classifier-result" hidden></div>
+  </section>
+
+  <!-- ================= TAB 3: LANDED COST CALCULATOR ================= -->
+  <section class="tab-panel" id="panel-calculator">
+    <h2 id="ui-calc-heading"></h2>
+    <p class="panel-intro" id="ui-calc-intro"></p>
+
+    <form class="calc-form" id="calc-form">
+      <div class="form-field">
+        <label for="calc-country" id="ui-calc-label-country"></label>
+        <select id="calc-country"></select>
+      </div>
+      <div class="form-field">
+        <label for="calc-fob" id="ui-calc-label-fob"></label>
+        <input type="number" id="calc-fob" min="0" step="0.01" required>
+      </div>
+      <div class="form-field">
+        <label for="calc-freight" id="ui-calc-label-freight"></label>
+        <input type="number" id="calc-freight" min="0" step="0.01" required>
+      </div>
+      <div class="form-field">
+        <label for="calc-insurance" id="ui-calc-label-insurance"></label>
+        <input type="number" id="calc-insurance" min="0" step="0.01" required>
+      </div>
+      <div class="form-field">
+        <label for="calc-duty" id="ui-calc-label-duty"></label>
+        <input type="number" id="calc-duty" min="0" step="0.01" required>
+      </div>
+      <div class="form-field">
+        <label for="calc-vat" id="ui-calc-label-vat"></label>
+        <input type="number" id="calc-vat" min="0" step="0.01" required>
+      </div>
+      <div class="form-field">
+        <label for="calc-fee" id="ui-calc-label-fee"></label>
+        <input type="number" id="calc-fee" min="0" step="0.01" required>
+      </div>
+      <div class="form-field">
+        <label for="calc-units" id="ui-calc-label-units"></label>
+        <input type="number" id="calc-units" min="1" step="1" required>
+      </div>
+      <button class="btn-primary" type="submit" id="ui-calc-button"></button>
+    </form>
+
+    <div class="result-card" id="calc-result" hidden></div>
+  </section>
+
+  <!-- ================= TAB 4: INCOTERMS GUIDE ================= -->
+  <section class="tab-panel" id="panel-incoterms">
+    <h2 id="ui-incoterms-heading"></h2>
+    <p class="panel-intro" id="ui-incoterms-intro"></p>
+
+    <div class="incoterms-grid" id="incoterms-grid"></div>
+
+    <div class="result-card" id="incoterms-detail" hidden></div>
+
+    <div class="warning-box">
+      <h3 id="ui-incoterms-warning-heading"></h3>
+      <ul id="incoterms-warnings"></ul>
+    </div>
+  </section>
+
+  <!-- ================= TAB 5: DIRECTORY & CHECKLIST ================= -->
+  <section class="tab-panel" id="panel-directory">
+    <h2 id="ui-directory-heading"></h2>
+    <p class="panel-intro" id="ui-directory-intro"></p>
+    <div class="directory-grid" id="directory-grid"></div>
+
+    <h2 class="checklist-heading" id="ui-checklist-heading"></h2>
+    <p class="panel-intro" id="ui-checklist-intro"></p>
+    <div class="checklist" id="checklist"></div>
+  </section>
+
+  <!-- ================= TAB 6: LEGAL SOURCES ================= -->
+  <section class="tab-panel" id="panel-sources">
+    <h2 id="ui-sources-heading"></h2>
+    <p class="panel-intro" id="ui-sources-intro"></p>
+    <div id="sources-list"></div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <p id="ui-footer-text"></p>
+</footer>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
