@@ -5,6 +5,11 @@
 const LANG_KEY = "impoai-lang";
 let currentLang = localStorage.getItem(LANG_KEY) === "es" ? "es" : "en";
 
+const LEVEL_KEY = "impoai-chat-level";
+let userLevel = localStorage.getItem(LEVEL_KEY) === "expert" || localStorage.getItem(LEVEL_KEY) === "beginner"
+  ? localStorage.getItem(LEVEL_KEY)
+  : null;
+
 // UI string lookup
 function t(key) {
   const entry = UI_STRINGS[key];
@@ -66,7 +71,6 @@ function hideEl(id) {
 function applyStaticText() {
   document.documentElement.lang = currentLang;
   document.getElementById("ui-tagline").textContent = t("tagline");
-  document.getElementById("ui-disclaimer").textContent = t("disclaimer");
 
   document.getElementById("ui-tab-chat").textContent = t("tab_chat");
   document.getElementById("ui-tab-classifier").textContent = t("tab_classifier");
@@ -165,17 +169,104 @@ function resetChat() {
   greeting.innerHTML = `<span class="sender">${escapeHtml(t("chat_ai"))}</span><p></p>`;
   greeting.querySelector("p").textContent = t("chat_greeting");
   chatWindow.appendChild(greeting);
+  if (!userLevel) {
+    renderLevelPrompt();
+  }
+  updateLevelIndicator();
+}
+
+// Resolves a {en:{beginner,expert}, es:{beginner,expert}} field to a plain
+// {en:"...", es:"..."} field for the currently chosen experience level.
+function resolveLeveled(field) {
+  const level = userLevel || "beginner";
+  return { en: field.en[level], es: field.es[level] };
+}
+
+function renderLevelPrompt() {
+  const chatWindow = document.getElementById("chat-window");
+  const div = document.createElement("div");
+  div.className = "chat-msg ai";
+  div.innerHTML = `<span class="sender">${escapeHtml(t("chat_ai"))}</span><p></p>`;
+  div.querySelector("p").textContent = t("chat_level_question");
+
+  const wrap = document.createElement("div");
+  wrap.className = "followups";
+  [
+    { level: "beginner", label: t("chat_level_beginner_btn") },
+    { level: "expert", label: t("chat_level_expert_btn") }
+  ].forEach((opt) => {
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "followup-chip";
+    chip.textContent = opt.label;
+    chip.addEventListener("click", () => chooseLevel(opt.level));
+    wrap.appendChild(chip);
+  });
+  div.appendChild(wrap);
+
+  chatWindow.appendChild(div);
+  scrollChatToBottom();
+}
+
+function chooseLevel(level) {
+  userLevel = level;
+  localStorage.setItem(LEVEL_KEY, level);
+  addUserMessage(level === "beginner" ? t("chat_level_beginner_btn") : t("chat_level_expert_btn"));
+  setTimeout(() => {
+    addAiMessage({
+      title: null,
+      body: level === "beginner" ? UI_STRINGS.chat_level_beginner_confirm : UI_STRINGS.chat_level_expert_confirm,
+      legalBasis: null,
+      warning: null,
+      followUps: []
+    });
+    updateLevelIndicator();
+  }, 300);
+}
+
+function updateLevelIndicator() {
+  const el = document.getElementById("level-indicator");
+  if (!el) return;
+  el.innerHTML = "";
+  if (!userLevel) return;
+
+  const label = document.createElement("span");
+  label.textContent = `${t("chat_level_current_prefix")} ${userLevel === "beginner" ? t("chat_level_beginner_btn") : t("chat_level_expert_btn")}`;
+  el.appendChild(label);
+
+  const changeBtn = document.createElement("button");
+  changeBtn.type = "button";
+  changeBtn.className = "level-change-link";
+  changeBtn.textContent = t("chat_level_change_link");
+  changeBtn.addEventListener("click", () => {
+    userLevel = null;
+    localStorage.removeItem(LEVEL_KEY);
+    resetChat();
+  });
+  el.appendChild(changeBtn);
 }
 
 function askScenario(text) {
   addUserMessage(text);
+
+  if (!userLevel) {
+    setTimeout(() => renderLevelPrompt(), 300);
+    return;
+  }
+
   const scenarioMatch = findScenario(text);
   if (scenarioMatch) {
-    setTimeout(() => addAiMessage(scenarioMatch.answer), 300);
+    const answer = { ...scenarioMatch.answer, body: resolveLeveled(scenarioMatch.answer.body) };
+    setTimeout(() => addAiMessage(answer), 300);
     return;
   }
   const sourceMatch = findLegalSource(text);
-  setTimeout(() => addAiMessage(sourceMatch ? buildSourceAnswer(sourceMatch) : CHAT_FALLBACK), 300);
+  if (sourceMatch) {
+    setTimeout(() => addAiMessage(buildSourceAnswer(sourceMatch)), 300);
+    return;
+  }
+  const fallback = { ...CHAT_FALLBACK, body: resolveLeveled(CHAT_FALLBACK.body) };
+  setTimeout(() => addAiMessage(fallback), 300);
 }
 
 function findScenario(text) {
@@ -210,10 +301,15 @@ function findLegalSource(text) {
 }
 
 function buildSourceAnswer(src) {
+  const level = userLevel || "beginner";
+  const prefix = level === "beginner" ? UI_STRINGS.chat_source_beginner_prefix : null;
   return {
     title: { en: src.title, es: src.title },
-    body: src.subject,
-    legalBasis: { en: `${src.issuer} — ${td(src.region)}`, es: `${src.issuer} — ${td(src.region)}` },
+    body: {
+      en: (prefix ? prefix.en + " " : "") + src.subject.en,
+      es: (prefix ? prefix.es + " " : "") + src.subject.es
+    },
+    legalBasis: { en: `${src.issuer} — ${src.region.en}`, es: `${src.issuer} — ${src.region.es}` },
     warning: null,
     sourceUrl: src.url,
     followUps: []
@@ -236,8 +332,13 @@ function addAiMessage(answer) {
   div.className = "chat-msg ai";
 
   div.innerHTML = `<span class="sender">${escapeHtml(t("chat_ai"))}</span><p class="msg-title"></p><p></p>`;
-  div.querySelector(".msg-title").textContent = td(answer.title);
-  div.querySelectorAll("p")[1].textContent = td(answer.body);
+  const titleEl = div.querySelector(".msg-title");
+  if (answer.title) {
+    titleEl.textContent = td(answer.title);
+  } else {
+    titleEl.remove();
+  }
+  div.querySelectorAll("p")[div.querySelectorAll("p").length - 1].textContent = td(answer.body);
 
   if (answer.legalBasis) {
     const legal = document.createElement("p");
@@ -305,14 +406,40 @@ function initClassifier() {
     const countryId = countrySelect.value;
     const countryName = td(DEST_COUNTRIES.find((c) => c.id === countryId).name);
     const national = product.national[countryId];
-    const ftaNote = td(product.fta[countryId]);
+    const tradeInfo = COUNTRY_TRADE_INFO[countryId];
 
     result.hidden = false;
+
+    if (tradeInfo && tradeInfo.restricted) {
+      result.innerHTML = `
+        <h3>${escapeHtml(td(product.name))} → ${escapeHtml(countryName)}</h3>
+        <table>
+          <tr><td>${escapeHtml(t("classifier_hs_label"))}</td><td>${escapeHtml(product.hs6)}</td></tr>
+        </table>
+        <div class="warning" style="margin-top:14px;">⚠ ${escapeHtml(td(tradeInfo.ftaNote))}</div>
+      `;
+      return;
+    }
+
+    let nationalRow;
+    let ftaField;
+    if (national) {
+      nationalRow = `<tr><td>${escapeHtml(t("classifier_national_label"))}</td><td>${escapeHtml(national.label)}</td></tr>`;
+      ftaField = product.fta[countryId];
+    } else {
+      nationalRow = `<tr><td>${escapeHtml(t("classifier_nomenclature_label"))}</td><td>${escapeHtml(td(tradeInfo.nomenclature))}</td></tr>`;
+      ftaField = tradeInfo.ftaNote;
+    }
+    const ftaNote = td(ftaField);
+    const ftaStatus = renderFtaStatus(ftaField.en);
+
     result.innerHTML = `
       <h3>${escapeHtml(td(product.name))} → ${escapeHtml(countryName)}</h3>
       <table>
         <tr><td>${escapeHtml(t("classifier_hs_label"))}</td><td>${escapeHtml(product.hs6)}</td></tr>
-        <tr><td>${escapeHtml(t("classifier_national_label"))}</td><td>${escapeHtml(national.label)}</td></tr>
+        ${nationalRow}
+        <tr><td>${escapeHtml(t("classifier_advalorem_label"))}</td><td>${escapeHtml(t("classifier_advalorem_yes"))}</td></tr>
+        <tr><td>${escapeHtml(t("classifier_fta_status_label"))}</td><td>${ftaStatus}</td></tr>
       </table>
       <p><strong>${escapeHtml(t("classifier_fta_label"))}</strong> ${escapeHtml(ftaNote)}</p>
       <p><strong>${escapeHtml(t("classifier_ntr_label"))}</strong></p>
@@ -346,6 +473,25 @@ function renderClassifierOptions() {
     countrySelect.appendChild(opt);
   });
   if (prevCountry) countrySelect.value = prevCountry;
+}
+
+// Detects which known FTA (if any) a note is referring to, by matching
+// against the note's English text (kept consistent on purpose, regardless
+// of the currently displayed language) so a specific agreement name and
+// its partner countries can be shown without hand-tagging every entry.
+function findFta(noteEnText) {
+  const lower = noteEnText.toLowerCase();
+  return FTA_REGISTRY.find((f) => f.match.some((m) => lower.includes(m)));
+}
+
+function renderFtaStatus(noteEnText) {
+  const match = findFta(noteEnText);
+  if (match) {
+    return escapeHtml(
+      t("classifier_fta_yes_prefix") + td(match.name) + " (" + t("classifier_fta_parties_prefix") + td(match.parties) + ")"
+    );
+  }
+  return escapeHtml(t("classifier_fta_no"));
 }
 
 /* ---------------- Tab 3: Landed Cost Calculator ---------------- */
@@ -403,12 +549,10 @@ function renderCalculatorOptions() {
   const countrySelect = document.getElementById("calc-country");
   const prevCountry = countrySelect.value;
   countrySelect.innerHTML = "";
-  Object.keys(VALUATION_BASIS).forEach((id) => {
-    const entry = COUNTRY_DIRECTORY.find((c) => c.id === id);
-    const name = entry ? td(entry.name) : id;
+  DEST_COUNTRIES.filter((c) => VALUATION_BASIS[c.id]).forEach((c) => {
     const opt = document.createElement("option");
-    opt.value = id;
-    opt.textContent = name;
+    opt.value = c.id;
+    opt.textContent = td(c.name);
     countrySelect.appendChild(opt);
   });
   if (prevCountry) countrySelect.value = prevCountry;
