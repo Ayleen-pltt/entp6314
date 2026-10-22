@@ -1,0 +1,1904 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VendeAI</title>
+<style>
+  :root {
+    --bg: #f3ecdc;
+    --surface: #ffffff;
+    --text: #000000;
+    --muted: #5c6266;
+    --line: #ceccc5;
+    --accent: #4c5a62;
+    --accent-soft: #e4e8ea;
+    --warn: #a35a00;
+    --warn-soft: #fdf1e2;
+    --danger: #b3261e;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #101314;
+      --surface: #1b1f22;
+      --text: #f3ecdc;
+      --muted: #ceccc5;
+      --line: #30373b;
+      --accent: #a9b8c0;
+      --accent-soft: #252d32;
+      --warn: #f0a94b;
+      --warn-soft: #33281a;
+      --danger: #f2867f;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 560px; margin: 0 auto; padding: 0 16px; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+
+  header { border-bottom: 1px solid var(--line); background: var(--bg); position: sticky; top: 0; z-index: 5; }
+  header .wrap { display: flex; align-items: center; justify-content: space-between; height: 56px; }
+  .logo { font-weight: 700; font-size: 1.1rem; }
+  .logo span { color: var(--accent); }
+  .lang { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .lang button { background: none; border: 0; padding: 4px 10px; font-size: 0.85rem; cursor: pointer; color: var(--muted); }
+  .lang button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+
+  main { padding: 24px 0 64px; }
+  h1 { font-size: 1.4rem; letter-spacing: -0.01em; margin-bottom: 4px; }
+  .sub { color: var(--muted); margin-bottom: 16px; }
+  h2 { font-size: 1rem; margin: 32px 0 10px; }
+
+  textarea {
+    width: 100%; min-height: 96px; resize: vertical;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+    padding: 12px 14px; font-size: 1rem;
+  }
+  textarea:focus, input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .row-actions { display: flex; gap: 10px; margin-top: 10px; align-items: center; flex-wrap: wrap; }
+  .btn {
+    border: 0; border-radius: 10px; padding: 11px 18px; font-weight: 600; cursor: pointer;
+    background: var(--accent); color: #fff;
+  }
+  @media (prefers-color-scheme: dark) { .btn { color: #101314; } }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn.ghost { background: none; color: var(--muted); border: 1px solid var(--line); }
+  .examples { margin-top: 14px; font-size: 0.85rem; color: var(--muted); }
+  .examples button {
+    display: block; width: 100%; text-align: left; margin-top: 6px;
+    background: var(--surface); border: 1px dashed var(--line); border-radius: 8px;
+    padding: 8px 10px; cursor: pointer; color: var(--text); font-size: 0.88rem;
+  }
+  .msg { margin-top: 10px; font-size: 0.9rem; color: var(--warn); }
+
+  .card {
+    margin-top: 20px; background: var(--surface);
+    border: 1px solid var(--line); border-radius: 16px; padding: 18px 16px;
+  }
+  .card h3 { font-size: 1rem; margin-bottom: 14px; }
+  .field { margin-bottom: 14px; }
+  .field > label, .field > .label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--muted); margin-bottom: 4px; }
+  .field input, .field select {
+    width: 100%; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px;
+  }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .field.ask input, .field.ask select, .field.ask .chips { border-color: var(--warn); background: var(--warn-soft); }
+  .ask-note { display: none; font-size: 0.8rem; color: var(--warn); margin-top: 4px; }
+  .field.ask .ask-note { display: block; }
+  .hint { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
+  .sub-box { border-left: 3px solid var(--accent-soft); padding-left: 10px; margin-top: 8px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; border: 1px solid transparent; border-radius: 10px; padding: 2px; }
+  .chips button {
+    border: 1px solid var(--line); background: var(--bg); border-radius: 999px;
+    padding: 6px 12px; cursor: pointer; font-size: 0.9rem;
+  }
+  .chips button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+  @media (prefers-color-scheme: dark) { .chips button[aria-pressed="true"] { color: #101314; } }
+  .total { display: flex; justify-content: space-between; font-weight: 600; padding: 10px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-bottom: 14px; }
+  .num { font-variant-numeric: tabular-nums; }
+  .schedule { list-style: none; font-size: 0.88rem; color: var(--muted); margin-top: 6px; }
+  .effect { background: var(--accent-soft); border-radius: 10px; padding: 10px 12px; font-size: 0.92rem; margin: 6px 0 14px; }
+  .effect div + div { margin-top: 2px; }
+  .warn { color: var(--danger); font-size: 0.88rem; margin-bottom: 10px; }
+
+  .sales { list-style: none; }
+  .sales li {
+    display: flex; justify-content: space-between; gap: 12px; align-items: center;
+    padding: 12px 0; border-bottom: 1px solid var(--line);
+  }
+  .sales .main { font-weight: 600; }
+  .sales .meta { font-size: 0.85rem; color: var(--muted); }
+  .sales .owes { color: var(--warn); }
+  .sales .undone { text-decoration: line-through; opacity: 0.6; }
+  .linkbtn { background: none; border: 0; color: var(--accent); cursor: pointer; font-size: 0.88rem; white-space: nowrap; }
+  .empty { color: var(--muted); font-size: 0.92rem; }
+
+  .toast {
+    position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%);
+    background: var(--text); color: var(--bg); padding: 10px 16px; border-radius: 10px;
+    font-size: 0.92rem; max-width: calc(100% - 32px); display: none; z-index: 20;
+  }
+  footer { border-top: 1px solid var(--line); padding: 20px 0 32px; font-size: 0.82rem; color: var(--muted); }
+  footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+  .overlay {
+    position: fixed; inset: 0; background: var(--bg); z-index: 30;
+    display: none; align-items: center; justify-content: center; padding: 16px;
+  }
+  .overlay .box { max-width: 360px; width: 100%; text-align: center; }
+  .overlay h2 { font-size: 1.2rem; margin: 16px 0 20px; }
+  .overlay .btn { display: block; width: 100%; margin-top: 10px; }
+
+  .onboard { align-items: flex-start; overflow-y: auto; }
+  .onboard .box { text-align: left; max-width: 420px; padding: 32px 0; }
+  .onboard h2 { margin: 16px 0 4px; }
+  .ob-sub { color: var(--muted); margin-bottom: 20px; }
+  .onboard .field input, .onboard .field select { width: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
+  .check-row { display: grid; grid-template-columns: 22px 1fr; gap: 10px; align-items: start; margin: 14px 0; font-size: 0.92rem; cursor: pointer; }
+  .check-row input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--accent); }
+  .check-row a { color: var(--accent); font-weight: 600; }
+  .doc-lang { color: var(--muted); font-size: 0.82rem; }
+  .ob-error { color: var(--danger); font-size: 0.82rem; margin-top: 4px; }
+  .ob-foot { margin-top: 12px; text-align: center; }
+  .onboard .btn { margin-top: 18px; }
+  .head-actions { display: flex; align-items: center; gap: 8px; }
+  .bizbtn { background: none; border: 1px solid var(--line); border-radius: 8px; padding: 4px 10px; font-size: 0.85rem; cursor: pointer; color: var(--accent); font-weight: 600; white-space: nowrap; }
+  @media (max-width: 440px) { .hello { display: none; } .lang button { padding: 4px 8px; } }
+  .hello { font-weight: 400; color: var(--muted); font-size: 0.9rem; margin-left: 6px; }
+  header .tabs { display: flex; height: auto; justify-content: flex-start; gap: 4px; overflow-x: auto; }
+  .tabs button {
+    background: none; border: 0; border-bottom: 2px solid transparent;
+    padding: 10px 10px 9px; cursor: pointer; color: var(--muted); font-weight: 600; font-size: 0.92rem; white-space: nowrap;
+  }
+  .tabs button[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .home-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+  .seg { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .seg button { background: none; border: 0; padding: 6px 12px; cursor: pointer; color: var(--muted); font-size: 0.88rem; }
+  .seg button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .stat { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
+  .stat .k { font-size: 0.8rem; color: var(--muted); }
+  .stat .v { font-size: 1.35rem; font-weight: 700; font-variant-numeric: tabular-nums; margin-top: 2px; }
+  .stat.big { grid-column: 1 / -1; }
+  .stat.big .v { font-size: 1.9rem; color: var(--accent); }
+  .stat .v.owe { color: var(--warn); }
+  .stat .small { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 4px 14px; }
+  .panel h2 { margin: 12px 0 4px; }
+  .rows { list-style: none; }
+  .rows li { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .rows li:last-child { border-bottom: 0; }
+  .rows .meta { font-size: 0.82rem; color: var(--muted); }
+  .rows .late { color: var(--danger); }
+  .pill { font-size: 0.75rem; padding: 2px 8px; border-radius: 999px; background: var(--warn-soft); color: var(--warn); font-weight: 600; white-space: nowrap; }
+  .stock-input { width: 64px; text-align: right; background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 5px 6px; }
+  .bar { height: 8px; background: var(--accent-soft); border-radius: 4px; margin-top: 4px; overflow: hidden; }
+  .bar span { display: block; height: 100%; background: var(--accent); }
+  .home-section { margin-top: 18px; }
+
+  .toggles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .toggle {
+    display: flex; align-items: center; gap: 10px; text-align: left;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px; cursor: pointer;
+  }
+  .toggle[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+  .toggle .dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--line); flex: none; }
+  .toggle[aria-pressed="true"] .dot { border-color: var(--accent); background: var(--accent); box-shadow: inset 0 0 0 3px var(--accent-soft); }
+  .toggle .name { font-weight: 600; font-size: 0.92rem; }
+  .toggle .st { font-size: 0.75rem; color: var(--muted); }
+  .biz h2 { margin: 22px 0 8px; }
+  .biz h2:first-child { margin-top: 4px; }
+  .biz .hint { margin: -4px 0 8px; }
+  .toggles.flags { margin-top: 8px; }
+  .rec { margin-top: 26px; background: var(--accent-soft); border-radius: 14px; padding: 4px 14px 14px; }
+  .rec h2 { color: var(--accent); }
+  .rec-free { font-size: 0.9rem; margin-bottom: 10px; }
+  .rec-item { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin-top: 8px; font-size: 0.9rem; }
+  .rec-why { color: var(--muted); font-size: 0.82rem; margin-top: 2px; }
+  .onboard .biz .toggle { background: var(--surface); }
+  .onboard .btn.ghost { margin-top: 8px; }
+  .soon { margin-top: 20px; font-size: 0.85rem; color: var(--muted); background: var(--surface); border: 1px dashed var(--line); border-radius: 10px; padding: 10px 12px; }
+
+  .legal-links { display: flex; flex-wrap: wrap; gap: 4px 14px; }
+  .legal-links a { color: var(--muted); }
+</style>
+</head>
+<body>
+
+<div class="overlay" id="langPicker" role="dialog" aria-modal="true">
+  <div class="box">
+    <div class="logo">Vende<span>AI</span></div>
+    <h2>¿En qué idioma quieres usar VendeAI?<br><span style="color:var(--muted);font-weight:400">Em qual idioma você quer usar o VendeAI?<br>Which language do you want to use?</span></h2>
+    <button class="btn" data-pick="es">Español</button>
+    <button class="btn" data-pick="pt">Português</button>
+    <button class="btn" data-pick="en">English</button>
+  </div>
+</div>
+
+<div class="overlay onboard" id="onboard" role="dialog" aria-modal="true" aria-labelledby="ob-title">
+  <form class="box" id="obForm" novalidate>
+    <div class="logo">Vende<span>AI</span></div>
+    <h2 id="ob-title" data-t="obTitle"></h2>
+    <p class="ob-sub" data-t="obSub"></p>
+
+    <div class="field">
+      <label for="ob-name" data-t="obName"></label>
+      <input id="ob-name" autocomplete="nickname" maxlength="40">
+    </div>
+    <div class="field">
+      <label for="ob-contact" data-t="obContact"></label>
+      <input id="ob-contact" autocomplete="tel" maxlength="60">
+      <div class="hint" data-t="obContactHint"></div>
+      <div class="ob-error" id="ob-contact-err" hidden data-t="obContactErr"></div>
+    </div>
+    <div class="field">
+      <label for="ob-country" data-t="obCountry"></label>
+      <select id="ob-country"></select>
+    </div>
+
+    <label class="check-row">
+      <input type="checkbox" id="ob-terms">
+      <span><span data-t="obTermsA"></span> <a href="../legal/terminos-y-condiciones.html" target="_blank" rel="noopener" data-t="obTermsLink"></a>. <span data-t="obTermsB"></span> <span class="doc-lang" data-t="docLangNote"></span></span>
+    </label>
+    <label class="check-row">
+      <input type="checkbox" id="ob-privacy">
+      <span><span data-t="obPrivacyA"></span> <a href="../legal/politica-de-privacidad.html" target="_blank" rel="noopener" data-t="obPrivacyLink"></a>. <span class="doc-lang" data-t="docLangNote"></span></span>
+    </label>
+
+    <button class="btn" id="ob-submit" type="submit" disabled data-t="obStart"></button>
+    <p class="hint ob-foot" data-t="obFoot"></p>
+  </form>
+</div>
+
+<div class="overlay onboard" id="bizStep" role="dialog" aria-modal="true" aria-labelledby="biz-title">
+  <div class="box">
+    <div class="logo">Vende<span>AI</span></div>
+    <h2 id="biz-title" data-t="bizStepTitle"></h2>
+    <p class="ob-sub" data-t="bizStepSub"></p>
+    <div id="bizStepForm"></div>
+    <p class="soon" data-t="chSoon"></p>
+    <div class="ob-error" id="bizNeedSector" hidden data-t="bizNeedSector"></div>
+    <button class="btn" id="bizDone"></button>
+    <button class="btn ghost" id="bizCancel" data-t="bizCancel" hidden></button>
+    <p class="hint ob-foot" id="bizFoot" data-t="bizEditLater"></p>
+  </div>
+</div>
+
+<header>
+  <div class="wrap">
+    <div class="logo">Vende<span>AI</span> <span class="hello" id="hello"></span></div>
+    <div class="head-actions">
+    <button class="bizbtn" id="bizOpen" data-t="tabChannels" hidden></button>
+    <div class="lang" role="group" aria-label="Idioma">
+      <button data-lang="es" aria-pressed="false">ES</button>
+      <button data-lang="pt" aria-pressed="false">PT</button>
+      <button data-lang="en" aria-pressed="false">EN</button>
+    </div>
+    </div>
+  </div>
+  <nav class="wrap tabs" role="tablist">
+    <button role="tab" data-tab="sell" data-t="tabSell"></button>
+    <button role="tab" data-tab="home" data-t="tabHome"></button>
+  </nav>
+</header>
+
+<main class="wrap">
+<section id="tab-sell" role="tabpanel">
+  <h1 data-t="newSaleTitle"></h1>
+  <p class="sub" data-t="newSaleSub"></p>
+
+  <textarea id="saleText" aria-label=""></textarea>
+  <div class="row-actions">
+    <button class="btn" id="readBtn" data-t="readBtn"></button>
+  </div>
+  <div class="msg" id="readMsg" hidden></div>
+
+  <div class="examples">
+    <span data-t="examplesLabel"></span>
+    <div id="exampleList"></div>
+  </div>
+
+  <div id="cardHost"></div>
+
+  <h2 data-t="recent"></h2>
+  <ul class="sales" id="salesList"></ul>
+</section>
+
+<section id="tab-home" role="tabpanel" hidden>
+  <div class="home-head">
+    <h1 data-t="homeTitle"></h1>
+    <div class="seg" role="group">
+      <button data-period="week" data-t="periodWeek"></button>
+      <button data-period="month" data-t="periodMonth"></button>
+    </div>
+  </div>
+  <div id="homeBody"></div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <nav class="legal-links" aria-label="Legal">
+      <a href="../legal/terminos-y-condiciones.html" target="_blank" rel="noopener" data-t="lgTerms"></a>
+      <a href="../legal/politica-de-privacidad.html" target="_blank" rel="noopener" data-t="lgPrivacy"></a>
+      <a href="../legal/politica-de-cookies.html" target="_blank" rel="noopener" data-t="lgCookies"></a>
+      <a href="../legal/politica-de-reembolsos.html" target="_blank" rel="noopener" data-t="lgRefunds"></a>
+    </nav>
+  </div>
+  <div class="wrap" style="margin-top:12px">
+    <span id="demoDate"></span>
+    <button class="linkbtn" id="resetBtn" data-t="reset"></button>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ------------------------------------------------------------------
+   Screen text. Every word on screen comes from here.
+------------------------------------------------------------------ */
+const I18N = {
+  es: {
+    locale: 'es-MX', currency: '$',
+    newSaleTitle: 'Anotar una venta',
+    newSaleSub: 'Escríbela como se la contarías a una amiga. Revisas y guardas con un toque.',
+    inputPh: 'Ej.: "Vendí 2 labiales a María, pagó la mitad y el resto el viernes"',
+    readBtn: 'Leer venta',
+    examplesLabel: 'Prueba con un ejemplo:',
+    examples: [
+      'Vendí 2 labiales rojos a María, pagó la mitad y el resto el viernes',
+      'Le vendí una crema a Ana por Instagram, pagó completo',
+      'Blusa azul talla M a Carla, 22, me paga en 2 cuotas'
+    ],
+    emptyInput: 'Escribe una venta primero.',
+    cardTitle: 'Revisa antes de guardar',
+    product: 'Producto',
+    chooseProduct: 'Elige un producto',
+    newProductOpt: '+ Producto nuevo',
+    left: 'quedan {n}',
+    npName: 'Nombre del producto',
+    npStock: 'Cuántos tienes',
+    npCost: 'Lo que te costó (cada uno)',
+    npPrice: 'Precio de venta',
+    productAsk: 'No encontré el producto. Elígelo de tu lista o crea uno nuevo.',
+    qty: 'Cantidad',
+    unitPrice: 'Precio por unidad',
+    fromList: 'Tu precio de venta.',
+    fromListWholesale: 'Tu precio por mayor.',
+    total: 'Total',
+    customer: 'Clienta o cliente',
+    customerPh: 'Nombre',
+    customerAskOwed: 'Falta el nombre. Lo necesitas para saber quién te debe.',
+    customerAskPaid: 'No dijiste el nombre. Puedes dejarlo vacío si ya pagó todo.',
+    newCustomer: 'Clienta nueva. Teléfono (opcional, para recordarle por WhatsApp)',
+    phonePh: 'Ej.: 55 1234 5678',
+    channel: 'Dónde vendiste',
+    channels: { none: 'Sin indicar', whatsapp: 'WhatsApp', instagram: 'Instagram', facebook: 'Facebook', tiktok: 'TikTok', mercadolibre: 'Mercado Libre', persona: 'En persona', catalogo: 'Catálogo' },
+    pay: { efectivo: 'Efectivo', transferencia: 'Transferencia', spei: 'Transferencia SPEI', mercadopago: 'Mercado Pago', pagoefectivo: 'PagoEfectivo', oxxo: 'OXXO', yape: 'Yape', plin: 'Plin', sip: 'SIP (Interbank / Oh!)', nequi: 'Nequi', daviplata: 'Daviplata', mach: 'MACH', pix: 'Pix', picpay: 'PicPay', otro: 'Otro' },
+    payOtherLabel: '¿Cuál? Escribe el nombre', payOtherPh: 'Ej.: Izipay, BIM, Tunki',
+    tabSell: 'Anotar', tabHome: 'Todo en un lugar', tabChannels: 'Mi negocio',
+    bizStepTitle: 'Tu negocio',
+    bizStepSub: 'Menos de un minuto, solo toques. Así la app se adapta a cómo vendes.',
+    bizDone: 'Listo', bizSkip: 'Ahora no', bizSave: 'Guardar cambios', bizCancel: 'Cancelar',
+    bizNeedSector: 'Elige qué vendes para continuar.',
+    examplesBySector: {
+      ropa: ['Vendí 2 polos a Lucía por Instagram, pagó completo', 'Vestido negro a Carmen, 80, me paga en 2 cuotas'],
+      accesorios: ['Vendí 3 aretes a Rosa, pagó la mitad y el resto el viernes', 'Le vendí un collar a Sofía por WhatsApp, pagó completo'],
+      comida: ['Vendí 12 empanadas a Luis, pagó completo', 'Una torta de chocolate a Patricia, me paga el sábado'],
+      hogar: ['Vendí 2 tápers grandes a Ana, me paga el viernes', 'Le vendí 3 velas a Marta en persona, pagó completo'],
+      salud: ['Vendí un colágeno a Pedro, pagó la mitad', 'Vendí 2 vitaminas a Elena por Facebook, pagó completo']
+    },
+    bizEditLater: 'Puedes cambiarlo cuando quieras con el botón "Mi negocio", arriba.',
+    bizSector: '¿Qué vendes?',
+    sectors: { belleza: 'Maquillaje y belleza', ropa: 'Ropa y calzado', accesorios: 'Accesorios y joyería', comida: 'Comida y postres', hogar: 'Hogar y cocina', salud: 'Salud y bienestar', otro: 'Otro' },
+    bizCredit: 'Vendo fiado o en cuotas', bizWholesale: 'También vendo por mayor',
+    bizNeeds: '¿Qué te cuesta más?',
+    bizNeedsHint: 'Elige hasta 2. Lo pondremos primero en "Todo en un lugar".',
+    needs: { ganancia: 'Saber cuánto gano', cobrar: 'Cobrar lo que me deben', inventario: 'Llevar bien mi inventario', reponer: 'Saber qué reponer', precios: 'Poner buenos precios', vender: 'Vender más' },
+    npWholesale: 'Precio por mayor',
+    sectorOtherLabel: 'Cuéntanos qué vendes', sectorOtherPh: 'Ej.: velas aromáticas, tortas, perfumes',
+    sectorGuess: 'Parece {sector}.', sectorUse: 'Usar esta categoría',
+    recTitle: 'Lo que te recomendamos',
+    recFree: 'Gratis para siempre: anotar ventas, ver todo en un lugar y avisos de qué reponer y a quién cobrar.',
+    recNone: 'Con lo que nos contaste, lo gratis te alcanza por ahora.',
+    mods: { cobrar: ['Módulo Cobrar', 'Recordatorios listos para enviar por WhatsApp a quien te debe.'], precios: ['Módulo Precios', 'Te sugiere precios que cubren todo lo que te cuesta.'], vender: ['Módulo Vender más', 'Mensajes de promoción listos y qué reponer antes de cada campaña.'] },
+    why: { credit: 'porque vendes fiado o en cuotas', cobrar: 'porque cobrar te cuesta', precios: 'porque poner precios te cuesta', ganancia: 'para que cada venta te deje ganancia', wholesale: 'porque manejas precio por mayor y al detalle', vender: 'porque quieres vender más', catalogo: 'porque vendes por catálogo', reponer: 'porque quieres saber qué reponer' },
+    hCostPriceW: 'Te costó {cost} · lo vendes a {price} · por mayor {wholesale}',
+    inputPhBySector: {
+      belleza: 'Ej.: "Vendí 2 labiales a María, pagó la mitad y el resto el viernes"',
+      ropa: 'Ej.: "Vendí una blusa talla M a Carla, me paga en 2 cuotas"',
+      accesorios: 'Ej.: "Vendí 3 aretes a Rosa por Instagram, pagó todo"',
+      comida: 'Ej.: "Vendí 12 empanadas a Luis, pagó completo"',
+      hogar: 'Ej.: "Vendí 2 tápers a Ana, me paga el viernes"',
+      salud: 'Ej.: "Vendí un suplemento a Pedro, pagó la mitad"'
+    },
+    homeTitle: 'Cómo te va', periodWeek: 'Esta semana', periodMonth: 'Este mes',
+    hEarned: 'Lo que ganaste', hEarnedSub: 'Vendiste {sales} y te costó {costs}',
+    hSales: 'Vendiste', hSalesSub: '{n} ventas', hSalesSubOne: '1 venta',
+    hOwed: 'Te deben', hOwedSub: '{n} clientas', hOwedSubOne: '1 clienta',
+    hWho: 'Quién te debe', hNobody: 'Nadie te debe.',
+    hNext: 'Próximo pago: {amount}, {date}', hLate: '{n} días de atraso',
+    hReceived: 'Recibí {amount}', hReceivedToast: 'Anotado: {name} te pagó {amount}.',
+    hStock: 'Lo que tienes', hLow: 'Se está acabando', hOut: 'Agotado',
+    hStockSaved: '{product}: {from} → {to}',
+    hCostPrice: 'Te costó {cost} · lo vendes a {price}',
+    hAddProduct: '+ Agregar producto', hAddSave: 'Guardar producto', hAdded: 'Producto agregado: {product}.',
+    hBest: 'Lo que más vendes', hBestRow: '{qty} vendidos · te dejó {earned}', hBestRowOne: '1 vendido · te dejó {earned}',
+    hNoSalesPeriod: 'Sin ventas en este periodo.',
+    hChannels: 'Dónde vendes más',
+    chTitle: 'Mi negocio',
+    chSub: 'Cuéntanos cómo vendes. VendeAI se adapta a tu negocio y a lo que se usa en tu país.',
+    chSellTitle: 'Dónde vendes', chPayTitle: 'Cómo te pagan',
+    chPayCountry: 'Opciones para {country}.',
+    chOn: 'Lo uso', chOff: 'No lo uso',
+    chSoon: 'Conexión automática: pronto. Por ahora anotas tus ventas con un mensaje, y los canales que elijas aquí aparecen al anotar.',
+    paidQ: '¿Cuánto pagó?',
+    paidAll: 'Todo', paidHalf: 'La mitad', paidNone: 'Nada', paidOther: 'Otro monto',
+    paidAsk: 'No dijiste cuánto pagó. Elige una opción.',
+    paidAmount: 'Monto pagado',
+    owes: 'Queda debiendo',
+    installments: 'Cuotas',
+    dueDate: 'Fecha de pago',
+    firstDue: 'Primera cuota',
+    scheduleItem: 'Cuota {n}: {amount}, {date}',
+    noDate: 'sin fecha',
+    ask: 'Falta este dato.',
+    effectStock: '{product}: {from} → {to}',
+    effectOwed: '{name} te deberá {amount}',
+    effectOwedNoName: 'Te deberán {amount}',
+    effectPaid: 'Pagó todo. No queda deuda.',
+    stockWarn: 'Solo tienes {n} en tu stock. Revisa la cantidad.',
+    save: 'Guardar venta',
+    discard: 'Descartar',
+    saved: 'Venta guardada. {product}: quedan {n}.',
+    undoneMsg: 'Venta deshecha. {product}: quedan {n}.',
+    recent: 'Últimas ventas',
+    noSales: 'Todavía no anotaste ventas.',
+    undo: 'Deshacer',
+    undoneTag: 'Deshecha',
+    owesTag: 'debe {amount}',
+    paidTag: 'pagó todo',
+    noCustomer: 'Sin nombre',
+    reset: 'Reiniciar datos de prueba',
+    resetConfirm: '¿Borrar todo (tus datos, ventas y aceptaciones) y volver a los productos de prueba?',
+    demoDate: 'Hoy: {date}',
+    obTitle: 'Antes de empezar',
+    obSub: 'Solo te pedimos lo necesario. Nada más.',
+    obName: 'Tu nombre o apodo',
+    obContact: 'Tu teléfono o tu correo (solo uno)',
+    obContactHint: 'Para entrar a tu cuenta con un código. Nunca lo compartimos.',
+    obContactErr: 'Escribe un teléfono (8 a 15 números) o un correo válido.',
+    obCountry: 'Tu país',
+    obTermsA: 'He leído y acepto los',
+    obTermsLink: 'Términos y condiciones',
+    obTermsB: 'Confirmo que soy mayor de 18 años.',
+    obPrivacyA: 'He leído y acepto la',
+    obPrivacyLink: 'Política de privacidad',
+    docLangNote: '',
+    obStart: 'Empezar',
+    obFoot: 'No pedimos documento de identidad, dirección ni datos de tarjeta.',
+    hello: 'Hola, {name}',
+    lgTerms: 'Términos', lgPrivacy: 'Privacidad', lgCookies: 'Cookies', lgRefunds: 'Reembolsos'
+  },
+  pt: {
+    locale: 'pt-BR', currency: 'R$ ',
+    newSaleTitle: 'Anotar uma venda',
+    newSaleSub: 'Escreva como você contaria para uma amiga. Você confere e salva com um toque.',
+    inputPh: 'Ex.: "Vendi 2 batons para a Maria, ela pagou metade e o resto na sexta"',
+    readBtn: 'Ler venda',
+    examplesLabel: 'Teste com um exemplo:',
+    examples: [
+      'Vendi 2 batons vermelhos para a Maria, ela pagou metade e o resto na sexta',
+      'Vendi um creme para a Ana pelo Instagram, pagou tudo',
+      'Blusa azul tamanho M para a Carla, 22, ela me paga em 2 vezes'
+    ],
+    emptyInput: 'Escreva uma venda primeiro.',
+    cardTitle: 'Confira antes de salvar',
+    product: 'Produto',
+    chooseProduct: 'Escolha um produto',
+    newProductOpt: '+ Produto novo',
+    left: 'restam {n}',
+    npName: 'Nome do produto',
+    npStock: 'Quantos você tem',
+    npCost: 'Quanto te custou (cada um)',
+    npPrice: 'Preço de venda',
+    productAsk: 'Não encontrei o produto. Escolha da sua lista ou crie um novo.',
+    qty: 'Quantidade',
+    unitPrice: 'Preço por unidade',
+    fromList: 'Seu preço de venda.',
+    fromListWholesale: 'Seu preço no atacado.',
+    total: 'Total',
+    customer: 'Cliente',
+    customerPh: 'Nome',
+    customerAskOwed: 'Falta o nome. Você precisa dele para saber quem te deve.',
+    customerAskPaid: 'Você não disse o nome. Pode deixar vazio se já pagou tudo.',
+    newCustomer: 'Cliente nova. Telefone (opcional, para lembrar pelo WhatsApp)',
+    phonePh: 'Ex.: 11 91234 5678',
+    channel: 'Onde você vendeu',
+    channels: { none: 'Não informado', whatsapp: 'WhatsApp', instagram: 'Instagram', facebook: 'Facebook', tiktok: 'TikTok', mercadolibre: 'Mercado Livre', persona: 'Pessoalmente', catalogo: 'Catálogo' },
+    pay: { efectivo: 'Dinheiro', transferencia: 'Transferência', spei: 'Transferência SPEI', mercadopago: 'Mercado Pago', pagoefectivo: 'PagoEfectivo', oxxo: 'OXXO', yape: 'Yape', plin: 'Plin', sip: 'SIP (Interbank / Oh!)', nequi: 'Nequi', daviplata: 'Daviplata', mach: 'MACH', pix: 'Pix', picpay: 'PicPay', otro: 'Outro' },
+    payOtherLabel: 'Qual? Escreva o nome', payOtherPh: 'Ex.: Nubank, Inter, PagBank',
+    tabSell: 'Anotar', tabHome: 'Tudo em um lugar', tabChannels: 'Meu negócio',
+    bizStepTitle: 'Seu negócio',
+    bizStepSub: 'Menos de um minuto, só toques. Assim o app se adapta ao seu jeito de vender.',
+    bizDone: 'Pronto', bizSkip: 'Agora não', bizSave: 'Salvar mudanças', bizCancel: 'Cancelar',
+    bizNeedSector: 'Escolha o que você vende para continuar.',
+    examplesBySector: {
+      ropa: ['Vendi 2 camisetas para a Lúcia pelo Instagram, pagou tudo', 'Vestido preto para a Carmen, 80, ela me paga em 2 vezes'],
+      accesorios: ['Vendi 3 brincos para a Rosa, ela pagou metade e o resto na sexta', 'Vendi um colar para a Sofia pelo WhatsApp, pagou tudo'],
+      comida: ['Vendi 12 empadas para o Luís, pagou tudo', 'Um bolo de chocolate para a Patrícia, ela me paga no sábado'],
+      hogar: ['Vendi 2 potes grandes para a Ana, ela me paga na sexta', 'Vendi 3 velas para a Marta pessoalmente, pagou tudo'],
+      salud: ['Vendi um colágeno para o Pedro, pagou metade', 'Vendi 2 vitaminas para a Elena pelo Facebook, pagou tudo']
+    },
+    bizEditLater: 'Você pode mudar quando quiser no botão "Meu negócio", lá em cima.',
+    bizSector: 'O que você vende?',
+    sectors: { belleza: 'Maquiagem e beleza', ropa: 'Roupas e calçados', accesorios: 'Acessórios e bijuterias', comida: 'Comida e doces', hogar: 'Casa e cozinha', salud: 'Saúde e bem-estar', otro: 'Outro' },
+    bizCredit: 'Vendo fiado ou parcelado', bizWholesale: 'Também vendo no atacado',
+    bizNeeds: 'O que é mais difícil para você?',
+    bizNeedsHint: 'Escolha até 2. Vamos colocar primeiro em "Tudo em um lugar".',
+    needs: { ganancia: 'Saber quanto ganho', cobrar: 'Cobrar quem me deve', inventario: 'Controlar meu estoque', reponer: 'Saber o que repor', precios: 'Colocar bons preços', vender: 'Vender mais' },
+    npWholesale: 'Preço no atacado',
+    sectorOtherLabel: 'Conte o que você vende', sectorOtherPh: 'Ex.: velas aromáticas, bolos, perfumes',
+    sectorGuess: 'Parece {sector}.', sectorUse: 'Usar esta categoria',
+    recTitle: 'O que recomendamos para você',
+    recFree: 'Grátis para sempre: anotar vendas, ver tudo em um lugar e avisos do que repor e de quem cobrar.',
+    recNone: 'Com o que você contou, o grátis já basta por enquanto.',
+    mods: { cobrar: ['Módulo Cobrar', 'Lembretes prontos para enviar pelo WhatsApp a quem te deve.'], precios: ['Módulo Preços', 'Sugere preços que cobrem tudo o que te custa.'], vender: ['Módulo Vender mais', 'Mensagens de promoção prontas e o que repor antes de cada campanha.'] },
+    why: { credit: 'porque você vende fiado ou parcelado', cobrar: 'porque cobrar é difícil para você', precios: 'porque colocar preços é difícil para você', ganancia: 'para que cada venda te dê lucro', wholesale: 'porque você tem preço de atacado e de varejo', vender: 'porque você quer vender mais', catalogo: 'porque você vende por catálogo', reponer: 'porque você quer saber o que repor' },
+    hCostPriceW: 'Te custou {cost} · você vende por {price} · atacado {wholesale}',
+    inputPhBySector: {
+      belleza: 'Ex.: "Vendi 2 batons para a Maria, ela pagou metade e o resto na sexta"',
+      ropa: 'Ex.: "Vendi uma blusa tamanho M para a Carla, ela me paga em 2 vezes"',
+      accesorios: 'Ex.: "Vendi 3 brincos para a Rosa pelo Instagram, pagou tudo"',
+      comida: 'Ex.: "Vendi 12 brigadeiros para o Luis, pagou tudo"',
+      hogar: 'Ex.: "Vendi 2 potes para a Ana, ela me paga na sexta"',
+      salud: 'Ex.: "Vendi um suplemento para o Pedro, pagou metade"'
+    },
+    homeTitle: 'Como você está indo', periodWeek: 'Esta semana', periodMonth: 'Este mês',
+    hEarned: 'O que você ganhou', hEarnedSub: 'Vendeu {sales} e te custou {costs}',
+    hSales: 'Você vendeu', hSalesSub: '{n} vendas', hSalesSubOne: '1 venda',
+    hOwed: 'Te devem', hOwedSub: '{n} clientes', hOwedSubOne: '1 cliente',
+    hWho: 'Quem te deve', hNobody: 'Ninguém te deve.',
+    hNext: 'Próximo pagamento: {amount}, {date}', hLate: '{n} dias de atraso',
+    hReceived: 'Recebi {amount}', hReceivedToast: 'Anotado: {name} te pagou {amount}.',
+    hStock: 'O que você tem', hLow: 'Está acabando', hOut: 'Esgotado',
+    hStockSaved: '{product}: {from} → {to}',
+    hCostPrice: 'Te custou {cost} · você vende por {price}',
+    hAddProduct: '+ Adicionar produto', hAddSave: 'Salvar produto', hAdded: 'Produto adicionado: {product}.',
+    hBest: 'O que você mais vende', hBestRow: '{qty} vendidos · te deixou {earned}', hBestRowOne: '1 vendido · te deixou {earned}',
+    hNoSalesPeriod: 'Sem vendas neste período.',
+    hChannels: 'Onde você mais vende',
+    chTitle: 'Meu negócio',
+    chSub: 'Conte como você vende. O VendeAI se adapta ao seu negócio e ao que se usa no seu país.',
+    chSellTitle: 'Onde você vende', chPayTitle: 'Como te pagam',
+    chPayCountry: 'Opções para {country}.',
+    chOn: 'Uso', chOff: 'Não uso',
+    chSoon: 'Conexão automática: em breve. Por enquanto você anota as vendas com uma mensagem, e os canais escolhidos aqui aparecem ao anotar.',
+    paidQ: 'Quanto pagou?',
+    paidAll: 'Tudo', paidHalf: 'Metade', paidNone: 'Nada', paidOther: 'Outro valor',
+    paidAsk: 'Você não disse quanto pagou. Escolha uma opção.',
+    paidAmount: 'Valor pago',
+    owes: 'Ficou devendo',
+    installments: 'Parcelas',
+    dueDate: 'Data do pagamento',
+    firstDue: 'Primeira parcela',
+    scheduleItem: 'Parcela {n}: {amount}, {date}',
+    noDate: 'sem data',
+    ask: 'Falta esta informação.',
+    effectStock: '{product}: {from} → {to}',
+    effectOwed: '{name} vai te dever {amount}',
+    effectOwedNoName: 'Vão te dever {amount}',
+    effectPaid: 'Pagou tudo. Não fica dívida.',
+    stockWarn: 'Você só tem {n} no estoque. Confira a quantidade.',
+    save: 'Salvar venda',
+    discard: 'Descartar',
+    saved: 'Venda salva. {product}: restam {n}.',
+    undoneMsg: 'Venda desfeita. {product}: restam {n}.',
+    recent: 'Últimas vendas',
+    noSales: 'Você ainda não anotou vendas.',
+    undo: 'Desfazer',
+    undoneTag: 'Desfeita',
+    owesTag: 'deve {amount}',
+    paidTag: 'pagou tudo',
+    noCustomer: 'Sem nome',
+    reset: 'Reiniciar dados de teste',
+    resetConfirm: 'Apagar tudo (seus dados, vendas e aceites) e voltar aos produtos de teste?',
+    demoDate: 'Hoje: {date}',
+    obTitle: 'Antes de começar',
+    obSub: 'Só pedimos o necessário. Nada mais.',
+    obName: 'Seu nome ou apelido',
+    obContact: 'Seu telefone ou seu e-mail (só um)',
+    obContactHint: 'Para entrar na sua conta com um código. Nunca compartilhamos.',
+    obContactErr: 'Escreva um telefone (8 a 15 números) ou um e-mail válido.',
+    obCountry: 'Seu país',
+    obTermsA: 'Li e aceito os',
+    obTermsLink: 'Termos e condições',
+    obTermsB: 'Confirmo que tenho mais de 18 anos.',
+    obPrivacyA: 'Li e aceito a',
+    obPrivacyLink: 'Política de privacidade',
+    docLangNote: '(Documento em espanhol. A versão em português está sendo preparada.)',
+    obStart: 'Começar',
+    obFoot: 'Não pedimos documento de identidade, endereço nem dados de cartão.',
+    hello: 'Olá, {name}',
+    lgTerms: 'Termos', lgPrivacy: 'Privacidade', lgCookies: 'Cookies', lgRefunds: 'Reembolsos'
+  },
+  en: {
+    locale: 'en-US', currency: '$',
+    newSaleTitle: 'Record a sale',
+    newSaleSub: 'Write it the way you would tell a friend. Check it and save with one tap.',
+    inputPh: 'E.g.: "I sold 2 lipsticks to María, she paid half and the rest on Friday"',
+    readBtn: 'Read sale',
+    examplesLabel: 'Try an example:',
+    examples: [
+      'I sold 2 red lipsticks to María, she paid half and the rest on Friday',
+      'Sold a cream to Ana on Instagram, she paid in full',
+      'Blue blouse size M to Carla, 22, she pays me in 2 installments'
+    ],
+    emptyInput: 'Write a sale first.',
+    cardTitle: 'Check before saving',
+    product: 'Product',
+    chooseProduct: 'Choose a product',
+    newProductOpt: '+ New product',
+    left: '{n} left',
+    npName: 'Product name',
+    npStock: 'How many you have',
+    npCost: 'What it cost you (each)',
+    npPrice: 'Selling price',
+    productAsk: 'I couldn\'t find the product. Pick it from your list or create a new one.',
+    qty: 'Quantity',
+    unitPrice: 'Price per unit',
+    fromList: 'Your selling price.',
+    fromListWholesale: 'Your wholesale price.',
+    total: 'Total',
+    customer: 'Customer',
+    customerPh: 'Name',
+    customerAskOwed: 'The name is missing. You need it to know who owes you.',
+    customerAskPaid: 'You didn\'t say the name. You can leave it empty if they paid in full.',
+    newCustomer: 'New customer. Phone (optional, to remind them on WhatsApp)',
+    phonePh: 'E.g.: 987 654 321',
+    channel: 'Where you sold',
+    channels: { none: 'Not specified', whatsapp: 'WhatsApp', instagram: 'Instagram', facebook: 'Facebook', tiktok: 'TikTok', mercadolibre: 'Mercado Libre', persona: 'In person', catalogo: 'Catalog' },
+    pay: { efectivo: 'Cash', transferencia: 'Bank transfer', spei: 'SPEI transfer', mercadopago: 'Mercado Pago', pagoefectivo: 'PagoEfectivo', oxxo: 'OXXO', yape: 'Yape', plin: 'Plin', sip: 'SIP (Interbank / Oh!)', nequi: 'Nequi', daviplata: 'Daviplata', mach: 'MACH', pix: 'Pix', picpay: 'PicPay', otro: 'Other' },
+    payOtherLabel: 'Which one? Write the name', payOtherPh: 'E.g.: Izipay, BIM, Tunki',
+    tabSell: 'Record', tabHome: 'All in one place', tabChannels: 'My business',
+    bizStepTitle: 'Your business',
+    bizStepSub: 'Under a minute, just taps. This way the app fits how you sell.',
+    bizDone: 'Done', bizSkip: 'Not now', bizSave: 'Save changes', bizCancel: 'Cancel',
+    bizNeedSector: 'Choose what you sell to continue.',
+    examplesBySector: {
+      ropa: ['I sold 2 shirts to Lucía on Instagram, she paid in full', 'Black dress to Carmen, 80, she pays me in 2 installments'],
+      accesorios: ['I sold 3 earrings to Rosa, she paid half and the rest on Friday', 'Sold a necklace to Sofía on WhatsApp, she paid in full'],
+      comida: ['I sold 12 empanadas to Luis, he paid in full', 'A chocolate cake to Patricia, she will pay on Saturday'],
+      hogar: ['I sold 2 big containers to Ana, she will pay on Friday', 'Sold 3 candles to Marta in person, she paid in full'],
+      salud: ['I sold a collagen to Pedro, he paid half', 'Sold 2 vitamins to Elena on Facebook, she paid in full']
+    },
+    bizEditLater: 'You can change it anytime with the "My business" button at the top.',
+    bizSector: 'What do you sell?',
+    sectors: { belleza: 'Makeup and beauty', ropa: 'Clothes and shoes', accesorios: 'Accessories and jewelry', comida: 'Food and desserts', hogar: 'Home and kitchen', salud: 'Health and wellness', otro: 'Other' },
+    bizCredit: 'I sell on credit or in installments', bizWholesale: 'I also sell wholesale',
+    bizNeeds: 'What is hardest for you?',
+    bizNeedsHint: 'Pick up to 2. We\'ll put them first in "All in one place".',
+    needs: { ganancia: 'Knowing what I earn', cobrar: 'Collecting what I\'m owed', inventario: 'Keeping my inventory right', reponer: 'Knowing what to restock', precios: 'Setting good prices', vender: 'Selling more' },
+    npWholesale: 'Wholesale price',
+    sectorOtherLabel: 'Tell us what you sell', sectorOtherPh: 'E.g.: scented candles, cakes, perfumes',
+    sectorGuess: 'Looks like {sector}.', sectorUse: 'Use this category',
+    recTitle: 'What we recommend',
+    recFree: 'Free forever: recording sales, seeing everything in one place, and alerts for what to restock and who to collect from.',
+    recNone: 'From what you told us, the free version is enough for now.',
+    mods: { cobrar: ['Collect module', 'Ready-to-send WhatsApp reminders for whoever owes you.'], precios: ['Prices module', 'Suggests prices that cover everything it costs you.'], vender: ['Sell more module', 'Ready promo messages and what to restock before each campaign.'] },
+    why: { credit: 'because you sell on credit or in installments', cobrar: 'because collecting is hard for you', precios: 'because setting prices is hard for you', ganancia: 'so every sale leaves you a profit', wholesale: 'because you have wholesale and retail prices', vender: 'because you want to sell more', catalogo: 'because you sell by catalog', reponer: 'because you want to know what to restock' },
+    hCostPriceW: 'Cost you {cost} · you sell at {price} · wholesale {wholesale}',
+    inputPhBySector: {
+      belleza: 'E.g.: "I sold 2 lipsticks to María, she paid half and the rest on Friday"',
+      ropa: 'E.g.: "I sold a dress to Carla, she pays me in 2 installments"',
+      accesorios: 'E.g.: "I sold 3 earrings to Rosa on Instagram, she paid in full"',
+      comida: 'E.g.: "I sold 12 empanadas to Luis, he paid in full"',
+      hogar: 'E.g.: "I sold 2 containers to Ana, she will pay on Friday"',
+      salud: 'E.g.: "I sold a collagen to Pedro, he paid half"'
+    },
+    homeTitle: 'How you\'re doing', periodWeek: 'This week', periodMonth: 'This month',
+    hEarned: 'What you earned', hEarnedSub: 'You sold {sales} and it cost you {costs}',
+    hSales: 'You sold', hSalesSub: '{n} sales', hSalesSubOne: '1 sale',
+    hOwed: 'You\'re owed', hOwedSub: '{n} customers', hOwedSubOne: '1 customer',
+    hWho: 'Who owes you', hNobody: 'Nobody owes you.',
+    hNext: 'Next payment: {amount}, {date}', hLate: '{n} days late',
+    hReceived: 'Got {amount}', hReceivedToast: 'Noted: {name} paid you {amount}.',
+    hStock: 'What you have', hLow: 'Running low', hOut: 'Sold out',
+    hStockSaved: '{product}: {from} → {to}',
+    hCostPrice: 'Cost you {cost} · you sell at {price}',
+    hAddProduct: '+ Add product', hAddSave: 'Save product', hAdded: 'Product added: {product}.',
+    hBest: 'Your best sellers', hBestRow: '{qty} sold · earned you {earned}', hBestRowOne: '1 sold · earned you {earned}',
+    hNoSalesPeriod: 'No sales in this period.',
+    hChannels: 'Where you sell most',
+    chTitle: 'My business',
+    chSub: 'Tell us how you sell. VendeAI adapts to your business and to what people use in your country.',
+    chSellTitle: 'Where you sell', chPayTitle: 'How you get paid',
+    chPayCountry: 'Options for {country}.',
+    chOn: 'I use it', chOff: 'I don\'t use it',
+    chSoon: 'Automatic connection: coming soon. For now you record sales with a message, and the channels you pick here show up when you record.',
+    paidQ: 'How much did they pay?',
+    paidAll: 'All', paidHalf: 'Half', paidNone: 'Nothing', paidOther: 'Other amount',
+    paidAsk: 'You didn\'t say how much they paid. Pick an option.',
+    paidAmount: 'Amount paid',
+    owes: 'Still owes',
+    installments: 'Installments',
+    dueDate: 'Payment date',
+    firstDue: 'First installment',
+    scheduleItem: 'Installment {n}: {amount}, {date}',
+    noDate: 'no date',
+    ask: 'This is missing.',
+    effectStock: '{product}: {from} → {to}',
+    effectOwed: '{name} will owe you {amount}',
+    effectOwedNoName: 'You will be owed {amount}',
+    effectPaid: 'Paid in full. Nothing owed.',
+    stockWarn: 'You only have {n} in stock. Check the quantity.',
+    save: 'Save sale',
+    discard: 'Discard',
+    saved: 'Sale saved. {product}: {n} left.',
+    undoneMsg: 'Sale undone. {product}: {n} left.',
+    recent: 'Latest sales',
+    noSales: 'You haven\'t recorded any sales yet.',
+    undo: 'Undo',
+    undoneTag: 'Undone',
+    owesTag: 'owes {amount}',
+    paidTag: 'paid in full',
+    noCustomer: 'No name',
+    reset: 'Reset test data',
+    resetConfirm: 'Delete everything (your details, sales and acceptances) and go back to the test products?',
+    demoDate: 'Today: {date}',
+    obTitle: 'Before you start',
+    obSub: 'We only ask for what we need. Nothing more.',
+    obName: 'Your name or nickname',
+    obContact: 'Your phone or your email (just one)',
+    obContactHint: 'To sign in with a code. We never share it.',
+    obContactErr: 'Enter a phone (8 to 15 digits) or a valid email.',
+    obCountry: 'Your country',
+    obTermsA: 'I have read and accept the',
+    obTermsLink: 'Terms and conditions',
+    obTermsB: 'I confirm I am over 18.',
+    obPrivacyA: 'I have read and accept the',
+    obPrivacyLink: 'Privacy policy',
+    docLangNote: '(Document in Spanish. The English version is being prepared.)',
+    obStart: 'Start',
+    obFoot: 'We don\'t ask for ID, address or card details.',
+    hello: 'Hi, {name}',
+    lgTerms: 'Terms', lgPrivacy: 'Privacy', lgCookies: 'Cookies', lgRefunds: 'Refunds'
+  }
+};
+
+/* ------------------------------------------------------------------
+   Storage
+------------------------------------------------------------------ */
+const DATA_KEY = 'vendeai_datos';
+const PREF_KEY = 'vendeai_preferencias';
+
+function seedData() {
+  return {
+    version: 1,
+    products: [
+      { id: 'p1', name: 'Labial rojo', aliases: ['labial', 'baton', 'batom', 'lipstick'], stock: 10, cost: 3, retail: 6, wholesale: 5 },
+      { id: 'p2', name: 'Crema hidratante', aliases: ['crema', 'creme', 'cream'], stock: 5, cost: 8, retail: 15, wholesale: 12 },
+      { id: 'p3', name: 'Blusa azul talla M', aliases: ['blusa', 'blouse'], stock: 4, cost: 10, retail: 22, wholesale: 18 }
+    ],
+    productsAreStarters: true, // true until the seller adds or edits a product or records a sale
+    profile: null,      // { name, contact, contactType, country, createdAt }
+    consents: [],       // append-only acceptance records, never edited
+    customers: [],
+    sales: [],
+    log: []
+  };
+}
+
+const APP_VERSION = '0.1.0';
+// Current version of each legal document. Changing a version asks the seller to accept again.
+const DOCS = {
+  terminos: { version: '1.0', language: 'es', file: '../legal/terminos-y-condiciones.html' },
+  privacidad: { version: '1.0', language: 'es', file: '../legal/politica-de-privacidad.html' }
+};
+const COUNTRIES = [
+  { code: 'MX', es: 'México', pt: 'México', en: 'Mexico', currency: '$', pay: ['efectivo', 'spei', 'mercadopago', 'oxxo', 'otro'] },
+  { code: 'CO', es: 'Colombia', pt: 'Colômbia', en: 'Colombia', currency: '$', pay: ['efectivo', 'nequi', 'daviplata', 'transferencia', 'otro'] },
+  { code: 'PE', es: 'Perú', pt: 'Peru', en: 'Peru', currency: 'S/ ', pay: ['efectivo', 'yape', 'plin', 'sip', 'mercadopago', 'pagoefectivo', 'transferencia', 'otro'] },
+  { code: 'AR', es: 'Argentina', pt: 'Argentina', en: 'Argentina', currency: '$', pay: ['efectivo', 'mercadopago', 'transferencia', 'otro'] },
+  { code: 'CL', es: 'Chile', pt: 'Chile', en: 'Chile', currency: '$', pay: ['efectivo', 'transferencia', 'mach', 'mercadopago', 'otro'] },
+  { code: 'BR', es: 'Brasil', pt: 'Brasil', en: 'Brazil', currency: 'R$ ', pay: ['efectivo', 'pix', 'mercadopago', 'picpay', 'otro'] }
+];
+const SELL_CHANNELS = ['whatsapp', 'instagram', 'facebook', 'tiktok', 'mercadolibre', 'persona', 'catalogo'];
+function load(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch (e) { return fallback; }
+}
+function store(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { /* app keeps working in memory */ }
+}
+
+let data = load(DATA_KEY, null) || seedData();
+let prefs = load(PREF_KEY, {});
+let lang = prefs.lang || null;
+let draft = null;
+
+function saveData() { store(DATA_KEY, data); }
+
+/* ------------------------------------------------------------------
+   Dates and money
+------------------------------------------------------------------ */
+const params = new URLSearchParams(location.search);
+function todayDate() {
+  const h = params.get('hoy');
+  if (h && /^\d{4}-\d{2}-\d{2}$/.test(h)) return parseISO(h);
+  const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+}
+function parseISO(s) { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); }
+function toISO(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function addDays(d, n) { const x = new Date(d); x.setDate(x.getDate() + n); return x; }
+function fmtDate(iso) {
+  if (!iso) return t('noDate');
+  return new Intl.DateTimeFormat(t('locale'), { weekday: 'long', day: 'numeric', month: 'short' }).format(parseISO(iso));
+}
+function round2(n) { return Math.round(n * 100) / 100; }
+function money(n) {
+  const country = data.profile && COUNTRIES.find(c => c.code === data.profile.country);
+  return (country ? country.currency : t('currency')) +Number(n).toLocaleString(t('locale'), { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+/* ------------------------------------------------------------------
+   Text helpers
+------------------------------------------------------------------ */
+function t(key, vars) {
+  let s = (I18N[lang || 'es'] || I18N.es)[key];
+  if (typeof s === 'string' && vars) for (const k in vars) s = s.split('{' + k + '}').join(vars[k]);
+  return s;
+}
+function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function norm(s) { return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); }
+
+/* ------------------------------------------------------------------
+   parseSale: reads a sale message (Spanish or Portuguese).
+   Prototype rules only; a real AI call replaces this later.
+   It never invents a value: anything not in the message stays null.
+------------------------------------------------------------------ */
+const NUM_WORDS = { un: 1, una: 1, uno: 1, um: 1, uma: 1, dos: 2, dois: 2, duas: 2, tres: 3, cuatro: 4, quatro: 4, cinco: 5, seis: 6, siete: 7, sete: 7, ocho: 8, oito: 8, nueve: 9, nove: 9, diez: 10, dez: 10, one: 1, an: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10 };
+const WEEKDAYS = { domingo: 0, lunes: 1, segunda: 1, martes: 2, terca: 2, miercoles: 3, quarta: 3, jueves: 4, quinta: 4, viernes: 5, sexta: 5, sabado: 6, sunday: 0, monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5, saturday: 6 };
+const SIZE_WORDS = ['talla', 'talle', 'tamanho', 'numero', 'n', 'size'];
+const NOT_NAMES = ['instagram', 'whatsapp', 'facebook', 'insta'];
+
+function toNum(w) {
+  if (/^\d+([.,]\d{1,2})?$/.test(w)) return parseFloat(w.replace(',', '.'));
+  return Object.prototype.hasOwnProperty.call(NUM_WORDS, w) ? NUM_WORDS[w] : null;
+}
+
+function parseSale(text, products, today) {
+  const n = norm(text);
+  const tokens = n.split(/\s+/)
+    .map(w => w.replace(/^r?\$/, '').replace(/^[^a-z0-9]+|[^a-z0-9]+$/g, ''))
+    .filter(Boolean);
+  const used = new Set();
+  const out = {
+    productId: null, qty: null, unitPrice: null, wholesale: false,
+    productHint: null, customerName: null, channel: null, paidMode: null, paidAmount: null,
+    installments: null, dueDate: null
+  };
+
+  // Product: match the seller's own products by alias (singular or plural).
+  const hits = [];
+  tokens.forEach((w, i) => {
+    for (const p of products) {
+      for (const a of p.aliases || []) {
+        if (w === a || w === a + 's' || w === a + 'es') hits.push({ p, i, plural: w !== a });
+      }
+    }
+  });
+  const distinct = [...new Set(hits.map(h => h.p.id))];
+  if (distinct.length === 1) {
+    const h = hits[0];
+    out.productId = h.p.id;
+    // Quantity: the number right before the product word. A singular word with no number means one.
+    const before = h.i > 0 ? toNum(tokens[h.i - 1]) : null;
+    const before2 = h.i > 1 && /^[a-z]+$/.test(tokens[h.i - 1]) ? toNum(tokens[h.i - 2]) : null;
+    if (before !== null && Number.isInteger(before)) { out.qty = before; used.add(h.i - 1); }
+    else if (before2 !== null && Number.isInteger(before2)) { out.qty = before2; used.add(h.i - 2); }
+    else if (!h.plural) out.qty = 1;
+  } else if (distinct.length === 0) {
+    // Unknown product: keep the quantity and the word after it, so a new product can start from it.
+    const start = Math.max(0, tokens.findIndex(w => w === 'vendi' || w === 'sold') + 1);
+    for (let i = start; i < tokens.length - 1; i++) {
+      const k = toNum(tokens[i]);
+      if (k !== null && Number.isInteger(k) && /^[a-z]+$/.test(tokens[i + 1])) {
+        out.qty = k; out.productHint = tokens[i + 1]; used.add(i); break;
+      }
+    }
+  }
+
+  // Installments: "en 2 cuotas", "em 2 vezes", "em 2 parcelas".
+  tokens.forEach((w, i) => {
+    if (['cuotas', 'cuota', 'vezes', 'parcelas', 'pagos', 'installments', 'installment', 'payments', 'parts'].includes(w) && i > 0) {
+      const k = toNum(tokens[i - 1]);
+      if (k !== null) { out.installments = k; used.add(i - 1); }
+    }
+  });
+
+  // Paid amount stated as a number: "pagó 5", "pagou 10".
+  tokens.forEach((w, i) => {
+    if ((w === 'pago' || w === 'pagou' || w === 'dio' || w === 'deu' || w === 'paid' || w === 'gave') && i + 1 < tokens.length) {
+      const k = toNum(tokens[i + 1]);
+      if (k !== null && /\d/.test(tokens[i + 1])) { out.paidMode = 'amount'; out.paidAmount = k; used.add(i + 1); }
+    }
+  });
+  if (!out.paidMode) {
+    if (/\b(pago|pagou|dio|deu)\s+(la\s+|a\s+)?(mitad|metade)\b|\b(paid|gave)\s+(me\s+)?half\b/.test(n)) out.paidMode = 'half';
+    else if (/\b(pago|pagou)\s+(completo|todo|tudo|total)\b|\b(ya pago|ja pagou|al contado|a vista)\b|\bpaid\s+(in full|everything|all|it all|cash)\b|\balready paid\b/.test(n)) out.paidMode = 'all';
+    else if (out.installments || /\b(fiado|me debe|me deve|no pago|nao pagou|me paga|me pagara|vai pagar|va a pagar|owes me|will pay|pays me|on credit|didn.?t pay|did not pay|hasn.?t paid)\b/.test(n)) out.paidMode = 'none';
+  }
+
+  // Price: the first number left over, unless it is a size ("talla 38").
+  for (let i = 0; i < tokens.length; i++) {
+    if (used.has(i) || !/\d/.test(tokens[i])) continue;
+    if (i > 0 && SIZE_WORDS.includes(tokens[i - 1])) continue;
+    const k = toNum(tokens[i]);
+    if (k !== null) { out.unitPrice = k; used.add(i); break; }
+  }
+  out.wholesale = /\b(por mayor|al mayoreo|no atacado|atacado|wholesale)\b/.test(n);
+
+  // Customer: "a María", "para a Maria", "pra Ana". Names start with a capital letter.
+  const NAME = '([A-ZÁÉÍÓÚÑÃÕÂÊÔÇÜ][A-Za-zÁÉÍÓÚÑÃÕÂÊÔÇÜáéíóúñãõâêôçü]+)';
+  const m = text.match(new RegExp('(?:para|pra)\\s+(?:a|o)\\s+' + NAME)) ||
+            text.match(new RegExp('(?:^|\\s)(?:para|pra)\\s+' + NAME)) ||
+            text.match(new RegExp('(?:^|\\s)to\\s+' + NAME)) ||
+            text.match(new RegExp('(?:^|\\s)(?:a|al)\\s+(?:la\\s+|el\\s+)?' + NAME));
+  if (m && !NOT_NAMES.includes(norm(m[1]))) out.customerName = m[1];
+
+  // Channel.
+  if (/\b(instagram|insta)\b/.test(n)) out.channel = 'instagram';
+  else if (/\b(facebook|face|marketplace)\b/.test(n)) out.channel = 'facebook';
+  else if (/\b(tiktok|tik tok)\b/.test(n)) out.channel = 'tiktok';
+  else if (/\b(mercado libre|mercadolibre|mercado livre|meli)\b/.test(n)) out.channel = 'mercadolibre';
+  else if (/\b(whatsapp|whats|wpp|zap)\b/.test(n)) out.channel = 'whatsapp';
+  else if (/\b(en persona|pessoalmente|presencial|in person)\b/.test(n)) out.channel = 'persona';
+  else if (/\b(catalogo|catalog)\b/.test(n)) out.channel = 'catalogo';
+
+  // Due date: a weekday or "mañana / amanhã".
+  for (const w of tokens) {
+    if (w === 'manana' || w === 'amanha' || w === 'tomorrow') { out.dueDate = toISO(addDays(today, 1)); break; }
+    if (Object.prototype.hasOwnProperty.call(WEEKDAYS, w)) {
+      const delta = ((WEEKDAYS[w] - today.getDay() + 7) % 7) || 7;
+      out.dueDate = toISO(addDays(today, delta)); break;
+    }
+  }
+  return out;
+}
+
+/* ------------------------------------------------------------------
+   Draft sale: the confirm card's state
+------------------------------------------------------------------ */
+function productById(id) { return data.products.find(p => p.id === id) || null; }
+function findCustomer(name) { const k = norm(name).trim(); return k ? data.customers.find(c => norm(c.name) === k) || null : null; }
+
+function newDraft(text) {
+  const today = todayDate();
+  const p = parseSale(text, data.products, today);
+  const product = productById(p.productId);
+  const priceFromList = p.unitPrice === null && !!product;
+  return {
+    raw: text,
+    productId: p.productId || '',
+    np: { name: p.productHint ? p.productHint.charAt(0).toUpperCase() + p.productHint.slice(1) : '', stock: '', cost: '', price: '' },
+    qty: p.qty,
+    unitPrice: priceFromList ? (p.wholesale ? product.wholesale : product.retail) : p.unitPrice,
+    priceFromList, wholesale: p.wholesale,
+    customerName: p.customerName || '',
+    phone: '',
+    channel: p.channel || 'none',
+    paidMode: p.paidMode, paidAmount: p.paidAmount,
+    installments: p.installments || 1,
+    dueDate: p.dueDate || (p.installments > 1 ? toISO(addDays(today, 7)) : ''),
+    // What the message did not say, so the card asks instead of guessing.
+    askProduct: !p.productId, askQty: p.qty === null, askPrice: p.unitPrice === null && !product,
+    askPaid: p.paidMode === null, askCustomer: !p.customerName
+  };
+}
+
+function compute(d) {
+  const isNew = d.productId === '__new';
+  const product = isNew ? null : productById(d.productId);
+  const qty = Number(d.qty) || 0;
+  const unit = isNew ? Number(d.np.price) || 0 : Number(d.unitPrice) || 0;
+  const total = round2(qty * unit);
+  let paid = null;
+  if (d.paidMode === 'all') paid = total;
+  else if (d.paidMode === 'half') paid = round2(total / 2);
+  else if (d.paidMode === 'none') paid = 0;
+  else if (d.paidMode === 'amount') paid = Math.min(round2(Number(d.paidAmount) || 0), total);
+  const owed = paid === null ? null : round2(total - paid);
+
+  let schedule = [];
+  if (owed > 0) {
+    const k = Math.max(1, Math.floor(Number(d.installments) || 1));
+    const each = round2(owed / k);
+    const first = d.dueDate || (k > 1 ? toISO(addDays(todayDate(), 7)) : '');
+    for (let i = 0; i < k; i++) {
+      const amount = i === k - 1 ? round2(owed - each * (k - 1)) : each;
+      const due = first ? toISO(addDays(parseISO(first), 7 * i)) : '';
+      schedule.push({ n: i + 1, due, amount });
+    }
+  }
+
+  const stockFrom = isNew ? Number(d.np.stock) || 0 : product ? product.stock : 0;
+  const customerName = d.customerName.trim();
+  const productOk = isNew ? d.np.name.trim() && d.np.stock !== '' && Number(d.np.price) > 0 : !!product;
+  const missing = {
+    product: !productOk,
+    qty: !(qty > 0),
+    price: !(unit > 0),
+    paid: paid === null || (d.paidMode === 'amount' && (d.paidAmount === null || d.paidAmount === '')),
+    customer: owed > 0 && !customerName
+  };
+  const ready = !Object.values(missing).some(Boolean);
+  return { isNew, product, qty, unit, total, paid, owed, schedule, stockFrom, stockTo: stockFrom - qty, customerName, missing, ready };
+}
+
+/* ------------------------------------------------------------------
+   Confirm card
+------------------------------------------------------------------ */
+const host = document.getElementById('cardHost');
+
+function renderCard() {
+  if (!draft) { host.innerHTML = ''; return; }
+  const d = draft;
+  const opts = data.products.map(p =>
+    `<option value="${p.id}" ${p.id === d.productId ? 'selected' : ''}>${esc(p.name)} (${esc(t('left', { n: p.stock }))})</option>`).join('');
+  const mine = data.profile && data.profile.sellChannels && data.profile.sellChannels.length ? data.profile.sellChannels : SELL_CHANNELS;
+  const chOpts = Object.entries(t('channels')).filter(([k]) => k === 'none' || k === d.channel || mine.includes(k)).map(([k, v]) => `<option value="${k}" ${k === d.channel ? 'selected' : ''}>${esc(v)}</option>`).join('');
+  const chip = (mode, label) => `<button type="button" data-paid="${mode}" aria-pressed="${d.paidMode === mode}">${esc(label)}</button>`;
+
+  host.innerHTML = `
+  <section class="card" aria-label="${esc(t('cardTitle'))}">
+    <h3>${esc(t('cardTitle'))}</h3>
+
+    <div class="field" id="f-product">
+      <label for="c-product">${esc(t('product'))}</label>
+      <select id="c-product">
+        <option value="" ${d.productId ? '' : 'selected'} disabled>${esc(t('chooseProduct'))}</option>
+        ${opts}
+        <option value="__new" ${d.productId === '__new' ? 'selected' : ''}>${esc(t('newProductOpt'))}</option>
+      </select>
+      <div class="ask-note">${esc(t('productAsk'))}</div>
+      <div class="sub-box" id="np" ${d.productId === '__new' ? '' : 'hidden'}>
+        <div class="field"><label for="np-name">${esc(t('npName'))}</label><input id="np-name" value="${esc(d.np.name)}"></div>
+        <div class="grid3">
+          <div class="field"><label for="np-stock">${esc(t('npStock'))}</label><input id="np-stock" type="number" min="0" inputmode="numeric" value="${esc(d.np.stock)}"></div>
+          <div class="field"><label for="np-cost">${esc(t('npCost'))}</label><input id="np-cost" type="number" min="0" step="0.01" inputmode="decimal" value="${esc(d.np.cost)}"></div>
+          <div class="field"><label for="np-price">${esc(t('npPrice'))}</label><input id="np-price" type="number" min="0" step="0.01" inputmode="decimal" value="${esc(d.np.price)}"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="field" id="f-qty">
+        <label for="c-qty">${esc(t('qty'))}</label>
+        <input id="c-qty" type="number" min="1" inputmode="numeric" value="${d.qty ?? ''}">
+        <div class="ask-note">${esc(t('ask'))}</div>
+      </div>
+      <div class="field" id="f-price" ${d.productId === '__new' ? 'hidden' : ''}>
+        <label for="c-price">${esc(t('unitPrice'))}</label>
+        <input id="c-price" type="number" min="0" step="0.01" inputmode="decimal" value="${d.unitPrice ?? ''}">
+        <div class="ask-note">${esc(t('ask'))}</div>
+        <div class="hint" id="priceHint" ${d.priceFromList ? '' : 'hidden'}>${esc(d.wholesale ? t('fromListWholesale') : t('fromList'))}</div>
+      </div>
+    </div>
+
+    <div class="total"><span>${esc(t('total'))}</span><span class="num" id="c-total"></span></div>
+
+    <div class="field" id="f-customer">
+      <label for="c-customer">${esc(t('customer'))}</label>
+      <input id="c-customer" list="customerList" placeholder="${esc(t('customerPh'))}" value="${esc(d.customerName)}" autocomplete="off">
+      <datalist id="customerList">${data.customers.map(c => `<option value="${esc(c.name)}">`).join('')}</datalist>
+      <div class="ask-note" id="customerAsk"></div>
+      <div class="sub-box" id="phoneBox" hidden>
+        <div class="field"><label for="c-phone">${esc(t('newCustomer'))}</label><input id="c-phone" type="tel" placeholder="${esc(t('phonePh'))}" value="${esc(d.phone)}"></div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="c-channel">${esc(t('channel'))}</label>
+      <select id="c-channel">${chOpts}</select>
+    </div>
+
+    <div class="field" id="f-paid">
+      <span class="label">${esc(t('paidQ'))}</span>
+      <div class="chips" role="group">
+        ${chip('all', t('paidAll'))}${chip('half', t('paidHalf'))}${chip('none', t('paidNone'))}${chip('amount', t('paidOther'))}
+      </div>
+      <div class="ask-note">${esc(t('paidAsk'))}</div>
+      <div class="sub-box" id="amountBox" ${d.paidMode === 'amount' ? '' : 'hidden'}>
+        <div class="field"><label for="c-amount">${esc(t('paidAmount'))}</label><input id="c-amount" type="number" min="0" step="0.01" inputmode="decimal" value="${d.paidAmount ?? ''}"></div>
+      </div>
+    </div>
+
+    <div id="owedBox" hidden>
+      <div class="grid2">
+        <div class="field">
+          <label for="c-inst">${esc(t('installments'))}</label>
+          <input id="c-inst" type="number" min="1" max="24" inputmode="numeric" value="${d.installments}">
+        </div>
+        <div class="field">
+          <label for="c-due" id="dueLabel"></label>
+          <input id="c-due" type="date" value="${esc(d.dueDate)}">
+        </div>
+      </div>
+      <ul class="schedule" id="schedule"></ul>
+    </div>
+
+    <div class="warn" id="stockWarn" hidden></div>
+    <div class="effect" id="effect"></div>
+
+    <div class="row-actions">
+      <button class="btn" id="saveBtn">${esc(t('save'))}</button>
+      <button class="btn ghost" id="discardBtn">${esc(t('discard'))}</button>
+    </div>
+  </section>`;
+
+  const $ = id => document.getElementById(id);
+  $('c-product').addEventListener('change', e => {
+    d.productId = e.target.value;
+    const p = productById(d.productId);
+    if (p && (d.priceFromList || d.unitPrice === null)) { d.unitPrice = d.wholesale ? p.wholesale : p.retail; d.priceFromList = true; $('c-price').value = d.unitPrice; }
+    $('np').hidden = d.productId !== '__new';
+    $('f-price').hidden = d.productId === '__new';
+    $('priceHint').hidden = !d.priceFromList;
+    d.askProduct = false;
+    update();
+  });
+  ['name', 'stock', 'cost', 'price'].forEach(k => $('np-' + k).addEventListener('input', e => { d.np[k] = e.target.value; update(); }));
+  $('c-qty').addEventListener('input', e => { d.qty = e.target.value === '' ? null : Number(e.target.value); update(); });
+  $('c-price').addEventListener('input', e => { d.unitPrice = e.target.value === '' ? null : Number(e.target.value); d.priceFromList = false; $('priceHint').hidden = true; update(); });
+  $('c-customer').addEventListener('input', e => { d.customerName = e.target.value; update(); });
+  $('c-phone').addEventListener('input', e => { d.phone = e.target.value; });
+  $('c-channel').addEventListener('change', e => { d.channel = e.target.value; });
+  host.querySelectorAll('[data-paid]').forEach(b => b.addEventListener('click', () => {
+    d.paidMode = b.dataset.paid;
+    host.querySelectorAll('[data-paid]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    $('amountBox').hidden = d.paidMode !== 'amount';
+    update();
+  }));
+  $('c-amount').addEventListener('input', e => { d.paidAmount = e.target.value === '' ? null : Number(e.target.value); update(); });
+  $('c-inst').addEventListener('input', e => { d.installments = e.target.value; update(); });
+  $('c-due').addEventListener('input', e => { d.dueDate = e.target.value; update(); });
+  $('saveBtn').addEventListener('click', saveSale);
+  $('discardBtn').addEventListener('click', () => { draft = null; renderCard(); });
+  update();
+}
+
+// Refreshes only the computed parts of the card, so typing never loses focus.
+function update() {
+  if (!draft) return;
+  const d = draft, c = compute(d), $ = id => document.getElementById(id);
+  $('c-total').textContent = money(c.total);
+
+  $('f-product').classList.toggle('ask', c.missing.product);
+  $('f-qty').classList.toggle('ask', c.missing.qty);
+  $('f-price').classList.toggle('ask', !c.isNew && c.missing.price);
+  $('f-paid').classList.toggle('ask', c.missing.paid);
+
+  const flagCustomer = c.missing.customer || (!c.customerName && d.askCustomer);
+  $('f-customer').classList.toggle('ask', flagCustomer);
+  $('customerAsk').textContent = c.owed > 0 ? t('customerAskOwed') : t('customerAskPaid');
+  $('phoneBox').hidden = !c.customerName || !!findCustomer(c.customerName);
+
+  const owes = c.owed > 0;
+  $('owedBox').hidden = !owes;
+  $('dueLabel').textContent = Number(d.installments) > 1 ? t('firstDue') : t('dueDate');
+  $('schedule').innerHTML = owes && c.schedule.length > 1
+    ? c.schedule.map(s => `<li>${esc(t('scheduleItem', { n: s.n, amount: money(s.amount), date: fmtDate(s.due) }))}</li>`).join('')
+    : '';
+
+  const stockName = c.isNew ? (d.np.name.trim() || t('product')) : c.product ? c.product.name : null;
+  const lines = [];
+  if (stockName && c.qty > 0) lines.push(esc(t('effectStock', { product: stockName, from: c.stockFrom, to: c.stockTo })));
+  if (c.owed > 0) {
+    const due = c.schedule.length === 1 && c.schedule[0].due ? ` (${esc(fmtDate(c.schedule[0].due))})` : '';
+    lines.push(c.customerName
+      ? esc(t('effectOwed', { name: c.customerName, amount: money(c.owed) })) + due
+      : esc(t('effectOwedNoName', { amount: money(c.owed) })) + due);
+  } else if (c.owed === 0 && c.total > 0) lines.push(esc(t('effectPaid')));
+  $('effect').innerHTML = lines.map(l => `<div>${l}</div>`).join('');
+  $('effect').hidden = lines.length === 0;
+
+  const warn = c.qty > 0 && (c.product || c.isNew) && c.stockTo < 0;
+  $('stockWarn').hidden = !warn;
+  if (warn) $('stockWarn').textContent = t('stockWarn', { n: c.stockFrom });
+
+  $('saveBtn').disabled = !c.ready;
+}
+
+/* ------------------------------------------------------------------
+   Saving and undoing
+------------------------------------------------------------------ */
+function uid(prefix) { return prefix + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+function logChange(type, detail) { data.log.push({ at: new Date().toISOString(), type, detail }); }
+
+function saveSale() {
+  const d = draft, c = compute(d);
+  if (!c.ready) return;
+
+  let product = c.product;
+  if (c.isNew) {
+    const name = d.np.name.trim();
+    const word = norm(name).split(/\s+/)[0];
+    const aliases = [...new Set([word, word.replace(/s$/, ''), word.replace(/es$/, '')])].filter(a => a.length >= 3);
+    product = {
+      id: uid('p'), name, aliases,
+      stock: Number(d.np.stock) || 0, cost: Number(d.np.cost) || 0,
+      retail: Number(d.np.price) || 0, wholesale: Number(d.np.price) || 0
+    };
+    data.products.push(product);
+    logChange('product_added', { productId: product.id, name, stock: product.stock });
+  }
+
+  let customer = null;
+  if (c.customerName) {
+    customer = findCustomer(c.customerName);
+    if (!customer) {
+      customer = { id: uid('c'), name: c.customerName, phone: d.phone.trim() };
+      data.customers.push(customer);
+      logChange('customer_added', { customerId: customer.id, name: customer.name });
+    }
+  }
+
+  const from = product.stock;
+  product.stock = from - c.qty;
+  const sale = {
+    id: uid('s'), at: Date.now(), date: toISO(todayDate()), message: null,
+    productId: product.id, qty: c.qty, unitPrice: c.unit, unitCost: product.cost, total: c.total, wholesale: d.wholesale,
+    customerId: customer ? customer.id : null, channel: d.channel === 'none' ? null : d.channel,
+    paid: c.paid, owed: c.owed, schedule: c.schedule.map(s => ({ due: s.due || null, amount: s.amount, paid: false })),
+    undone: false
+  };
+  data.sales.push(sale);
+  logChange('sale_saved', { saleId: sale.id, productId: product.id, stockFrom: from, stockTo: product.stock, owed: c.owed });
+  saveData();
+
+  draft = null;
+  renderCard();
+  document.getElementById('saleText').value = '';
+  renderSales(); renderHome();
+  toast(t('saved', { product: product.name, n: product.stock }));
+}
+
+function undoSale(id) {
+  const s = data.sales.find(x => x.id === id);
+  if (!s || s.undone || Date.now() - s.at > 24 * 3600 * 1000) return;
+  const p = productById(s.productId);
+  const from = p ? p.stock : null;
+  if (p) p.stock += s.qty;
+  s.undone = true;
+  logChange('sale_undone', { saleId: s.id, productId: s.productId, stockFrom: from, stockTo: p ? p.stock : null });
+  saveData();
+  renderSales(); renderHome();
+  if (p) toast(t('undoneMsg', { product: p.name, n: p.stock }));
+}
+
+/* ------------------------------------------------------------------
+   Recent sales list
+------------------------------------------------------------------ */
+function renderSales() {
+  const list = document.getElementById('salesList');
+  const sales = data.sales.slice().reverse().slice(0, 10);
+  if (!sales.length) { list.innerHTML = `<li class="empty">${esc(t('noSales'))}</li>`; return; }
+  list.innerHTML = sales.map(s => {
+    const p = productById(s.productId);
+    const cu = data.customers.find(c => c.id === s.customerId);
+    const left = remaining(s);
+    const next = s.schedule.find(x => !x.paid);
+    const owesTxt = left > 0
+      ? `<span class="owes">${esc(t('owesTag', { amount: money(left) }))}${next && next.due ? ', ' + esc(fmtDate(next.due)) : ''}</span>`
+      : esc(t('paidTag'));
+    const canUndo = !s.undone && Date.now() - s.at < 24 * 3600 * 1000;
+    return `<li>
+      <div class="${s.undone ? 'undone' : ''}">
+        <div class="main">${s.qty} × ${esc(p ? p.name : '?')} · <span class="num">${money(s.total)}</span></div>
+        <div class="meta">${esc(cu ? cu.name : t('noCustomer'))}${s.channel ? ' · ' + esc(t('channels')[s.channel]) : ''} · ${owesTxt}</div>
+      </div>
+      ${s.undone ? `<span class="meta">${esc(t('undoneTag'))}</span>` : canUndo ? `<button class="linkbtn" data-undo="${s.id}">${esc(t('undo'))}</button>` : ''}
+    </li>`;
+  }).join('');
+  list.querySelectorAll('[data-undo]').forEach(b => b.addEventListener('click', () => undoSale(b.dataset.undo)));
+}
+
+/* ------------------------------------------------------------------
+   Todo en un lugar (home)
+------------------------------------------------------------------ */
+let period = prefs.period || 'week';
+
+function remaining(s) {
+  if (s.undone) return 0;
+  return round2(s.schedule.filter(x => !x.paid).reduce((a, x) => a + x.amount, 0));
+}
+function periodStart() {
+  const today = todayDate();
+  if (period === 'month') return toISO(new Date(today.getFullYear(), today.getMonth(), 1));
+  return toISO(addDays(today, -((today.getDay() + 6) % 7))); // week starts Monday
+}
+function daysBetween(aISO, bISO) { return Math.round((parseISO(bISO) - parseISO(aISO)) / 86400000); }
+
+function renderHome() {
+  const body = document.getElementById('homeBody');
+  if (!body) return;
+  document.querySelectorAll('[data-period]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.period === period)));
+  const start = periodStart();
+  const todayISO = toISO(todayDate());
+  const sales = data.sales.filter(s => !s.undone && s.date >= start);
+  const costOf = s => s.qty * (s.unitCost ?? (productById(s.productId) || { cost: 0 }).cost);
+  const totalSales = round2(sales.reduce((a, s) => a + s.total, 0));
+  const totalCosts = round2(sales.reduce((a, s) => a + costOf(s), 0));
+  const earned = round2(totalSales - totalCosts);
+
+  // Who owes: all unpaid installments, whatever the period, grouped by customer.
+  const debts = {};
+  data.sales.filter(s => !s.undone).forEach(s => {
+    s.schedule.forEach((x, idx) => {
+      if (x.paid) return;
+      const key = s.customerId || 'none';
+      (debts[key] = debts[key] || []).push({ sale: s, idx, ...x });
+    });
+  });
+  const owers = Object.entries(debts).map(([cid, items]) => {
+    items.sort((a, b) => (a.due || '9999') < (b.due || '9999') ? -1 : 1);
+    const cu = data.customers.find(c => c.id === cid);
+    return { cid, name: cu ? cu.name : t('noCustomer'), total: round2(items.reduce((a, x) => a + x.amount, 0)), next: items[0] };
+  }).sort((a, b) => (a.next.due || '9999') < (b.next.due || '9999') ? -1 : 1);
+  const owedTotal = round2(owers.reduce((a, o) => a + o.total, 0));
+  const biz = bizOf();
+  const showDebts = !(biz.answeredAt && !biz.credit) || owers.length > 0;
+
+  // Best sellers and channels in the period.
+  const byProduct = {}, byChannel = {};
+  sales.forEach(s => {
+    const b = byProduct[s.productId] = byProduct[s.productId] || { qty: 0, earned: 0 };
+    b.qty += s.qty; b.earned = round2(b.earned + s.total - costOf(s));
+    const ch = s.channel || 'none';
+    byChannel[ch] = round2((byChannel[ch] || 0) + s.total);
+  });
+  const best = Object.entries(byProduct).sort((a, b) => b[1].qty - a[1].qty || b[1].earned - a[1].earned).slice(0, 3);
+  const chans = Object.entries(byChannel).sort((a, b) => b[1] - a[1]);
+  const chMax = chans.length ? chans[0][1] : 1;
+
+  const stock = data.products.slice().sort((a, b) => a.stock - b.stock);
+
+  body.innerHTML = `
+    <div class="stats">
+      <div class="stat big"><div class="k">${esc(t('hEarned'))}</div><div class="v ${earned < 0 ? 'owe' : ''}">${money(earned)}</div>
+        <div class="small">${esc(t('hEarnedSub', { sales: money(totalSales), costs: money(totalCosts) }))}</div></div>
+      <div class="stat"><div class="k">${esc(t('hSales'))}</div><div class="v">${money(totalSales)}</div><div class="small">${esc(t(sales.length === 1 ? 'hSalesSubOne' : 'hSalesSub', { n: sales.length }))}</div></div>
+      <div class="stat" ${showDebts ? '' : 'hidden'}><div class="k">${esc(t('hOwed'))}</div><div class="v ${owedTotal > 0 ? 'owe' : ''}">${money(owedTotal)}</div><div class="small">${esc(t(owers.length === 1 ? 'hOwedSubOne' : 'hOwedSub', { n: owers.length }))}</div></div>
+    </div>
+
+    <div class="panel home-section" data-panel="who" ${showDebts ? '' : 'hidden'}>
+      <h2>${esc(t('hWho'))}</h2>
+      <ul class="rows">${owers.length ? owers.map(o => {
+        const late = o.next.due && o.next.due < todayISO ? daysBetween(o.next.due, todayISO) : 0;
+        return `<li>
+          <div><div><strong>${esc(o.name)}</strong> · <span class="num">${money(o.total)}</span></div>
+            <div class="meta ${late ? 'late' : ''}">${esc(t('hNext', { amount: money(o.next.amount), date: fmtDate(o.next.due) }))}${late ? ' · ' + esc(t('hLate', { n: late })) : ''}</div></div>
+          <button class="linkbtn" data-receive="${o.next.sale.id}:${o.next.idx}">${esc(t('hReceived', { amount: money(o.next.amount) }))}</button>
+        </li>`;
+      }).join('') : `<li class="empty">${esc(t('hNobody'))}</li>`}</ul>
+    </div>
+
+    <div class="panel home-section" data-panel="stock">
+      <h2>${esc(t('hStock'))}</h2>
+      <ul class="rows">${stock.map(p => `<li>
+        <div><div><strong>${esc(p.name)}</strong> ${p.stock <= 0 ? `<span class="pill">${esc(t('hOut'))}</span>` : p.stock <= 3 ? `<span class="pill">${esc(t('hLow'))}</span>` : ''}</div>
+          <div class="meta">${esc(bizOf().wholesale
+            ? t('hCostPriceW', { cost: money(p.cost), price: money(p.retail), wholesale: money(p.wholesale) })
+            : t('hCostPrice', { cost: money(p.cost), price: money(p.retail) }))}</div></div>
+        <input class="stock-input" type="number" min="0" inputmode="numeric" value="${p.stock}" data-stock="${p.id}" aria-label="${esc(p.name)}">
+      </li>`).join('')}</ul>
+      <div style="padding:6px 0 12px">
+        <button class="linkbtn" id="addProdBtn">${esc(t('hAddProduct'))}</button>
+        <div class="sub-box" id="addProd" hidden style="margin-top:10px">
+          <div class="field"><label for="ap-name">${esc(t('npName'))}</label><input id="ap-name"></div>
+          <div class="grid3">
+            <div class="field"><label for="ap-stock">${esc(t('npStock'))}</label><input id="ap-stock" type="number" min="0" inputmode="numeric"></div>
+            <div class="field"><label for="ap-cost">${esc(t('npCost'))}</label><input id="ap-cost" type="number" min="0" step="0.01" inputmode="decimal"></div>
+            <div class="field"><label for="ap-price">${esc(t('npPrice'))}</label><input id="ap-price" type="number" min="0" step="0.01" inputmode="decimal"></div>
+          </div>
+          ${bizOf().wholesale ? `<div class="field"><label for="ap-whole">${esc(t('npWholesale'))}</label><input id="ap-whole" type="number" min="0" step="0.01" inputmode="decimal"></div>` : ''}
+          <button class="btn" id="ap-save" disabled>${esc(t('hAddSave'))}</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel home-section" data-panel="best">
+      <h2>${esc(t('hBest'))}</h2>
+      <ul class="rows">${best.length ? best.map(([pid, b]) => {
+        const p = productById(pid);
+        return `<li><div><div><strong>${esc(p ? p.name : '?')}</strong></div><div class="meta">${esc(t(b.qty === 1 ? 'hBestRowOne' : 'hBestRow', { qty: b.qty, earned: money(b.earned) }))}</div></div></li>`;
+      }).join('') : `<li class="empty">${esc(t('hNoSalesPeriod'))}</li>`}</ul>
+    </div>
+
+    <div class="panel home-section" data-panel="channels">
+      <h2>${esc(t('hChannels'))}</h2>
+      <ul class="rows">${chans.length ? chans.map(([ch, v]) => `<li style="display:block">
+        <div style="display:flex;justify-content:space-between"><span>${esc(t('channels')[ch] || ch)}</span><span class="num">${money(v)}</span></div>
+        <div class="bar"><span style="width:${Math.max(4, Math.round(v / chMax * 100))}%"></span></div>
+      </li>`).join('') : `<li class="empty">${esc(t('hNoSalesPeriod'))}</li>`}</ul>
+    </div>`;
+
+  // Put the panels for the seller's biggest needs first.
+  const NEED_PANELS = { cobrar: ['who'], inventario: ['stock'], reponer: ['stock'], precios: ['stock'], vender: ['best', 'channels'] };
+  const first = [...new Set((bizOf().needs || []).flatMap(n => NEED_PANELS[n] || []))];
+  const order = [...first, ...['who', 'stock', 'best', 'channels'].filter(k => !first.includes(k))];
+  order.forEach(k => { const el = body.querySelector(`[data-panel="${k}"]`); if (el) body.appendChild(el); });
+
+  body.querySelectorAll('[data-receive]').forEach(b => b.addEventListener('click', () => {
+    const [sid, idx] = b.dataset.receive.split(':');
+    const s = data.sales.find(x => x.id === sid);
+    const inst = s && s.schedule[Number(idx)];
+    if (!inst || inst.paid) return;
+    inst.paid = true; inst.paidAt = new Date().toISOString();
+    const cu = data.customers.find(c => c.id === s.customerId);
+    logChange('payment_received', { saleId: sid, installment: Number(idx), amount: inst.amount });
+    saveData(); renderHome(); renderSales();
+    toast(t('hReceivedToast', { name: cu ? cu.name : t('noCustomer'), amount: money(inst.amount) }));
+  }));
+  body.querySelectorAll('[data-stock]').forEach(inp => inp.addEventListener('change', () => {
+    const p = productById(inp.dataset.stock);
+    const to = Math.max(0, Math.floor(Number(inp.value) || 0));
+    if (!p || to === p.stock) return;
+    const from = p.stock; p.stock = to;
+    data.productsAreStarters = false;
+    logChange('stock_adjusted', { productId: p.id, stockFrom: from, stockTo: to });
+    saveData(); renderHome();
+    toast(t('hStockSaved', { product: p.name, from, to }));
+  }));
+  const $ = id => document.getElementById(id);
+  $('addProdBtn').addEventListener('click', () => { $('addProd').hidden = !$('addProd').hidden; });
+  const apCheck = () => { $('ap-save').disabled = !($('ap-name').value.trim() && $('ap-stock').value !== '' && Number($('ap-price').value) > 0); };
+  ['ap-name', 'ap-stock', 'ap-cost', 'ap-price'].forEach(id => $(id).addEventListener('input', apCheck));
+  $('ap-save').addEventListener('click', () => {
+    const name = $('ap-name').value.trim();
+    const word = norm(name).split(/\s+/)[0];
+    const p = {
+      id: uid('p'), name,
+      aliases: [...new Set([word, word.replace(/s$/, ''), word.replace(/es$/, '')])].filter(a => a.length >= 3),
+      stock: Math.max(0, Math.floor(Number($('ap-stock').value) || 0)), cost: Number($('ap-cost').value) || 0,
+      retail: Number($('ap-price').value) || 0,
+      wholesale: ($('ap-whole') && Number($('ap-whole').value)) || Number($('ap-price').value) || 0
+    };
+    data.products.push(p);
+    data.productsAreStarters = false;
+    logChange('product_added', { productId: p.id, name, stock: p.stock });
+    saveData(); renderHome();
+    toast(t('hAdded', { product: name }));
+  });
+}
+
+/* ------------------------------------------------------------------
+   Mi negocio: what you sell, how you sell, how you get paid, what you need.
+   Every answer changes something in the app, so we only ask what we use.
+------------------------------------------------------------------ */
+const SECTORS = ['belleza', 'ropa', 'accesorios', 'comida', 'hogar', 'salud', 'otro'];
+const NEEDS = ['ganancia', 'cobrar', 'inventario', 'reponer', 'precios', 'vender'];
+
+// Prototype rules standing in for the AI: guess a category from what the seller typed in "Otro".
+const SECTOR_WORDS = {
+  belleza: ['maquillaje', 'labial', 'perfume', 'crema', 'cosmetic', 'belleza', 'unas', 'esmalte', 'shampoo', 'maquiagem', 'batom', 'creme', 'beleza', 'unha', 'makeup', 'lipstick', 'beauty', 'nail', 'cream'],
+  ropa: ['ropa', 'polo', 'blusa', 'vestido', 'zapat', 'calzado', 'jean', 'pantalon', 'casaca', 'roupa', 'sapato', 'tenis', 'camiseta', 'calca', 'clothes', 'shirt', 'dress', 'shoe', 'pant'],
+  accesorios: ['arete', 'collar', 'pulsera', 'joya', 'bisuteria', 'reloj', 'cartera', 'bolso', 'lente', 'brinco', 'colar', 'pulseira', 'joia', 'bijuteria', 'bolsa', 'oculos', 'earring', 'necklace', 'bracelet', 'jewel', 'watch', 'bag'],
+  comida: ['pastel', 'torta', 'postre', 'comida', 'empanada', 'galleta', 'chocolate', 'dulce', 'panes', 'panader', 'keke', 'queque', 'bolo', 'doce', 'brigadeiro', 'salgado', 'marmita', 'cake', 'cookie', 'food', 'dessert', 'bread', 'candy'],
+  hogar: ['hogar', 'cocina', 'taper', 'vela', 'decora', 'limpieza', 'sabana', 'toalla', 'casa', 'cozinha', 'pote', 'limpeza', 'toalha', 'home', 'kitchen', 'candle', 'container', 'towel', 'clean'],
+  salud: ['suplemento', 'vitamina', 'proteina', 'natural', 'salud', 'herbal', 'colageno', 'saude', 'supplement', 'vitamin', 'protein', 'collagen', 'health']
+};
+function guessSector(text) {
+  const words = norm(text).split(/[^a-z]+/).filter(w => w.length >= 3);
+  let best = null, bestScore = 0;
+  for (const [sector, keys] of Object.entries(SECTOR_WORDS)) {
+    const score = words.filter(w => keys.some(k => w.startsWith(k))).length;
+    if (score > bestScore) { best = sector; bestScore = score; }
+  }
+  return best;
+}
+
+// Prototype rules standing in for the AI: which paid modules fit this seller, and why.
+function recommend() {
+  const prof = data.profile || {}, b = bizOf(), needs = b.needs || [], sell = prof.sellChannels || [];
+  const recs = [];
+  const add = (mod, reasons) => { const r = reasons.filter(Boolean); if (r.length) recs.push({ mod, reasons: r }); };
+  add('cobrar', [b.credit && 'credit', needs.includes('cobrar') && 'cobrar']);
+  add('precios', [needs.includes('precios') && 'precios', needs.includes('ganancia') && 'ganancia', b.wholesale && 'wholesale']);
+  add('vender', [needs.includes('vender') && 'vender', sell.includes('catalogo') && 'catalogo', needs.includes('reponer') && sell.includes('catalogo') && 'reponer']);
+  return recs;
+}
+function recommendHTML() {
+  const recs = recommend();
+  return `<div class="rec">
+    <h2>${esc(t('recTitle'))}</h2>
+    <p class="rec-free">${esc(t('recFree'))}</p>
+    ${recs.length ? recs.map(r => `<div class="rec-item">
+      <strong>${esc(t('mods')[r.mod][0])}</strong>
+      <div>${esc(t('mods')[r.mod][1])}</div>
+      <div class="rec-why">${esc(r.reasons.map(k => t('why')[k]).join(', '))}.</div>
+    </div>`).join('') : `<p class="hint">${esc(t('recNone'))}</p>`}
+  </div>`;
+}
+function bizOf() { const b = data.profile && data.profile.business; return b && !b.skipped ? b : {}; }
+
+function businessFormHTML() {
+  const prof = data.profile || {}, b = bizOf();
+  const country = COUNTRIES.find(c => c.code === prof.country) || COUNTRIES[0];
+  const sel = prof.sellChannels || [], pay = prof.payMethods || [], needs = b.needs || [];
+  const tg = (kind, key, label, on, status) => `<button type="button" class="toggle" data-kind="${kind}" data-key="${key}" aria-pressed="${on}">
+      <span class="dot"></span><span><span class="name">${esc(label)}</span>${status ? `<br><span class="st">${esc(on ? t('chOn') : t('chOff'))}</span>` : ''}</span></button>`;
+  return `<div class="biz">
+    <h2>${esc(t('bizSector'))}</h2>
+    <div class="toggles">${SECTORS.map(k => tg('sector', k, t('sectors')[k], b.sector === k)).join('')}</div>
+    ${b.sector === 'otro' ? `<div class="field" style="margin-top:10px">
+      <label>${esc(t('sectorOtherLabel'))}<input class="sector-other" maxlength="60" placeholder="${esc(t('sectorOtherPh'))}" value="${esc(b.sectorOther || '')}" style="margin-top:4px"></label>
+      <div class="sector-guess hint" hidden></div>
+    </div>` : ''}
+    <h2>${esc(t('chSellTitle'))}</h2>
+    <div class="toggles">${SELL_CHANNELS.map(k => tg('sell', k, t('channels')[k], sel.includes(k), true)).join('')}</div>
+    <div class="toggles flags">${tg('flag', 'credit', t('bizCredit'), !!b.credit)}${tg('flag', 'wholesale', t('bizWholesale'), !!b.wholesale)}</div>
+    <h2>${esc(t('chPayTitle'))}</h2>
+    <p class="hint">${esc(t('chPayCountry', { country: country[lang] || country.es }))}</p>
+    <div class="toggles">${country.pay.map(k => tg('pay', k, t('pay')[k], pay.includes(k), true)).join('')}</div>
+    ${pay.includes('otro') ? `<div class="field" style="margin-top:10px">
+      <label>${esc(t('payOtherLabel'))}<input class="pay-other" maxlength="40" placeholder="${esc(t('payOtherPh'))}" value="${esc(prof.payOther || '')}" style="margin-top:4px"></label>
+    </div>` : ''}
+    <h2>${esc(t('bizNeeds'))}</h2>
+    <p class="hint">${esc(t('bizNeedsHint'))}</p>
+    <div class="toggles">${NEEDS.map(k => tg('need', k, t('needs')[k], needs.includes(k))).join('')}</div>
+    ${recommendHTML()}
+  </div>`;
+}
+
+function bindBusiness(container, rerender) {
+  const sectorOther = container.querySelector('.sector-other');
+  if (sectorOther) {
+    const guessBox = container.querySelector('.sector-guess');
+    const showGuess = () => {
+      const g = guessSector(sectorOther.value);
+      guessBox.hidden = !g;
+      if (g) {
+        guessBox.innerHTML = `${esc(t('sectorGuess', { sector: t('sectors')[g] }))} <button type="button" class="linkbtn">${esc(t('sectorUse'))}</button>`;
+        guessBox.querySelector('button').addEventListener('click', () => {
+          data.profile.business = Object.assign({}, bizOf(), { sector: g });
+          logChange('business_changed', { kind: 'sector', key: g, from: 'guess' });
+          saveData(); rerender(); applyPlaceholder();
+        });
+      }
+    };
+    sectorOther.addEventListener('input', () => {
+      if (!data.profile) return;
+      data.profile.business = Object.assign({}, bizOf(), { sectorOther: sectorOther.value.trim() });
+      saveData(); showGuess();
+    });
+    showGuess();
+  }
+  const other = container.querySelector('.pay-other');
+  if (other) {
+    other.addEventListener('input', () => { if (data.profile) { data.profile.payOther = other.value.trim(); saveData(); } });
+    other.addEventListener('change', () => logChange('business_changed', { kind: 'pay', key: 'otro', value: other.value.trim() }));
+  }
+  container.querySelectorAll('.toggle').forEach(btn => btn.addEventListener('click', () => {
+    const prof = data.profile;
+    if (!prof) return;
+    const b = prof.business = Object.assign({}, bizOf());
+    const kind = btn.dataset.kind, key = btn.dataset.key;
+    if (kind === 'sector') b.sector = b.sector === key ? null : key;
+    else if (kind === 'flag') b[key] = !b[key];
+    else if (kind === 'need') {
+      const n = b.needs = (b.needs || []).slice();
+      const i = n.indexOf(key);
+      if (i >= 0) n.splice(i, 1); else { n.push(key); if (n.length > 2) n.shift(); }
+    } else {
+      const field = kind === 'sell' ? 'sellChannels' : 'payMethods';
+      const list = prof[field] = prof[field] || [];
+      const i = list.indexOf(key);
+      if (i >= 0) list.splice(i, 1); else list.push(key);
+    }
+    logChange('business_changed', { kind, key });
+    saveData();
+    rerender();
+    applyPlaceholder();
+    if (draft) renderCard();
+  }));
+}
+
+function renderChannels() {
+  const host = document.getElementById('bizTab');
+  if (!host) return;
+  host.innerHTML = data.profile ? businessFormHTML() : '';
+  bindBusiness(host, renderChannels);
+}
+
+// Starter products for each kind of business, so the app looks like the seller's own from the first minute.
+// Beauty (and "other") keep the PRD test-case products.
+const SECTOR_STARTERS = {
+  ropa: [
+    { es: 'Polo básico', pt: 'Camiseta básica', en: 'Basic T-shirt', aliases: ['polo', 'camiseta', 'shirt'], stock: 12, cost: 15, retail: 35, wholesale: 28 },
+    { es: 'Jean azul', pt: 'Calça jeans', en: 'Blue jeans', aliases: ['jean', 'calca'], stock: 6, cost: 40, retail: 90, wholesale: 75 },
+    { es: 'Vestido negro', pt: 'Vestido preto', en: 'Black dress', aliases: ['vestido', 'dress'], stock: 4, cost: 35, retail: 80, wholesale: 65 }
+  ],
+  accesorios: [
+    { es: 'Aretes plateados', pt: 'Brincos prateados', en: 'Silver earrings', aliases: ['arete', 'brinco', 'earring'], stock: 20, cost: 5, retail: 15, wholesale: 12 },
+    { es: 'Collar dorado', pt: 'Colar dourado', en: 'Gold necklace', aliases: ['collar', 'colar', 'necklace'], stock: 8, cost: 12, retail: 30, wholesale: 25 },
+    { es: 'Pulsera', pt: 'Pulseira', en: 'Bracelet', aliases: ['pulsera', 'pulseira', 'bracelet'], stock: 15, cost: 4, retail: 12, wholesale: 10 }
+  ],
+  comida: [
+    { es: 'Torta de chocolate', pt: 'Bolo de chocolate', en: 'Chocolate cake', aliases: ['torta', 'bolo', 'cake'], stock: 3, cost: 25, retail: 60, wholesale: 50 },
+    { es: 'Empanada', pt: 'Empada', en: 'Empanada', aliases: ['empanada', 'empada'], stock: 24, cost: 2, retail: 5, wholesale: 4 },
+    { es: 'Galletas', pt: 'Biscoitos', en: 'Cookies', aliases: ['galleta', 'biscoito', 'cookie'], stock: 40, cost: 0.5, retail: 1.5, wholesale: 1.2 }
+  ],
+  hogar: [
+    { es: 'Táper grande', pt: 'Pote grande', en: 'Big container', aliases: ['taper', 'pote', 'container'], stock: 10, cost: 8, retail: 20, wholesale: 16 },
+    { es: 'Vela aromática', pt: 'Vela aromática', en: 'Scented candle', aliases: ['vela', 'candle'], stock: 15, cost: 6, retail: 18, wholesale: 14 },
+    { es: 'Toalla', pt: 'Toalha', en: 'Towel', aliases: ['toalla', 'toalha', 'towel'], stock: 8, cost: 12, retail: 30, wholesale: 25 }
+  ],
+  salud: [
+    { es: 'Colágeno', pt: 'Colágeno', en: 'Collagen', aliases: ['colageno', 'collagen'], stock: 6, cost: 40, retail: 85, wholesale: 70 },
+    { es: 'Vitamina C', pt: 'Vitamina C', en: 'Vitamin C', aliases: ['vitamina', 'vitamin'], stock: 10, cost: 15, retail: 35, wholesale: 28 },
+    { es: 'Proteína', pt: 'Proteína', en: 'Protein', aliases: ['proteina', 'protein'], stock: 5, cost: 60, retail: 120, wholesale: 100 }
+  ]
+};
+function applyStarters() {
+  // Only replace products the seller hasn't touched yet.
+  if (!data.productsAreStarters || data.sales.length) return;
+  const set = SECTOR_STARTERS[bizOf().sector];
+  data.products = set
+    ? set.map((p, i) => ({ id: 'p' + (i + 1), name: p[lang] || p.es, aliases: p.aliases, stock: p.stock, cost: p.cost, retail: p.retail, wholesale: p.wholesale }))
+    : seedData().products;
+}
+function examplesFor() {
+  const s = bizOf().sector, bySector = t('examplesBySector');
+  return (data.productsAreStarters && s && bySector[s]) || t('examples');
+}
+
+let bizMode = 'first', bizSnapshot = null;
+function renderBizStep() {
+  const host = document.getElementById('bizStepForm');
+  host.innerHTML = businessFormHTML();
+  bindBusiness(host, renderBizStep);
+  const edit = bizMode === 'edit';
+  document.getElementById('biz-title').textContent = edit ? t('chTitle') : t('bizStepTitle');
+  document.querySelector('#bizStep .ob-sub').textContent = edit ? t('chSub') : t('bizStepSub');
+  document.getElementById('bizDone').textContent = edit ? t('bizSave') : t('bizDone');
+  document.getElementById('bizCancel').hidden = !edit;
+  document.getElementById('bizFoot').hidden = edit;
+  document.getElementById('bizNeedSector').hidden = true;
+}
+function openBizEditor() {
+  bizMode = 'edit';
+  bizSnapshot = JSON.stringify({ business: data.profile.business, sell: data.profile.sellChannels, pay: data.profile.payMethods, payOther: data.profile.payOther });
+  renderBizStep();
+  const el = document.getElementById('bizStep');
+  el.style.display = 'flex'; el.scrollTop = 0;
+}
+document.getElementById('bizOpen').addEventListener('click', openBizEditor);
+document.getElementById('bizDone').addEventListener('click', () => {
+  if (!bizOf().sector) { document.getElementById('bizNeedSector').hidden = false; return; }
+  data.profile.business = Object.assign({}, bizOf(), { answeredAt: bizOf().answeredAt || new Date().toISOString() });
+  logChange(bizMode === 'edit' ? 'business_edited' : 'business_answered', { sector: data.profile.business.sector });
+  applyStarters();
+  saveData();
+  document.getElementById('bizStep').style.display = 'none';
+  const wasFirst = bizMode === 'first';
+  bizMode = 'first';
+  applyLang();
+  if (wasFirst) showTab('sell'); else renderHome();
+});
+document.getElementById('bizCancel').addEventListener('click', () => {
+  if (bizSnapshot) {
+    const s = JSON.parse(bizSnapshot);
+    Object.assign(data.profile, { business: s.business, sellChannels: s.sell, payMethods: s.pay, payOther: s.payOther });
+    saveData();
+  }
+  document.getElementById('bizStep').style.display = 'none';
+  bizMode = 'first';
+  applyLang();
+});
+
+function applyPlaceholder() {
+  const s = bizOf().sector, bySector = t('inputPhBySector');
+  document.getElementById('saleText').placeholder = (s && bySector[s]) || t('inputPh');
+}
+
+/* ------------------------------------------------------------------
+   Tabs
+------------------------------------------------------------------ */
+function showTab(name) {
+  if (!['sell', 'home'].includes(name)) name = 'sell';
+  ['sell', 'home'].forEach(k => { document.getElementById('tab-' + k).hidden = k !== name; });
+  document.querySelectorAll('[data-tab]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === name)));
+  prefs.tab = name; store(PREF_KEY, prefs);
+  if (name === 'home') renderHome();
+  window.scrollTo(0, 0);
+}
+document.querySelectorAll('[data-tab]').forEach(b => b.addEventListener('click', () => showTab(b.dataset.tab)));
+document.querySelectorAll('[data-period]').forEach(b => b.addEventListener('click', () => {
+  period = b.dataset.period; prefs.period = period; store(PREF_KEY, prefs); renderHome();
+}));
+
+/* ------------------------------------------------------------------
+   Page wiring
+------------------------------------------------------------------ */
+let toastTimer = null;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.style.display = 'block';
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { el.style.display = 'none'; }, 3500);
+}
+
+function applyLang() {
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-t]').forEach(el => { el.textContent = t(el.dataset.t); });
+  const ta = document.getElementById('saleText');
+  ta.setAttribute('aria-label', t('newSaleTitle'));
+  applyPlaceholder();
+  if (document.getElementById('bizStep').style.display === 'flex') renderBizStep();
+  document.querySelectorAll('[data-lang]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
+  document.getElementById('exampleList').innerHTML = examplesFor().map((ex, i) => `<button type="button" data-ex="${i}">${esc(ex)}</button>`).join('');
+  document.querySelectorAll('[data-ex]').forEach(b => b.addEventListener('click', () => {
+    document.getElementById('saleText').value = examplesFor()[Number(b.dataset.ex)];
+    readSale();
+  }));
+  document.getElementById('demoDate').textContent = t('demoDate', { date: fmtDate(toISO(todayDate())) });
+  document.getElementById('hello').textContent = data.profile ? t('hello', { name: data.profile.name }) : '';
+  document.getElementById('bizOpen').hidden = !(data.profile && data.profile.business && data.profile.business.answeredAt);
+  if (document.getElementById('onboard').style.display === 'flex') {
+    const sel = document.getElementById('ob-country'), v = sel.value;
+    sel.innerHTML = COUNTRIES.map(c => `<option value="${c.code}">${esc(c[lang] || c.es)}</option>`).join('');
+    sel.value = v;
+  }
+  renderCard();
+  renderSales();
+  renderHome();
+  renderChannels();
+}
+
+function setLang(l) {
+  lang = l; prefs.lang = l; store(PREF_KEY, prefs);
+  document.getElementById('langPicker').style.display = 'none';
+  applyLang();
+  showOnboardingIfNeeded();
+}
+
+/* ------------------------------------------------------------------
+   Sign-up: minimum data plus two separate acceptances
+------------------------------------------------------------------ */
+function hasCurrentConsent(doc) {
+  return data.consents.some(c => c.document === doc && c.document_version === DOCS[doc].version && c.action === 'accepted');
+}
+function needsOnboarding() {
+  return !data.profile || !hasCurrentConsent('terminos') || !hasCurrentConsent('privacidad');
+}
+function showOnboardingIfNeeded() {
+  const el = document.getElementById('onboard');
+  const biz = document.getElementById('bizStep');
+  if (!needsOnboarding()) {
+    el.style.display = 'none';
+    // Step 2: the business questions, asked once after sign-up (they can be skipped).
+    if (data.profile && !(data.profile.business && data.profile.business.answeredAt)) { bizMode = 'first'; renderBizStep(); biz.style.display = 'flex'; biz.scrollTop = 0; }
+    else biz.style.display = 'none';
+    return;
+  }
+  biz.style.display = 'none';
+  const sel = document.getElementById('ob-country');
+  const current = sel.value || (data.profile && data.profile.country) || (lang === 'pt' ? 'BR' : 'MX');
+  sel.innerHTML = COUNTRIES.map(c => `<option value="${c.code}">${esc(c[lang] || c.es)}</option>`).join('');
+  sel.value = current;
+  if (data.profile) {
+    document.getElementById('ob-name').value = data.profile.name;
+    document.getElementById('ob-contact').value = data.profile.contact;
+  }
+  el.style.display = 'flex';
+  obCheck();
+}
+
+function contactType(v) {
+  const s = v.trim();
+  if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s)) return 'email';
+  const digits = s.replace(/[\s\-().+]/g, '');
+  if (/^\d{8,15}$/.test(digits)) return 'phone';
+  return null;
+}
+function obCheck() {
+  const name = document.getElementById('ob-name').value.trim();
+  const contact = document.getElementById('ob-contact').value;
+  const ok = name && contactType(contact) &&
+    document.getElementById('ob-terms').checked && document.getElementById('ob-privacy').checked;
+  document.getElementById('ob-submit').disabled = !ok;
+}
+
+function recordConsent(doc) {
+  // One record per checkbox. In the real app this is written on the server, append-only,
+  // with the IP address and a hash of the exact text shown (see legal/compliance-checklist.md §3).
+  data.consents.push({
+    id: uid('k'),
+    document: doc,
+    document_version: DOCS[doc].version,
+    document_language: DOCS[doc].language,
+    action: 'accepted',
+    accepted_at: new Date().toISOString(),
+    method: 'checkbox',
+    form_id: 'signup_v1',
+    app_version: APP_VERSION,
+    ui_language: lang,
+    user_agent: navigator.userAgent
+  });
+}
+
+['ob-name', 'ob-contact'].forEach(id => document.getElementById(id).addEventListener('input', () => {
+  document.getElementById('ob-contact-err').hidden = true; obCheck();
+}));
+document.getElementById('ob-contact').addEventListener('blur', e => {
+  document.getElementById('ob-contact-err').hidden = !e.target.value.trim() || !!contactType(e.target.value);
+});
+['ob-terms', 'ob-privacy'].forEach(id => document.getElementById(id).addEventListener('change', obCheck));
+document.getElementById('obForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const contact = document.getElementById('ob-contact').value.trim();
+  const type = contactType(contact);
+  if (!type) { document.getElementById('ob-contact-err').hidden = false; return; }
+  if (!document.getElementById('ob-terms').checked || !document.getElementById('ob-privacy').checked) return;
+  // Keep earlier answers (business, channels) if the seller is only accepting a new document version.
+  data.profile = Object.assign({}, data.profile, {
+    name: document.getElementById('ob-name').value.trim(),
+    contact, contactType: type,
+    country: document.getElementById('ob-country').value,
+    createdAt: (data.profile && data.profile.createdAt) || new Date().toISOString()
+  });
+  if (!hasCurrentConsent('terminos')) recordConsent('terminos');
+  if (!hasCurrentConsent('privacidad')) recordConsent('privacidad');
+  logChange('profile_saved', { country: data.profile.country, contactType: type });
+  saveData();
+  applyLang();
+  showOnboardingIfNeeded();
+});
+
+function readSale() {
+  const text = document.getElementById('saleText').value.trim();
+  const msg = document.getElementById('readMsg');
+  if (!text) { msg.textContent = t('emptyInput'); msg.hidden = false; return; }
+  msg.hidden = true;
+  draft = newDraft(text);
+  renderCard();
+  document.getElementById('cardHost').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+document.getElementById('readBtn').addEventListener('click', readSale);
+document.getElementById('saleText').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) readSale();
+});
+document.querySelectorAll('[data-lang]').forEach(b => b.addEventListener('click', () => setLang(b.dataset.lang)));
+document.querySelectorAll('[data-pick]').forEach(b => b.addEventListener('click', () => setLang(b.dataset.pick)));
+document.getElementById('resetBtn').addEventListener('click', () => {
+  if (!confirm(t('resetConfirm'))) return;
+  data = seedData(); saveData(); draft = null;
+  ['ob-name', 'ob-contact'].forEach(id => { document.getElementById(id).value = ''; });
+  ['ob-terms', 'ob-privacy'].forEach(id => { document.getElementById(id).checked = false; });
+  applyLang(); showOnboardingIfNeeded();
+});
+
+// Older saved data may predate sign-up.
+if (!data.consents) data.consents = [];
+if (data.profile === undefined) data.profile = null;
+
+if (!lang) { lang = 'es'; document.getElementById('langPicker').style.display = 'flex'; }
+applyLang();
+showTab(prefs.tab || 'sell');
+if (prefs.lang) showOnboardingIfNeeded();
+</script>
+</body>
+</html>
