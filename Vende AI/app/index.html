@@ -363,6 +363,10 @@
       <input type="checkbox" id="ob-privacy">
       <span><span data-t="obPrivacyA"></span> <a href="../legal/politica-de-privacidad.html" target="_blank" rel="noopener" data-t="obPrivacyLink"></a>. <span class="doc-lang" data-t="docLangNote"></span></span>
     </label>
+    <label class="check-row" data-modes="signup">
+      <input type="checkbox" id="ob-news">
+      <span data-t="obNews"></span>
+    </label>
 
     <p class="ob-ok" id="ob-ok" role="status" hidden></p>
     <div class="ob-error" id="ob-err" role="alert" hidden></div>
@@ -480,6 +484,7 @@
   <div class="wrap" style="margin-top:12px">
     <span id="demoDate"></span>
     <button class="linkbtn" id="resetBtn" data-t="reset"></button>
+    <button class="linkbtn" id="newsBtn" hidden></button>
   </div>
 </footer>
 
@@ -731,6 +736,10 @@ const I18N = {
     obTermsB: 'Confirmo que soy mayor de 18 años.',
     obPrivacyA: 'He leído y acepto la',
     obPrivacyLink: 'Política de privacidad',
+    obNews: 'Quiero recibir novedades y consejos de VendeAI por email (opcional, puedes dejarlo cuando quieras).',
+    newsOn: 'Novedades por email: activadas', newsOff: 'Novedades por email: desactivadas',
+    newsOnToast: 'Listo: te enviaremos novedades y consejos.', newsOffToast: 'Listo: ya no te enviaremos novedades.',
+    newsOffSignIn: 'Entra a tu cuenta para dejar de recibir novedades.',
     docLangNote: '',
     obFoot: 'No pedimos documento de identidad, dirección ni datos de tarjeta.',
     hello: 'Hola, {name}',
@@ -972,6 +981,10 @@ const I18N = {
     obTermsB: 'Confirmo que tenho mais de 18 anos.',
     obPrivacyA: 'Li e aceito a',
     obPrivacyLink: 'Política de privacidade',
+    obNews: 'Quero receber novidades e dicas do VendeAI por email (opcional, você pode sair quando quiser).',
+    newsOn: 'Novidades por email: ativadas', newsOff: 'Novidades por email: desativadas',
+    newsOnToast: 'Pronto: vamos te enviar novidades e dicas.', newsOffToast: 'Pronto: não vamos mais te enviar novidades.',
+    newsOffSignIn: 'Entre na sua conta para parar de receber novidades.',
     docLangNote: '(Documento em espanhol. A versão em português está sendo preparada.)',
     obFoot: 'Não pedimos documento de identidade, endereço nem dados de cartão.',
     hello: 'Olá, {name}',
@@ -1213,6 +1226,10 @@ const I18N = {
     obTermsB: 'I confirm I am over 18.',
     obPrivacyA: 'I have read and accept the',
     obPrivacyLink: 'Privacy policy',
+    obNews: 'I want VendeAI news and tips by email (optional, you can stop any time).',
+    newsOn: 'News by email: on', newsOff: 'News by email: off',
+    newsOnToast: 'Done: we will send you news and tips.', newsOffToast: 'Done: we will stop sending you news.',
+    newsOffSignIn: 'Sign in to stop the news emails.',
     docLangNote: '(Document in Spanish. The English version is being prepared.)',
     obFoot: 'We don\'t ask for ID, address or card details.',
     hello: 'Hi, {name}',
@@ -1244,7 +1261,7 @@ function seedData() {
   };
 }
 
-const APP_VERSION = '0.4.4';
+const APP_VERSION = '0.5.0';
 // Current version of each legal document. Changing a version asks the seller to accept again.
 const DOCS = {
   terminos: { version: '1.0', language: 'es', file: '../legal/terminos-y-condiciones.html' },
@@ -2520,6 +2537,7 @@ function applyLang() {
   const inside = user || (!sb && dataKey);   // signed in, or using demo mode
   document.getElementById('bizOpen').hidden = !(inside && data.profile && data.profile.business && data.profile.business.answeredAt);
   document.getElementById('signOutBtn').hidden = !user;
+  renderNewsBtn();
   document.getElementById('hello').textContent = inside && data.profile ? t('hello', { name: data.profile.name }) : '';
   if (document.getElementById('onboard').style.display === 'flex') renderAuth();
   renderCard();
@@ -2617,6 +2635,44 @@ function askWelcome(session) {
   }).then(r => r.json()).then(j => { if (j && (j.sent || j.already)) { data.welcomeAsked = new Date().toISOString(); saveData(); } }).catch(() => { /* email is optional */ });
 }
 
+// News and marketing emails (sent by tools/send-campaign.mjs). The choice lives on the account
+// (user_metadata.marketing), and so does the plan (user_metadata.plan), so each seller gets the right email.
+// The plan there only picks which email to send; it never unlocks anything.
+function wantsNews() { return !!(user && user.user_metadata && user.user_metadata.marketing === true); }
+function renderNewsBtn() {
+  const b = document.getElementById('newsBtn');
+  b.hidden = !user;
+  if (user) b.textContent = t(wantsNews() ? 'newsOn' : 'newsOff');
+}
+async function setNews(on) {
+  if (!sb || !user) return;
+  const res = await sb.auth.updateUser({ data: { marketing: on } }).catch(() => null);
+  if (res && !res.error && res.data && res.data.user) {
+    user = res.data.user;
+    logChange(on ? 'news_on' : 'news_off', {}); saveData();
+    toast(t(on ? 'newsOnToast' : 'newsOffToast'));
+  }
+  renderNewsBtn();
+}
+function syncPlan() {
+  const tier = (data.plan && data.plan.tier) || 0;
+  if (sb && user && (user.user_metadata || {}).plan !== tier) sb.auth.updateUser({ data: { plan: tier } }).catch(() => { /* next sign-in tries again */ });
+}
+// Links from the emails: #email-off (stop the emails) and #planes (show the plans).
+function handleEmailLinks() {
+  if (location.hash === '#email-off') {
+    if (!sb) return;
+    if (!user) { toast(t('newsOffSignIn')); return; }   // keep the hash until they sign in
+    history.replaceState(null, '', location.pathname);
+    setNews(false);
+  } else if (location.hash === '#planes' && (user || !sb)) {
+    history.replaceState(null, '', location.pathname);
+    showTab('home');
+    setTimeout(() => { const p = document.querySelector('[data-panel="plans"]'); if (p) p.scrollIntoView({ behavior: 'smooth' }); }, 300);
+  }
+}
+document.getElementById('newsBtn').addEventListener('click', () => setNews(!wantsNews()));
+
 function onSession(event, session) {
   document.body.classList.remove('auth-wait');
   if (!sb) { openDemoData(); applyLang(); showTab(prefs.tab || 'sell'); showOnboardingIfNeeded(); return; }
@@ -2626,12 +2682,15 @@ function onSession(event, session) {
   if ((u && u.id) !== (user && user.id)) {
     user = u;
     draft = null; sheetRows = null; connAsking = null; aiWording.clear(); aiTried.clear(); aiState = null;
-    if (u) { openUserData(u); syncConsents(); askWelcome(session); }
+    if (u) { openUserData(u); syncConsents(); askWelcome(session); syncPlan(); }
     else { dataKey = null; data = seedData(); }
     applyLang();
     showTab(prefs.tab || 'sell');
   }
+  if (u) user = u;   // keep the latest account details (news choice, plan)
   showOnboardingIfNeeded();
+  handleEmailLinks();
+  renderNewsBtn();
 }
 
 function showOnboardingIfNeeded() {
@@ -2720,7 +2779,7 @@ async function submitAuth(e) {
     if (obMode === 'signup') {
       const res = await sb.auth.signUp({ email, password: pass, options: {
         emailRedirectTo: appUrl(),
-        data: { name, country: $('ob-country').value, language: lang,
+        data: { name, country: $('ob-country').value, language: lang, marketing: $('ob-news').checked, plan: 0,
           consents: ['terminos', 'privacidad'].map(doc => ({ document: doc, version: DOCS[doc].version, language: DOCS[doc].language,
             app_version: APP_VERSION, user_agent: navigator.userAgent.slice(0, 300) })) }
       } });
@@ -2785,6 +2844,7 @@ function claimPayment() {
   saveData();
   try { localStorage.removeItem(PAY_KEY); } catch (e) { /* keep going */ }
   toast(t('plPaidToast', { name: TIER_NAMES[p.tier] }));
+  syncPlan();
 }
 
 // The app's own suggestion: the smallest plan that covers every module recommend() found.

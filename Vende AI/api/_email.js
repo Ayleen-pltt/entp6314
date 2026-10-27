@@ -42,10 +42,10 @@ export async function sendEmail({ to, subject, html, text }) {
 /* ------------------------------------------------------------------
    Email templates (es, pt, en), in the brand colors. Plain words.
 ------------------------------------------------------------------ */
-const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const APP_URL = 'https://vendeai-pi.vercel.app/app/';
+export const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+export const APP_URL = 'https://vendeai-pi.vercel.app/app/';
 
-function layout(lang, title, paragraphs, button) {
+export function layout(lang, title, paragraphs, button, link = APP_URL, foot = '') {
   return `<!DOCTYPE html><html lang="${lang}"><body style="margin:0;background:#F3ECDC;font-family:Arial,Helvetica,sans-serif;color:#111111">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F3ECDC;padding:24px 12px"><tr><td align="center">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px">
@@ -53,9 +53,9 @@ function layout(lang, title, paragraphs, button) {
 <tr><td style="background:#FFFFFF;border-radius:0 0 16px 16px;padding:28px">
 <h1 style="font-family:Georgia,'Times New Roman',serif;font-size:24px;line-height:1.25;margin:0 0 16px">${esc(title)}</h1>
 ${paragraphs.map(p => `<p style="font-size:15px;line-height:1.55;color:#4C5A62;margin:0 0 14px">${p}</p>`).join('')}
-${button ? `<p style="margin:22px 0 4px"><a href="${APP_URL}" style="display:inline-block;background:#111111;color:#F3ECDC;text-decoration:none;font-weight:bold;border-radius:999px;padding:12px 24px">${esc(button)}</a></p>` : ''}
+${button ? `<p style="margin:22px 0 4px"><a href="${esc(link)}" style="display:inline-block;background:#111111;color:#F3ECDC;text-decoration:none;font-weight:bold;border-radius:999px;padding:12px 24px">${esc(button)}</a></p>` : ''}
 </td></tr>
-<tr><td style="padding:16px 8px;font-size:12px;color:#4C5A62;text-align:center">VendeAI · ${esc(FOOT[lang] || FOOT.es)}</td></tr>
+<tr><td style="padding:16px 8px;font-size:12px;line-height:1.5;color:#4C5A62;text-align:center">VendeAI · ${esc(FOOT[lang] || FOOT.es)}${foot ? '<br>' + foot : ''}</td></tr>
 </table></td></tr></table></body></html>`;
 }
 const FOOT = { es: 'Todas tus ventas en un solo lugar', pt: 'Todas as suas vendas num só lugar', en: 'All your sales in one place' };
