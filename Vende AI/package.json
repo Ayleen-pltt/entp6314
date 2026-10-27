@@ -1,0 +1,10 @@
+{
+  "name": "vendeai",
+  "version": "1.0.0",
+  "description": "VendeAI prototype. The only dependency is for the server function in api/.",
+  "type": "module",
+  "dependencies": {
+    "@google/genai": "^2.31.0"
+  },
+  "private": true
+}

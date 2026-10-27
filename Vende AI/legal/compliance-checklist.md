@@ -26,6 +26,8 @@
 - The future login cookie is needed for the app to work too.
 - None of the six countries' laws require prior consent for storage that is strictly necessary to provide a service the user asked for. **[VERIFY]** Brazil's ANPD cookie guide (2022) is the most detailed of the six, and it treats necessary cookies as not needing consent.
 
+**Vercel Web Analytics (added to `app/index.html`):** cookieless and anonymous. Visitors are counted with a request hash that is discarded after 24 hours, and IP addresses are not stored (per Vercel's Web Analytics privacy page). It is disclosed in the cookie and privacy policies. We treat it as not needing a banner, but this is a cross-border transfer to the US, and it should be confirmed per country. **[VERIFY]**
+
 **Consent becomes required the moment we add any of these:** analytics (Google Analytics, Hotjar), ad pixels (Meta, TikTok), social embeds, or **Google Fonts loaded from Google's servers**, which sends the user's IP address to Google. To stay banner-free, use system fonts or self-host the font files.
 
 **If we ever add non-essential cookies:** show a banner before setting them, make "Rechazar" as easy as "Aceptar," keep the app working on reject, and log the choice like any other consent.

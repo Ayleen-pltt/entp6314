@@ -1,6 +1,6 @@
 # Política de privacidad de VendeAI
 
-**Versión:** 1.0 · **Vigente desde:** [FECHA DE LANZAMIENTO]
+**Versión:** 1.1 · **Vigente desde:** [FECHA DE LANZAMIENTO]
 **Responsable:** [RAZÓN SOCIAL], [DOMICILIO], [PAÍS]. Contacto de privacidad: [CORREO DE PRIVACIDAD].
 
 > Borrador para revisión de un abogado con licencia en cada país. Esta versión sirve como "aviso de privacidad" en México y como política de tratamiento de datos en Colombia, Perú, Argentina y Chile. Brasil usa la versión en portugués de este documento, que se publica antes de activar el portugués en la app.
@@ -37,6 +37,7 @@ Los nombres, teléfonos y deudas de tus clientes los anotas tú. **Tú eres resp
 |---|---|---|
 | Proveedor de inteligencia artificial: [NOMBRE] | El texto del mensaje o el audio, sin tu nombre ni teléfono | Leer la venta y redactar los consejos |
 | Proveedor de alojamiento: [NOMBRE] | Todos los datos de tu cuenta, cifrados | Guardarlos de forma segura |
+| Vercel (Estados Unidos), medición de visitas | La página que abres, de dónde llegaste, país y ciudad aproximados, tipo de dispositivo y navegador. Sin cookies, sin tu nombre ni tus ventas | Contar visitas en totales (ver la [Política de cookies](politica-de-cookies.md)) |
 | Empresa de pagos (Mercado Pago, OXXO, Yape, etc.) | Plan y monto | Cobrar tu plan |
 | Autoridades | Lo que la ley exija | Solo con una orden válida |
 

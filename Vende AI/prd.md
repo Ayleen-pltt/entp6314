@@ -54,7 +54,7 @@ A Brazilian seller should check the Portuguese words before launch.
    - **Credit:** if you don't sell on credit, "who owes you" is hidden unless someone owes you.
    - **Wholesale:** adds a wholesale price to products.
    - **Hardest things:** the matching panels come first in "Todo en un lugar".
-   - **Recommendations:** "Lo que te recomendamos" suggests the paid modules that fit, with the reason for each.
+   - **Recommendations:** "Lo que te recomendamos" suggests the paid tier that fits, with the reason.
 
    The seller can change the answers anytime with the "Mi negocio" button in the header.
 
@@ -71,12 +71,16 @@ The app uses these rules unless the seller's message says otherwise.
 ## Plans
 
 - **Free forever:** recording sales, the "Todo en un lugar" screen, and the Cobrar and Reponer nudges.
-- **Paid modules: the seller pays only for what they use.** There are at most three modules, each named by what it does, never by a plan level:
-  - **Cobrar:** ready-to-send payment reminders for every customer who owes.
-  - **Precios:** Precio nudges with suggested prices.
-  - **Vender más:** Promocionar nudges with promo messages, and restock advice before a catalog campaign.
-- **Pricing:** each module costs [$X] a month, and all three together cost less than buying them separately. Charged in local currency through options like Mercado Pago, Pix, OXXO, or Yape. The prices are to be set once payment fees per country are known, since a very small charge may be eaten by fees.
-- **No add-on creep:** no more than three modules, and nothing that is free today is ever moved into a paid module.
+- **Three paid tiers, monthly, in US dollars.** Each tier includes everything in the one below:
+  | Tier | Price a month | Adds |
+  |---|---|---|
+  | **Freedom** | $0 | everything in "Free forever" above |
+  | **Standard** | $5.99 | **Precios:** Precio nudges with suggested prices |
+  | **Medium** | $9.99 | **Cobrar:** ready-to-send payment reminders for every customer who owes |
+  | **Business** | $19.99 | **Vender más:** Promocionar nudges with promo messages, and restock advice before a catalog campaign |
+- **When the plans show:** only after the seller answers "Tu negocio". A "Nuestra sugerencia" card names one plan and why, then all four plans side by side. The AI (Gemini, task `plan`) picks the plan and writes the reason; the app accepts it only if the plan exists and the only number is that plan's price, otherwise it uses its own rule (the smallest plan covering the modules "Lo que te recomendamos" found). The seller can always stay on Freedom.
+- **Payment:** shown and charged in local currency at the day's rate where possible (Mercado Pago, Pix, OXXO, Yape); Stripe Checkout in test mode for the prototype.
+- **No add-on creep:** no more than three paid tiers, and nothing that is free today is ever moved into a paid tier.
 
 ## Features (build in this order)
 
@@ -145,7 +149,7 @@ Details are in [legal/compliance-checklist.md](legal/compliance-checklist.md).
 - **Two separate checkboxes,** unchecked by default, with a link next to each, on the create-account form and the paid-plan form. One is for the terms and one is for the privacy policy. Submit stays disabled until both are checked.
 - **Consent record:** each acceptance is saved with the document version, date and time, form, and method, and is never edited. This needs a server, so it is required before launch but not in the prototype.
 - **Minimum data:** only a nickname, one phone or email, and country from the seller. No ID, birth date, or address. Voice notes are deleted after they become text.
-- **No non-essential cookies or trackers,** so no cookie banner is needed. Use system fonts, not the Google Fonts CDN.
+- **No non-essential cookies or trackers,** so no cookie banner is needed. Use system fonts, not the Google Fonts CDN. Page views are counted with Vercel Web Analytics, which uses no cookies and is disclosed in the cookie and privacy policies.
 - **Images:** only own, licensed, or public-domain images, each logged in `legal/image-licenses.md`. No brand logos.
 
 ## Out of scope
@@ -157,3 +161,13 @@ Real payment processing, sending messages through the WhatsApp API, bank connect
 Sellers. Each seller has products, customers, sales, and nudges. Each product has a name, size or color, stock, every direct cost, and retail and wholesale prices. Each customer has a name, a phone number, and what they still owe. Each sale has a date, a customer, a channel, the products sold, how much was paid, and how much is still owed and when. Each nudge records what it suggested and whether the seller acted on it or skipped it.
 
 For the prototype, nothing is on a server. Everything is kept in the browser between visits.
+
+The database for the real app is defined in [supabase/migrations/0001_initial_schema.sql](supabase/migrations/0001_initial_schema.sql). It has tables for sellers, products, customers, sales, sale items (with a product snapshot), payments, the payment schedule, nudges, and consents. Deletion and retention rules are enforced by the database:
+
+| When this is deleted | What happens |
+|---|---|
+| Seller account | Everything they own is deleted. Consent records are kept without the seller link, for legal proof. |
+| Product | Archived (hidden) if it has sales, with sale lines keeping a snapshot of name, size, color, cost and price. Really deleted if it has no sales. |
+| Customer | Blocked while they owe money, unless the debt is written off first. Otherwise their sales stay, shown as "Customer deleted / walk-in". |
+| Sale | Its lines and payments are deleted, and the stock goes back to the products. |
+| Payment | The sale's balance goes back up, and its status returns to partial or credit. |

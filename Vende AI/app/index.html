@@ -4,56 +4,91 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VendeAI</title>
+<!-- Installable app (PWA): name, icon and colors for the phone's home screen. -->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#111111">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="VendeAI">
+<!-- Vercel Web Analytics (plain-HTML version). Counts page views without cookies.
+     The script is served by Vercel from this same site; opened as a local file it simply does nothing. -->
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
 <style>
+
+  @font-face { font-family: "Bodoni Moda"; font-style: normal; font-weight: 400 900; font-display: swap; src: url(../fonts/bodoni-moda-latin-wght-normal.woff2) format("woff2"); }
+  @font-face { font-family: "Bodoni Moda"; font-style: italic; font-weight: 400 900; font-display: swap; src: url(../fonts/bodoni-moda-latin-wght-italic.woff2) format("woff2"); }
+  @font-face { font-family: "Manrope"; font-style: normal; font-weight: 200 800; font-display: swap; src: url(../fonts/manrope-latin-wght-normal.woff2) format("woff2"); }
+
+  /* Brand: Negro 40%, Marfil 35%, Blanco 15%, Arena 6%, Gris azulado 4%. */
   :root {
-    --bg: #f3ecdc;
-    --surface: #ffffff;
-    --text: #000000;
-    --muted: #5c6266;
-    --line: #ceccc5;
-    --accent: #4c5a62;
-    --accent-soft: #e4e8ea;
+    --bg: #f3ecdc;          /* Marfil */
+    --surface: #ffffff;     /* Blanco */
+    --text: #111111;        /* Negro */
+    --muted: #4c5a62;       /* Gris azulado */
+    --line: #ceccc5;        /* Piedra */
+    --accent: #111111;      /* buttons and active states are black */
+    --on-accent: #f3ecdc;
+    --accent-soft: #ebe1cb;
+    --sand: #c9b48f;        /* Arena: details only, never body text on ivory */
+    --logo-ai: #4c5a62;
     --warn: #a35a00;
     --warn-soft: #fdf1e2;
     --danger: #b3261e;
+    --serif: "Bodoni Moda", "Didot", "Bodoni 72", Georgia, serif;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #101314;
-      --surface: #1b1f22;
+      --bg: #111111;
+      --surface: #1c1b19;
       --text: #f3ecdc;
       --muted: #ceccc5;
-      --line: #30373b;
-      --accent: #a9b8c0;
-      --accent-soft: #252d32;
+      --line: #34312b;
+      --accent: #f3ecdc;
+      --on-accent: #111111;
+      --accent-soft: #2a261f;
+      --logo-ai: #c9b48f;
       --warn: #f0a94b;
       --warn-soft: #33281a;
       --danger: #f2867f;
     }
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  [hidden] { display: none !important; }
+  /* Until Supabase says who is signed in, show nothing behind the sign-in screen. */
+  body.auth-wait > header, body.auth-wait > main, body.auth-wait > footer { visibility: hidden; }
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
   }
   .wrap { max-width: 560px; margin: 0 auto; padding: 0 16px; }
   button, input, select, textarea { font: inherit; color: inherit; }
 
-  header { border-bottom: 1px solid var(--line); background: var(--bg); position: sticky; top: 0; z-index: 5; }
+  /* The header is the big black block of the brand; the variables flip to light-on-black inside it. */
+  header {
+    --text: #f3ecdc; --muted: #ceccc5; --line: #2e2c28; --accent: #c9b48f; --accent-soft: #2a261f; --logo-ai: #c9b48f;
+    background: #111111; color: var(--text); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 5;
+  }
   header .wrap { display: flex; align-items: center; justify-content: space-between; height: 56px; }
-  .logo { font-weight: 700; font-size: 1.1rem; }
-  .logo span { color: var(--accent); }
+  .logo { font-family: var(--serif); font-weight: 600; font-size: 1.3rem; letter-spacing: 0.01em; }
+  .logo > span:first-child { font-style: italic; color: var(--logo-ai); }
+  h1, h2, h3 { font-family: var(--serif); font-weight: 600; }
   .lang { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
   .lang button { background: none; border: 0; padding: 4px 10px; font-size: 0.85rem; cursor: pointer; color: var(--muted); }
   .lang button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
 
   main { padding: 24px 0 64px; }
-  h1 { font-size: 1.4rem; letter-spacing: -0.01em; margin-bottom: 4px; }
+  h1 { font-size: 1.6rem; letter-spacing: -0.005em; margin-bottom: 4px; }
   .sub { color: var(--muted); margin-bottom: 16px; }
-  h2 { font-size: 1rem; margin: 32px 0 10px; }
+  h2 { font-size: 1.15rem; margin: 32px 0 10px; }
 
   textarea {
     width: 100%; min-height: 96px; resize: vertical;
@@ -64,9 +99,8 @@
   .row-actions { display: flex; gap: 10px; margin-top: 10px; align-items: center; flex-wrap: wrap; }
   .btn {
     border: 0; border-radius: 10px; padding: 11px 18px; font-weight: 600; cursor: pointer;
-    background: var(--accent); color: #fff;
+    background: var(--accent); color: var(--on-accent); letter-spacing: 0.02em;
   }
-  @media (prefers-color-scheme: dark) { .btn { color: #101314; } }
   .btn:disabled { opacity: 0.45; cursor: not-allowed; }
   .btn.ghost { background: none; color: var(--muted); border: 1px solid var(--line); }
   .examples { margin-top: 14px; font-size: 0.85rem; color: var(--muted); }
@@ -83,7 +117,7 @@
   }
   .card h3 { font-size: 1rem; margin-bottom: 14px; }
   .field { margin-bottom: 14px; }
-  .field > label, .field > .label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--muted); margin-bottom: 4px; }
+  .field > label, .field > .label { display: block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
   .field input, .field select {
     width: 100%; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px;
   }
@@ -99,8 +133,7 @@
     border: 1px solid var(--line); background: var(--bg); border-radius: 999px;
     padding: 6px 12px; cursor: pointer; font-size: 0.9rem;
   }
-  .chips button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
-  @media (prefers-color-scheme: dark) { .chips button[aria-pressed="true"] { color: #101314; } }
+  .chips button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
   .total { display: flex; justify-content: space-between; font-weight: 600; padding: 10px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-bottom: 14px; }
   .num { font-variant-numeric: tabular-nums; }
   .schedule { list-style: none; font-size: 0.88rem; color: var(--muted); margin-top: 6px; }
@@ -147,6 +180,10 @@
   .doc-lang { color: var(--muted); font-size: 0.82rem; }
   .ob-error { color: var(--danger); font-size: 0.82rem; margin-top: 4px; }
   .ob-foot { margin-top: 12px; text-align: center; }
+  .ob-ok { background: var(--accent-soft); border-radius: 10px; padding: 12px; font-size: 0.92rem; margin: 6px 0 4px; }
+  .ob-switch { margin-top: 16px; text-align: center; font-size: 0.9rem; color: var(--muted); }
+  #ob-forgot { display: block; margin: 12px auto 0; }
+  #ob-err { margin-top: 10px; font-size: 0.88rem; }
   .onboard .btn { margin-top: 18px; }
   .head-actions { display: flex; align-items: center; gap: 8px; }
   .bizbtn { background: none; border: 1px solid var(--line); border-radius: 8px; padding: 4px 10px; font-size: 0.85rem; cursor: pointer; color: var(--accent); font-weight: 600; white-space: nowrap; }
@@ -157,7 +194,8 @@
     background: none; border: 0; border-bottom: 2px solid transparent;
     padding: 10px 10px 9px; cursor: pointer; color: var(--muted); font-weight: 600; font-size: 0.92rem; white-space: nowrap;
   }
-  .tabs button[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); }
+  .tabs button { font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; }
+  .tabs button[aria-selected="true"] { color: var(--text); border-bottom-color: var(--sand); }
 
   .home-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
   .seg { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
@@ -165,10 +203,12 @@
   .seg button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
   .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .stat { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
-  .stat .k { font-size: 0.8rem; color: var(--muted); }
+  .stat .k { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
   .stat .v { font-size: 1.35rem; font-weight: 700; font-variant-numeric: tabular-nums; margin-top: 2px; }
   .stat.big { grid-column: 1 / -1; }
-  .stat.big .v { font-size: 1.9rem; color: var(--accent); }
+  .stat.big { background: #111111; border-color: #111111; color: #f3ecdc; }
+  .stat.big .k, .stat.big .small { color: #c9b48f; }
+  .stat.big .v { font-size: 2rem; }
   .stat .v.owe { color: var(--warn); }
   .stat .small { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
   .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 4px 14px; }
@@ -181,7 +221,7 @@
   .pill { font-size: 0.75rem; padding: 2px 8px; border-radius: 999px; background: var(--warn-soft); color: var(--warn); font-weight: 600; white-space: nowrap; }
   .stock-input { width: 64px; text-align: right; background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 5px 6px; }
   .bar { height: 8px; background: var(--accent-soft); border-radius: 4px; margin-top: 4px; overflow: hidden; }
-  .bar span { display: block; height: 100%; background: var(--accent); }
+  .bar span { display: block; height: 100%; background: var(--sand); }
   .home-section { margin-top: 18px; }
 
   .toggles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -199,24 +239,81 @@
   .biz .hint { margin: -4px 0 8px; }
   .toggles.flags { margin-top: 8px; }
   .rec { margin-top: 26px; background: var(--accent-soft); border-radius: 14px; padding: 4px 14px 14px; }
-  .rec h2 { color: var(--accent); }
+  .rec { border-left: 3px solid var(--sand); }
   .rec-free { font-size: 0.9rem; margin-bottom: 10px; }
   .rec-item { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin-top: 8px; font-size: 0.9rem; }
   .rec-why { color: var(--muted); font-size: 0.82rem; margin-top: 2px; }
+  .plpick { text-align: left; }
+  .pl-sug { background: #111111; color: #f3ecdc; border: 1px solid #c9b48f; border-radius: 16px; padding: 18px 16px 16px; }
+  @media (prefers-color-scheme: dark) { .pl-sug { background: #1c1b19; } }
+  .pl-eyebrow { font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: #c9b48f; font-weight: 600; }
+  .pl-basis { font-size: 0.82rem; color: #ceccc5; margin-top: 2px; }
+  .pl-name { font-family: var(--serif); font-size: 2rem; font-weight: 600; line-height: 1.1; margin-top: 12px; }
+  .pl-price { font-family: var(--serif); font-size: 1.35rem; margin-top: 2px; }
+  .pl-price small, .pl-col .pr small { font-family: var(--sans, inherit); font-size: 0.75rem; font-weight: 400; opacity: 0.75; }
+  .pl-why { font-size: 0.9rem; color: #f3ecdc; margin: 10px 0 14px; border-left: 2px solid #c9b48f; padding-left: 10px; }
+  .pl-note { font-size: 0.74rem; color: #ceccc5; margin-top: 10px; }
+  .plpick .btn { display: inline-block; width: auto; margin-top: 0; }
+  .pl-sug .btn { background: #f3ecdc; color: #111111; }
+  .pl-sug .pill { background: #c9b48f; color: #111111; }
+  .pl-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 12px; }
+  .pl-col { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 8px; display: flex; flex-direction: column; gap: 4px; text-align: center; }
+  .pl-col.sug { border-color: var(--sand); box-shadow: inset 0 3px 0 var(--sand); }
+  .pl-col .nm { font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; color: var(--muted); }
+  .pl-col .pr { font-family: var(--serif); font-size: 1.2rem; font-weight: 600; }
+  .pl-col .wh { font-size: 0.74rem; color: var(--muted); flex: 1; }
+  .pl-col .btn, .pl-col .pill { align-self: center; padding: 6px 12px; font-size: 0.78rem; }
+  .pl-col .tag-sug { font-size: 0.66rem; color: var(--muted); font-weight: 600; }
+  @media (max-width: 380px) { .pl-grid { grid-template-columns: repeat(2, 1fr); } }
+  #planStep .box { max-width: 520px; }
   .onboard .biz .toggle { background: var(--surface); }
   .onboard .btn.ghost { margin-top: 8px; }
   .soon { margin-top: 20px; font-size: 0.85rem; color: var(--muted); background: var(--surface); border: 1px dashed var(--line); border-radius: 10px; padding: 10px 12px; }
 
+  .ai-tag { font-family: var(--serif); font-style: italic; font-size: 0.85rem; color: var(--muted); margin: -8px 0 12px; }
+  .assistant { border-left: 3px solid var(--sand); }
+  .assistant .as-text { margin-top: 4px; font-size: 0.92rem; }
+  .assistant .tag { margin-left: 0; }
+  .as-note { font-size: 0.78rem; color: var(--muted); padding: 2px 0 12px; }
+  .install { display: grid; grid-template-columns: 44px 1fr; gap: 12px; align-items: start; background: #111111; color: #f3ecdc; border-radius: 14px; padding: 14px; margin-bottom: 20px; }
+  .install img { width: 44px; height: 44px; border-radius: 10px; }
+  .install strong { font-family: var(--serif); font-size: 1.05rem; font-weight: 600; }
+  .install p { font-size: 0.85rem; color: #ceccc5; margin: 2px 0 10px; }
+  .install .btn { background: #f3ecdc; color: #111111; padding: 7px 14px; font-size: 0.85rem; }
+  .install .linkbtn { color: #c9b48f; margin-left: 8px; }
+  .offline-bar { background: var(--warn-soft); color: var(--warn); font-size: 0.82rem; text-align: center; padding: 6px 16px; }
+  .demo-note { font-size: 0.82rem; color: var(--muted); border-left: 3px solid var(--sand); padding: 6px 10px; margin-bottom: 18px; background: var(--surface); border-radius: 0 8px 8px 0; }
+  .conn { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-top: 12px; }
+  .conn-head { display: grid; grid-template-columns: 40px 1fr auto; gap: 12px; align-items: center; }
+  .conn-ico { width: 40px; height: 40px; border-radius: 50%; background: #111111; color: #c9b48f; display: flex; align-items: center; justify-content: center; font-family: var(--serif); font-style: italic; font-weight: 600; font-size: 0.95rem; }
+  .conn-name { font-weight: 700; }
+  .conn .meta { font-size: 0.82rem; color: var(--muted); }
+  .tag { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 2px 7px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); margin-left: 4px; white-space: nowrap; }
+  .tag.on { background: #111111; border-color: #111111; color: #c9b48f; }
+  .btn.sm { padding: 7px 12px; font-size: 0.85rem; }
+  .ask-box { margin-top: 12px; background: var(--bg); border-radius: 10px; padding: 12px; font-size: 0.9rem; }
+  .ask-box ul { margin: 6px 0 10px 18px; }
+  .ask-box .never { color: var(--muted); font-size: 0.82rem; margin-bottom: 10px; }
+  .conn-body { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 10px; }
+  .conn-body h4 { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .chat { background: var(--bg); border-radius: 12px 12px 12px 2px; padding: 8px 12px; font-size: 0.9rem; max-width: 92%; }
+  .chat b { display: block; font-size: 0.75rem; color: var(--muted); }
+  .understood { font-size: 0.85rem; margin: 6px 0 4px; }
+  .understood em { font-family: var(--serif); }
+  .found { padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .found:last-child { border-bottom: 0; }
+  .file-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
+  .file-row label.btn { display: inline-block; }
   .legal-links { display: flex; flex-wrap: wrap; gap: 4px 14px; }
   .legal-links a { color: var(--muted); }
 </style>
 </head>
-<body>
+<body class="auth-wait">
 
 <div class="overlay" id="langPicker" role="dialog" aria-modal="true">
   <div class="box">
     <div class="logo">Vende<span>AI</span></div>
-    <h2>¿En qué idioma quieres usar VendeAI?<br><span style="color:var(--muted);font-weight:400">Em qual idioma você quer usar o VendeAI?<br>Which language do you want to use?</span></h2>
+    <h2>¿En qué idioma quieres usar VendeAI?<br><span style="color:var(--muted);font-weight:400;font-style:italic">Em qual idioma você quer usar o VendeAI?<br>Which language do you want to use?</span></h2>
     <button class="btn" data-pick="es">Español</button>
     <button class="btn" data-pick="pt">Português</button>
     <button class="btn" data-pick="en">English</button>
@@ -226,36 +323,52 @@
 <div class="overlay onboard" id="onboard" role="dialog" aria-modal="true" aria-labelledby="ob-title">
   <form class="box" id="obForm" novalidate>
     <div class="logo">Vende<span>AI</span></div>
-    <h2 id="ob-title" data-t="obTitle"></h2>
-    <p class="ob-sub" data-t="obSub"></p>
+    <h2 id="ob-title"></h2>
+    <p class="ob-sub" id="ob-sub"></p>
 
-    <div class="field">
+    <div class="field" data-modes="signup demo">
       <label for="ob-name" data-t="obName"></label>
       <input id="ob-name" autocomplete="nickname" maxlength="40">
     </div>
-    <div class="field">
-      <label for="ob-contact" data-t="obContact"></label>
-      <input id="ob-contact" autocomplete="tel" maxlength="60">
-      <div class="hint" data-t="obContactHint"></div>
-      <div class="ob-error" id="ob-contact-err" hidden data-t="obContactErr"></div>
+    <div class="field" data-modes="signup signin reset">
+      <label for="ob-email" data-t="obEmail"></label>
+      <input id="ob-email" type="email" autocomplete="email" inputmode="email" maxlength="120">
     </div>
-    <div class="field">
+    <div class="field" data-modes="signup signin newpass">
+      <label for="ob-pass" data-t="obPass"></label>
+      <input id="ob-pass" type="password" autocomplete="new-password" maxlength="72">
+      <div class="hint" data-modes="signup newpass" data-t="obPassHint"></div>
+    </div>
+    <div class="field" data-modes="signup demo">
       <label for="ob-country" data-t="obCountry"></label>
       <select id="ob-country"></select>
     </div>
 
-    <label class="check-row">
+    <label class="check-row" data-modes="signup reaccept demo">
       <input type="checkbox" id="ob-terms">
       <span><span data-t="obTermsA"></span> <a href="../legal/terminos-y-condiciones.html" target="_blank" rel="noopener" data-t="obTermsLink"></a>. <span data-t="obTermsB"></span> <span class="doc-lang" data-t="docLangNote"></span></span>
     </label>
-    <label class="check-row">
+    <label class="check-row" data-modes="signup reaccept demo">
       <input type="checkbox" id="ob-privacy">
       <span><span data-t="obPrivacyA"></span> <a href="../legal/politica-de-privacidad.html" target="_blank" rel="noopener" data-t="obPrivacyLink"></a>. <span class="doc-lang" data-t="docLangNote"></span></span>
     </label>
 
-    <button class="btn" id="ob-submit" type="submit" disabled data-t="obStart"></button>
-    <p class="hint ob-foot" data-t="obFoot"></p>
+    <p class="ob-ok" id="ob-ok" role="status" hidden></p>
+    <div class="ob-error" id="ob-err" role="alert" hidden></div>
+    <button class="btn" id="ob-submit" type="submit"></button>
+    <button class="linkbtn" id="ob-forgot" type="button" data-modes="signin" data-t="obForgot"></button>
+    <p class="ob-switch" data-modes="signup signin reset sent"><span id="ob-switch-q"></span> <button class="linkbtn" id="ob-switch" type="button"></button></p>
+    <p class="hint ob-foot" data-modes="signup demo" data-t="obFoot"></p>
   </form>
+</div>
+
+<div class="overlay onboard" id="planStep" role="dialog" aria-modal="true" aria-labelledby="plan-title">
+  <div class="box">
+    <div class="logo">Vende<span>AI</span></div>
+    <h2 id="plan-title" data-t="plTitle"></h2>
+    <div id="planStepBody"></div>
+    <button class="btn ghost" id="planLater" data-t="plKeepFree"></button>
+  </div>
 </div>
 
 <div class="overlay onboard" id="bizStep" role="dialog" aria-modal="true" aria-labelledby="biz-title">
@@ -277,6 +390,7 @@
     <div class="logo">Vende<span>AI</span> <span class="hello" id="hello"></span></div>
     <div class="head-actions">
     <button class="bizbtn" id="bizOpen" data-t="tabChannels" hidden></button>
+    <button class="bizbtn" id="signOutBtn" data-t="signOut" hidden></button>
     <div class="lang" role="group" aria-label="Idioma">
       <button data-lang="es" aria-pressed="false">ES</button>
       <button data-lang="pt" aria-pressed="false">PT</button>
@@ -284,14 +398,24 @@
     </div>
     </div>
   </div>
+  <div class="offline-bar" id="offlineBar" role="status" hidden data-t="offlineNote"></div>
   <nav class="wrap tabs" role="tablist">
     <button role="tab" data-tab="sell" data-t="tabSell"></button>
     <button role="tab" data-tab="home" data-t="tabHome"></button>
+    <button role="tab" data-tab="connect" data-t="tabConnect"></button>
   </nav>
 </header>
 
 <main class="wrap">
 <section id="tab-sell" role="tabpanel">
+  <div class="install" id="installCard" hidden>
+    <img src="icons/icon-192.png" alt="">
+    <div>
+      <strong data-t="instTitle"></strong>
+      <p id="instBody"></p>
+      <button class="btn" id="instBtn" data-t="instBtn"></button><button class="linkbtn" id="instLater" data-t="instLater"></button>
+    </div>
+  </div>
   <h1 data-t="newSaleTitle"></h1>
   <p class="sub" data-t="newSaleSub"></p>
 
@@ -323,6 +447,13 @@
   <div id="homeBody"></div>
 </section>
 
+<section id="tab-connect" role="tabpanel" hidden>
+  <h1 data-t="cnTitle"></h1>
+  <p class="sub" data-t="cnSub"></p>
+  <p class="demo-note" data-t="cnDemo"></p>
+  <div id="connectBody"></div>
+</section>
+
 </main>
 
 <footer>
@@ -332,6 +463,7 @@
       <a href="../legal/politica-de-privacidad.html" target="_blank" rel="noopener" data-t="lgPrivacy"></a>
       <a href="../legal/politica-de-cookies.html" target="_blank" rel="noopener" data-t="lgCookies"></a>
       <a href="../legal/politica-de-reembolsos.html" target="_blank" rel="noopener" data-t="lgRefunds"></a>
+      <button class="linkbtn" id="instFooter" data-t="instFooter" hidden></button>
     </nav>
   </div>
   <div class="wrap" style="margin-top:12px">
@@ -341,6 +473,11 @@
 </footer>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- Supabase's sign-in library (copied into the project), then the Supabase address and
+     publishable key from our own server. Opened as a file, both are missing and sign-in says so. -->
+<script src="vendor/supabase.js"></script>
+<script src="/api/config"></script>
 
 <script>
 /* ------------------------------------------------------------------
@@ -386,6 +523,35 @@ const I18N = {
     pay: { efectivo: 'Efectivo', transferencia: 'Transferencia', spei: 'Transferencia SPEI', mercadopago: 'Mercado Pago', pagoefectivo: 'PagoEfectivo', oxxo: 'OXXO', yape: 'Yape', plin: 'Plin', sip: 'SIP (Interbank / Oh!)', nequi: 'Nequi', daviplata: 'Daviplata', mach: 'MACH', pix: 'Pix', picpay: 'PicPay', otro: 'Otro' },
     payOtherLabel: '¿Cuál? Escribe el nombre', payOtherPh: 'Ej.: Izipay, BIM, Tunki',
     tabSell: 'Anotar', tabHome: 'Todo en un lugar', tabChannels: 'Mi negocio',
+    tabConnect: 'Conectar',
+    cnTitle: 'Tus canales',
+    cnSub: 'Conecta donde vendes y tus ventas llegan solas. Tú solo revisas y guardas.',
+    cnDemo: 'Modo demo: las conexiones son una simulación. No entra a ninguna cuenta real y nada sale de tu teléfono.',
+    cnSheetName: 'Excel o Google Sheets',
+    cnKinds: { msgs: 'Lee los chats donde te piden algo y arma la venta por ti.', orders: 'Trae tus pedidos con producto, precio y comprador.', sheet: 'Sube tu lista de ventas y pásala de una vez.' },
+    cnConnect: 'Conectar', cnConnected: 'Conectado', cnDisconnect: 'Desconectar', cnYouUse: 'Lo usas',
+    cnAskTitle: 'VendeAI pedirá permiso a {name} para:',
+    cnAskMsgs: 'Leer los mensajes de tus clientes para encontrar ventas.',
+    cnAskOrders: 'Ver tus pedidos y ventas.',
+    cnAskNever: 'Nunca publica nada ni le escribe a nadie por ti. Puedes desconectarlo cuando quieras.',
+    cnAllow: 'Permitir', cnCancel: 'Cancelar',
+    cnConnectedToast: '{name} conectado (demo).', cnDisconnectedToast: '{name} desconectado. Tus ventas guardadas se quedan.',
+    cnFound: 'Chats que parecen ventas', cnUnderstood: 'VendeAI entendió:', cnReview: 'Revisar y guardar',
+    cnUpToDate: 'Todo al día. Te avisamos cuando llegue algo nuevo.',
+    cnOrdersTitle: 'Pedidos nuevos', cnOrderRow: '{qty} × {product} · {buyer}', cnPaid: 'pagado',
+    cnImportAll: 'Pasar {n} a VendeAI', cnImportOne: 'Pasar 1 a VendeAI',
+    cnImported: 'Listo: pasamos {n} ventas y tu stock ya está al día.',
+    cnSheetHelp: 'En Excel: Archivo → Guardar como → CSV. Una venta por fila. Columnas: fecha, producto, cantidad, precio, cliente, pagado (si lo dejas vacío, se cuenta como pagado completo).',
+    cnPickFile: 'Elegir archivo', cnTemplate: 'Descargar plantilla', cnUseSample: 'Probar con un ejemplo',
+    cnCsvHead: ['fecha', 'producto', 'cantidad', 'precio', 'cliente', 'pagado'],
+    cnPreview: '{n} ventas en tu archivo', cnNewProduct: 'producto nuevo', cnRowOwes: 'debe {amount}',
+    cnBadFile: 'No pudimos leer el archivo. Revisa que tenga las columnas producto, cantidad y precio, y que esté guardado como CSV.',
+    cnVia: 'desde {name}',
+    cnMsgs: [
+      { chat: 'Hola! me separas {q} {p}? te pago la mitad ahora y el resto el viernes 🙏', sale: 'Vendí {q} {p} a {from}, pagó la mitad y el resto el viernes' },
+      { chat: 'Quiero {q} {p}, ya te pagué todo 🙌', sale: 'Vendí {q} {p} a {from}, pagó completo' },
+      { chat: 'Me llevo {q} {p}, ¿te puedo pagar en 2 cuotas?', sale: 'Vendí {q} {p} a {from}, me paga en 2 cuotas' }
+    ],
     bizStepTitle: 'Tu negocio',
     bizStepSub: 'Menos de un minuto, solo toques. Así la app se adapta a cómo vendes.',
     bizDone: 'Listo', bizSkip: 'Ahora no', bizSave: 'Guardar cambios', bizCancel: 'Cancelar',
@@ -410,6 +576,19 @@ const I18N = {
     recTitle: 'Lo que te recomendamos',
     recFree: 'Gratis para siempre: anotar ventas, ver todo en un lugar y avisos de qué reponer y a quién cobrar.',
     recNone: 'Con lo que nos contaste, lo gratis te alcanza por ahora.',
+    plTitle: 'Tu plan',
+    plEyebrow: 'Nuestra sugerencia', plBasis: 'Basada en lo que nos contaste de tu negocio.',
+    plMonth: 'al mes', plFreePrice: 'Gratis',
+    plShort: { 0: 'Anotar ventas y ver todo en un lugar', 1: '+ Precios sugeridos', 2: '+ Recordatorios de cobro', 3: '+ Promociones y campañas' },
+    plWhyRule: 'Te sugerimos {name} {reasons}.',
+    plWhyFree: 'Con lo que nos contaste, Freedom te alcanza por ahora: es gratis para siempre.',
+    plByAI: 'Sugerencia escrita con IA. La app revisó el plan y el precio.', plThinking: 'Pensando en el plan que más te conviene…',
+    plSugTag: 'Sugerido', plPayName: 'Pagar {name}', plPay: 'Elegir', plYours: 'Tu plan', plKeepFree: 'Seguir gratis por ahora',
+    plAskBiz: 'Cuéntanos de tu negocio y te sugerimos el plan que más te conviene.', plAskBizBtn: 'Contar de mi negocio',
+    plOpening: 'Abriendo la página de pago…',
+    plTest: 'Modo de prueba: no se cobra dinero real. Usa la tarjeta 4242 4242 4242 4242. Cada plan incluye lo del anterior y cancelas cuando quieras.',
+    plErr: { not_ready: 'Los pagos aún no están listos.', offline: 'Sin internet. Prueba de nuevo cuando tengas conexión.', down: 'No pudimos abrir la página de pago. Prueba en un momento.' },
+    plPaidToast: 'Listo: ya tienes {name}.',
     mods: { cobrar: ['Módulo Cobrar', 'Recordatorios listos para enviar por WhatsApp a quien te debe.'], precios: ['Módulo Precios', 'Te sugiere precios que cubren todo lo que te cuesta.'], vender: ['Módulo Vender más', 'Mensajes de promoción listos y qué reponer antes de cada campaña.'] },
     why: { credit: 'porque vendes fiado o en cuotas', cobrar: 'porque cobrar te cuesta', precios: 'porque poner precios te cuesta', ganancia: 'para que cada venta te deje ganancia', wholesale: 'porque manejas precio por mayor y al detalle', vender: 'porque quieres vender más', catalogo: 'porque vendes por catálogo', reponer: 'porque quieres saber qué reponer' },
     hCostPriceW: 'Te costó {cost} · lo vendes a {price} · por mayor {wholesale}',
@@ -435,12 +614,45 @@ const I18N = {
     hBest: 'Lo que más vendes', hBestRow: '{qty} vendidos · te dejó {earned}', hBestRowOne: '1 vendido · te dejó {earned}',
     hNoSalesPeriod: 'Sin ventas en este periodo.',
     hChannels: 'Dónde vendes más',
+    aiReading: 'Leyendo…',
+    aiRead: 'Leído con IA. Revisa antes de guardar.',
+    aiFail: {
+      slow: 'La IA tardó demasiado, así que usamos el lector básico. Revisa bien la tarjeta.',
+      busy: 'La IA está muy ocupada en este momento, así que usamos el lector básico. Revisa bien la tarjeta.',
+      limit: 'La IA llegó a su límite de uso gratis por ahora, así que usamos el lector básico. Revisa bien la tarjeta.',
+      down: 'La IA no está disponible, así que usamos el lector básico. Revisa bien la tarjeta.',
+      offline: 'Sin conexión con la IA, así que usamos el lector básico. Revisa bien la tarjeta.'
+    },
+    asTitle: 'Tu asistente',
+    asNone: 'Todo en orden: tus precios, tu stock y tus cobros están al día.',
+    asBusy: 'Tu asistente está escribiendo…',
+    asByAI: 'Redactado con IA. Los números los calcula la app.',
+    asFail: {
+      slow: 'La IA tardó demasiado: te mostramos la revisión básica.',
+      busy: 'La IA está muy ocupada ahora: te mostramos la revisión básica.',
+      limit: 'La IA llegó a su límite de uso gratis por ahora: te mostramos la revisión básica.',
+      down: 'La IA no está disponible: te mostramos la revisión básica.',
+      offline: 'Sin conexión con la IA: te mostramos la revisión básica.'
+    },
+    asRetry: 'Intentar de nuevo',
+    asKinds: { cobrar: 'Cobrar', precio: 'Precio', reponer: 'Reponer', promo: 'Vender más', olvido: 'Se te pasó' },
+    asT: {
+      late: '{customer} te tenía que pagar {amount} el {date}. Ya pasaron {days} días: mándale un recordatorio.',
+      noDue: '{customer} te debe {amount} y no tiene fecha de pago. Ponle una para no olvidarte de cobrar.',
+      negStock: 'Según la app tienes {stock} de {product}: vendiste más de lo que tenías anotado. Corrige el stock.',
+      restock: 'Te quedan {stock} de {product}. Al ritmo que vendes, compra unos {buy}.',
+      noCost: 'No anotaste cuánto te cuesta {product}. Sin eso, la app no sabe cuánto ganas de verdad.',
+      price: '{product} te cuesta {cost} y lo vendes a {price}: te deja muy poco. Prueba venderlo a {suggested}.',
+      noWholesale: '{product} tiene el mismo precio por mayor que al detalle ({price}). Ponle un precio por mayor.',
+      promo: '{product} no se vende hace más de 14 días y te quedan {stock}. Publícalo con una oferta.',
+      idle: 'Hace {days} días que no anotas ventas. ¿Vendiste algo y se te pasó anotarlo?'
+    },
     chTitle: 'Mi negocio',
     chSub: 'Cuéntanos cómo vendes. VendeAI se adapta a tu negocio y a lo que se usa en tu país.',
     chSellTitle: 'Dónde vendes', chPayTitle: 'Cómo te pagan',
     chPayCountry: 'Opciones para {country}.',
     chOn: 'Lo uso', chOff: 'No lo uso',
-    chSoon: 'Conexión automática: pronto. Por ahora anotas tus ventas con un mensaje, y los canales que elijas aquí aparecen al anotar.',
+    chSoon: 'Los canales que elijas aquí aparecen al anotar. Para que tus ventas lleguen solas, pruébalo en la pestaña Conectar (demo).',
     paidQ: '¿Cuánto pagó?',
     paidAll: 'Todo', paidHalf: 'La mitad', paidNone: 'Nada', paidOther: 'Otro monto',
     paidAsk: 'No dijiste cuánto pagó. Elige una opción.',
@@ -469,14 +681,40 @@ const I18N = {
     paidTag: 'pagó todo',
     noCustomer: 'Sin nombre',
     reset: 'Reiniciar datos de prueba',
-    resetConfirm: '¿Borrar todo (tus datos, ventas y aceptaciones) y volver a los productos de prueba?',
+    resetConfirm: '¿Borrar tus ventas, productos y respuestas de “Tu negocio” en este teléfono y volver a los productos de prueba? Tu cuenta no se borra.',
     demoDate: 'Hoy: {date}',
-    obTitle: 'Antes de empezar',
-    obSub: 'Solo te pedimos lo necesario. Nada más.',
+    obTitles: { signup: 'Crea tu cuenta', signin: 'Entra a tu cuenta', reset: '¿Olvidaste tu contraseña?', sent: 'Revisa tu correo', newpass: 'Elige una contraseña nueva', reaccept: 'Actualizamos nuestros documentos', demo: 'Prueba VendeAI' },
+    obSubs: { signup: 'Solo te pedimos lo necesario. Nada más.', signin: 'Con tu correo y tu contraseña.', reset: 'Escribe tu correo y te mandamos un enlace para elegir una nueva.', newpass: 'Mínimo 8 caracteres.', reaccept: 'Léelos y acéptalos para seguir usando VendeAI.', demo: 'Modo de prueba: todavía no hay cuentas. Tus datos se guardan solo en este teléfono.' },
+    obSubmit: { signup: 'Crear cuenta', signin: 'Entrar', reset: 'Enviar enlace', newpass: 'Guardar contraseña', reaccept: 'Aceptar y seguir', demo: 'Empezar' },
+    obEmail: 'Tu correo',
+    obPass: 'Contraseña',
+    obPassHint: 'Mínimo 8 caracteres. Nadie más puede verla, ni nosotros.',
+    obForgot: '¿Olvidaste tu contraseña?',
+    obHaveAccount: '¿Ya tienes cuenta?', obNoAccount: '¿Primera vez aquí?', obBack: 'Volver a entrar',
+    obSentConfirm: 'Te enviamos un correo a {email}. Ábrelo y toca el enlace para activar tu cuenta. Si no llega, mira en spam.',
+    obSentReset: 'Si hay una cuenta con {email}, te enviamos un enlace para cambiar tu contraseña.',
+    obWait: 'Un momento…',
+    obPassSaved: 'Listo, tu contraseña nueva quedó guardada.',
+    obErr: {
+      name: 'Escribe tu nombre o apodo.',
+      email: 'Escribe un correo válido.',
+      pass: 'La contraseña necesita mínimo 8 caracteres.',
+      invalid_credentials: 'El correo o la contraseña no coinciden.',
+      email_not_confirmed: 'Primero activa tu cuenta con el enlace que te enviamos por correo.',
+      user_already_exists: 'Ya hay una cuenta con ese correo. Entra con tu contraseña.',
+      weak_password: 'Esa contraseña es muy fácil de adivinar. Prueba con una más larga.',
+      rate: 'Demasiados intentos seguidos. Espera unos minutos y vuelve a probar.',
+      offline: 'No hay conexión. Revisa tu internet y vuelve a probar.',
+      generic: 'Algo salió mal. Vuelve a probar en un momento.'
+    },
+    signOut: 'Salir',
+    instTitle: 'Usa VendeAI como app',
+    instBody: 'Instálala en tu teléfono: se abre con un toque, en pantalla completa, y funciona aunque no tengas internet.',
+    instBodyIOS: 'En iPhone: toca el botón Compartir de Safari y luego “Agregar a inicio”.',
+    instBtn: 'Instalar', instLater: 'Ahora no', instFooter: 'Instalar la app', instOK: 'Entendido',
+    instDone: 'Listo: VendeAI ya está en tu pantalla de inicio.',
+    offlineNote: 'Sin internet. Tus ventas se guardan en este teléfono.',
     obName: 'Tu nombre o apodo',
-    obContact: 'Tu teléfono o tu correo (solo uno)',
-    obContactHint: 'Para entrar a tu cuenta con un código. Nunca lo compartimos.',
-    obContactErr: 'Escribe un teléfono (8 a 15 números) o un correo válido.',
     obCountry: 'Tu país',
     obTermsA: 'He leído y acepto los',
     obTermsLink: 'Términos y condiciones',
@@ -484,7 +722,6 @@ const I18N = {
     obPrivacyA: 'He leído y acepto la',
     obPrivacyLink: 'Política de privacidad',
     docLangNote: '',
-    obStart: 'Empezar',
     obFoot: 'No pedimos documento de identidad, dirección ni datos de tarjeta.',
     hello: 'Hola, {name}',
     lgTerms: 'Términos', lgPrivacy: 'Privacidad', lgCookies: 'Cookies', lgRefunds: 'Reembolsos'
@@ -528,6 +765,35 @@ const I18N = {
     pay: { efectivo: 'Dinheiro', transferencia: 'Transferência', spei: 'Transferência SPEI', mercadopago: 'Mercado Pago', pagoefectivo: 'PagoEfectivo', oxxo: 'OXXO', yape: 'Yape', plin: 'Plin', sip: 'SIP (Interbank / Oh!)', nequi: 'Nequi', daviplata: 'Daviplata', mach: 'MACH', pix: 'Pix', picpay: 'PicPay', otro: 'Outro' },
     payOtherLabel: 'Qual? Escreva o nome', payOtherPh: 'Ex.: Nubank, Inter, PagBank',
     tabSell: 'Anotar', tabHome: 'Tudo em um lugar', tabChannels: 'Meu negócio',
+    tabConnect: 'Conectar',
+    cnTitle: 'Seus canais',
+    cnSub: 'Conecte onde você vende e as vendas chegam sozinhas. Você só confere e salva.',
+    cnDemo: 'Modo demo: as conexões são uma simulação. Não entra em nenhuma conta real e nada sai do seu celular.',
+    cnSheetName: 'Excel ou Google Planilhas',
+    cnKinds: { msgs: 'Lê as conversas em que pedem algo e monta a venda para você.', orders: 'Traz seus pedidos com produto, preço e comprador.', sheet: 'Envie sua lista de vendas e passe tudo de uma vez.' },
+    cnConnect: 'Conectar', cnConnected: 'Conectado', cnDisconnect: 'Desconectar', cnYouUse: 'Você usa',
+    cnAskTitle: 'O VendeAI vai pedir permissão ao {name} para:',
+    cnAskMsgs: 'Ler as mensagens dos seus clientes para encontrar vendas.',
+    cnAskOrders: 'Ver seus pedidos e vendas.',
+    cnAskNever: 'Nunca publica nada nem escreve para ninguém por você. Você pode desconectar quando quiser.',
+    cnAllow: 'Permitir', cnCancel: 'Cancelar',
+    cnConnectedToast: '{name} conectado (demo).', cnDisconnectedToast: '{name} desconectado. Suas vendas salvas continuam.',
+    cnFound: 'Conversas que parecem vendas', cnUnderstood: 'O VendeAI entendeu:', cnReview: 'Conferir e salvar',
+    cnUpToDate: 'Tudo em dia. Avisamos quando chegar algo novo.',
+    cnOrdersTitle: 'Pedidos novos', cnOrderRow: '{qty} × {product} · {buyer}', cnPaid: 'pago',
+    cnImportAll: 'Passar {n} para o VendeAI', cnImportOne: 'Passar 1 para o VendeAI',
+    cnImported: 'Pronto: passamos {n} vendas e seu estoque já está em dia.',
+    cnSheetHelp: 'No Excel: Arquivo → Salvar como → CSV. Uma venda por linha. Colunas: data, produto, quantidade, preço, cliente, pago (se deixar vazio, conta como pago).',
+    cnPickFile: 'Escolher arquivo', cnTemplate: 'Baixar modelo', cnUseSample: 'Testar com um exemplo',
+    cnCsvHead: ['data', 'produto', 'quantidade', 'preco', 'cliente', 'pago'],
+    cnPreview: '{n} vendas no seu arquivo', cnNewProduct: 'produto novo', cnRowOwes: 'deve {amount}',
+    cnBadFile: 'Não conseguimos ler o arquivo. Confira se tem as colunas produto, quantidade e preço, e se está salvo como CSV.',
+    cnVia: 'via {name}',
+    cnMsgs: [
+      { chat: 'Oi! separa {q} {p} pra mim? pago metade agora e o resto na sexta 🙏', sale: 'Vendi {q} {p} para a {from}, ela pagou metade e o resto na sexta' },
+      { chat: 'Quero {q} {p}, já te paguei tudo 🙌', sale: 'Vendi {q} {p} para a {from}, pagou tudo' },
+      { chat: 'Vou levar {q} {p}, posso pagar em 2 vezes?', sale: 'Vendi {q} {p} para a {from}, ela me paga em 2 vezes' }
+    ],
     bizStepTitle: 'Seu negócio',
     bizStepSub: 'Menos de um minuto, só toques. Assim o app se adapta ao seu jeito de vender.',
     bizDone: 'Pronto', bizSkip: 'Agora não', bizSave: 'Salvar mudanças', bizCancel: 'Cancelar',
@@ -552,6 +818,19 @@ const I18N = {
     recTitle: 'O que recomendamos para você',
     recFree: 'Grátis para sempre: anotar vendas, ver tudo em um lugar e avisos do que repor e de quem cobrar.',
     recNone: 'Com o que você contou, o grátis já basta por enquanto.',
+    plTitle: 'Seu plano',
+    plEyebrow: 'Nossa sugestão', plBasis: 'Com base no que você contou do seu negócio.',
+    plMonth: 'por mês', plFreePrice: 'Grátis',
+    plShort: { 0: 'Anotar vendas e ver tudo num só lugar', 1: '+ Preços sugeridos', 2: '+ Lembretes de cobrança', 3: '+ Promoções e campanhas' },
+    plWhyRule: 'Sugerimos o {name} {reasons}.',
+    plWhyFree: 'Com o que você contou, o Freedom já basta por enquanto: é grátis para sempre.',
+    plByAI: 'Sugestão escrita com IA. O app conferiu o plano e o preço.', plThinking: 'Pensando no plano que mais combina com você…',
+    plSugTag: 'Sugerido', plPayName: 'Pagar {name}', plPay: 'Escolher', plYours: 'Seu plano', plKeepFree: 'Continuar grátis por enquanto',
+    plAskBiz: 'Conte do seu negócio e sugerimos o plano que mais combina com você.', plAskBizBtn: 'Contar do meu negócio',
+    plOpening: 'Abrindo a página de pagamento…',
+    plTest: 'Modo de teste: nenhum dinheiro real é cobrado. Use o cartão 4242 4242 4242 4242. Cada plano inclui o anterior e você cancela quando quiser.',
+    plErr: { not_ready: 'Os pagamentos ainda não estão prontos.', offline: 'Sem internet. Tente de novo quando tiver conexão.', down: 'Não conseguimos abrir a página de pagamento. Tente daqui a pouco.' },
+    plPaidToast: 'Pronto: você já tem o {name}.',
     mods: { cobrar: ['Módulo Cobrar', 'Lembretes prontos para enviar pelo WhatsApp a quem te deve.'], precios: ['Módulo Preços', 'Sugere preços que cobrem tudo o que te custa.'], vender: ['Módulo Vender mais', 'Mensagens de promoção prontas e o que repor antes de cada campanha.'] },
     why: { credit: 'porque você vende fiado ou parcelado', cobrar: 'porque cobrar é difícil para você', precios: 'porque colocar preços é difícil para você', ganancia: 'para que cada venda te dê lucro', wholesale: 'porque você tem preço de atacado e de varejo', vender: 'porque você quer vender mais', catalogo: 'porque você vende por catálogo', reponer: 'porque você quer saber o que repor' },
     hCostPriceW: 'Te custou {cost} · você vende por {price} · atacado {wholesale}',
@@ -577,12 +856,45 @@ const I18N = {
     hBest: 'O que você mais vende', hBestRow: '{qty} vendidos · te deixou {earned}', hBestRowOne: '1 vendido · te deixou {earned}',
     hNoSalesPeriod: 'Sem vendas neste período.',
     hChannels: 'Onde você mais vende',
+    aiReading: 'Lendo…',
+    aiRead: 'Lido com IA. Confira antes de salvar.',
+    aiFail: {
+      slow: 'A IA demorou demais, então usamos o leitor básico. Confira bem o cartão.',
+      busy: 'A IA está muito ocupada agora, então usamos o leitor básico. Confira bem o cartão.',
+      limit: 'A IA chegou ao limite de uso grátis por enquanto, então usamos o leitor básico. Confira bem o cartão.',
+      down: 'A IA não está disponível, então usamos o leitor básico. Confira bem o cartão.',
+      offline: 'Sem conexão com a IA, então usamos o leitor básico. Confira bem o cartão.'
+    },
+    asTitle: 'Seu assistente',
+    asNone: 'Tudo certo: seus preços, seu estoque e suas cobranças estão em dia.',
+    asBusy: 'Seu assistente está escrevendo…',
+    asByAI: 'Escrito com IA. Os números são calculados pelo app.',
+    asFail: {
+      slow: 'A IA demorou demais: mostramos a revisão básica.',
+      busy: 'A IA está muito ocupada agora: mostramos a revisão básica.',
+      limit: 'A IA chegou ao limite de uso grátis por enquanto: mostramos a revisão básica.',
+      down: 'A IA não está disponível: mostramos a revisão básica.',
+      offline: 'Sem conexão com a IA: mostramos a revisão básica.'
+    },
+    asRetry: 'Tentar de novo',
+    asKinds: { cobrar: 'Cobrar', precio: 'Preço', reponer: 'Repor', promo: 'Vender mais', olvido: 'Você esqueceu' },
+    asT: {
+      late: '{customer} tinha que te pagar {amount} em {date}. Já passaram {days} dias: mande um lembrete.',
+      noDue: '{customer} te deve {amount} e não tem data de pagamento. Coloque uma para não esquecer de cobrar.',
+      negStock: 'Pelo app você tem {stock} de {product}: vendeu mais do que tinha anotado. Corrija o estoque.',
+      restock: 'Restam {stock} de {product}. No ritmo que você vende, compre uns {buy}.',
+      noCost: 'Você não anotou quanto custa {product}. Sem isso, o app não sabe quanto você ganha de verdade.',
+      price: '{product} custa {cost} e você vende a {price}: sobra muito pouco. Tente vender a {suggested}.',
+      noWholesale: '{product} tem o mesmo preço no atacado e no varejo ({price}). Coloque um preço de atacado.',
+      promo: '{product} não vende há mais de 14 dias e restam {stock}. Publique com uma oferta.',
+      idle: 'Faz {days} dias que você não anota vendas. Vendeu algo e esqueceu de anotar?'
+    },
     chTitle: 'Meu negócio',
     chSub: 'Conte como você vende. O VendeAI se adapta ao seu negócio e ao que se usa no seu país.',
     chSellTitle: 'Onde você vende', chPayTitle: 'Como te pagam',
     chPayCountry: 'Opções para {country}.',
     chOn: 'Uso', chOff: 'Não uso',
-    chSoon: 'Conexão automática: em breve. Por enquanto você anota as vendas com uma mensagem, e os canais escolhidos aqui aparecem ao anotar.',
+    chSoon: 'Os canais escolhidos aqui aparecem ao anotar. Para as vendas chegarem sozinhas, teste na aba Conectar (demo).',
     paidQ: 'Quanto pagou?',
     paidAll: 'Tudo', paidHalf: 'Metade', paidNone: 'Nada', paidOther: 'Outro valor',
     paidAsk: 'Você não disse quanto pagou. Escolha uma opção.',
@@ -611,14 +923,40 @@ const I18N = {
     paidTag: 'pagou tudo',
     noCustomer: 'Sem nome',
     reset: 'Reiniciar dados de teste',
-    resetConfirm: 'Apagar tudo (seus dados, vendas e aceites) e voltar aos produtos de teste?',
+    resetConfirm: 'Apagar suas vendas, produtos e respostas de “Seu negócio” neste celular e voltar aos produtos de teste? Sua conta não é apagada.',
     demoDate: 'Hoje: {date}',
-    obTitle: 'Antes de começar',
-    obSub: 'Só pedimos o necessário. Nada mais.',
+    obTitles: { signup: 'Crie sua conta', signin: 'Entre na sua conta', reset: 'Esqueceu sua senha?', sent: 'Veja seu e-mail', newpass: 'Escolha uma senha nova', reaccept: 'Atualizamos nossos documentos', demo: 'Experimente o VendeAI' },
+    obSubs: { signup: 'Só pedimos o necessário. Nada mais.', signin: 'Com seu e-mail e sua senha.', reset: 'Escreva seu e-mail e mandamos um link para escolher uma nova.', newpass: 'Mínimo de 8 caracteres.', reaccept: 'Leia e aceite para continuar usando o VendeAI.', demo: 'Modo de teste: ainda não há contas. Seus dados ficam só neste celular.' },
+    obSubmit: { signup: 'Criar conta', signin: 'Entrar', reset: 'Enviar link', newpass: 'Salvar senha', reaccept: 'Aceitar e continuar', demo: 'Começar' },
+    obEmail: 'Seu e-mail',
+    obPass: 'Senha',
+    obPassHint: 'Mínimo de 8 caracteres. Ninguém mais pode vê-la, nem nós.',
+    obForgot: 'Esqueceu sua senha?',
+    obHaveAccount: 'Já tem conta?', obNoAccount: 'Primeira vez aqui?', obBack: 'Voltar para entrar',
+    obSentConfirm: 'Enviamos um e-mail para {email}. Abra e toque no link para ativar sua conta. Se não chegar, veja no spam.',
+    obSentReset: 'Se existir uma conta com {email}, enviamos um link para trocar sua senha.',
+    obWait: 'Um momento…',
+    obPassSaved: 'Pronto, sua senha nova foi salva.',
+    obErr: {
+      name: 'Escreva seu nome ou apelido.',
+      email: 'Escreva um e-mail válido.',
+      pass: 'A senha precisa de no mínimo 8 caracteres.',
+      invalid_credentials: 'O e-mail ou a senha não conferem.',
+      email_not_confirmed: 'Primeiro ative sua conta com o link que enviamos por e-mail.',
+      user_already_exists: 'Já existe uma conta com esse e-mail. Entre com sua senha.',
+      weak_password: 'Essa senha é muito fácil de adivinhar. Tente uma mais longa.',
+      rate: 'Muitas tentativas seguidas. Espere alguns minutos e tente de novo.',
+      offline: 'Sem conexão. Confira sua internet e tente de novo.',
+      generic: 'Algo deu errado. Tente de novo em um momento.'
+    },
+    signOut: 'Sair',
+    instTitle: 'Use o VendeAI como app',
+    instBody: 'Instale no seu celular: abre com um toque, em tela cheia, e funciona mesmo sem internet.',
+    instBodyIOS: 'No iPhone: toque no botão Compartilhar do Safari e depois em “Adicionar à Tela de Início”.',
+    instBtn: 'Instalar', instLater: 'Agora não', instFooter: 'Instalar o app', instOK: 'Entendi',
+    instDone: 'Pronto: o VendeAI já está na sua tela de início.',
+    offlineNote: 'Sem internet. Suas vendas ficam salvas neste celular.',
     obName: 'Seu nome ou apelido',
-    obContact: 'Seu telefone ou seu e-mail (só um)',
-    obContactHint: 'Para entrar na sua conta com um código. Nunca compartilhamos.',
-    obContactErr: 'Escreva um telefone (8 a 15 números) ou um e-mail válido.',
     obCountry: 'Seu país',
     obTermsA: 'Li e aceito os',
     obTermsLink: 'Termos e condições',
@@ -626,7 +964,6 @@ const I18N = {
     obPrivacyA: 'Li e aceito a',
     obPrivacyLink: 'Política de privacidade',
     docLangNote: '(Documento em espanhol. A versão em português está sendo preparada.)',
-    obStart: 'Começar',
     obFoot: 'Não pedimos documento de identidade, endereço nem dados de cartão.',
     hello: 'Olá, {name}',
     lgTerms: 'Termos', lgPrivacy: 'Privacidade', lgCookies: 'Cookies', lgRefunds: 'Reembolsos'
@@ -670,6 +1007,35 @@ const I18N = {
     pay: { efectivo: 'Cash', transferencia: 'Bank transfer', spei: 'SPEI transfer', mercadopago: 'Mercado Pago', pagoefectivo: 'PagoEfectivo', oxxo: 'OXXO', yape: 'Yape', plin: 'Plin', sip: 'SIP (Interbank / Oh!)', nequi: 'Nequi', daviplata: 'Daviplata', mach: 'MACH', pix: 'Pix', picpay: 'PicPay', otro: 'Other' },
     payOtherLabel: 'Which one? Write the name', payOtherPh: 'E.g.: Izipay, BIM, Tunki',
     tabSell: 'Record', tabHome: 'All in one place', tabChannels: 'My business',
+    tabConnect: 'Connect',
+    cnTitle: 'Your channels',
+    cnSub: 'Connect where you sell and your sales come in on their own. You just check and save.',
+    cnDemo: 'Demo mode: the connections are simulated. It does not sign in to any real account and nothing leaves your phone.',
+    cnSheetName: 'Excel or Google Sheets',
+    cnKinds: { msgs: 'Reads the chats where people order and builds the sale for you.', orders: 'Brings in your orders with product, price and buyer.', sheet: 'Upload your list of sales and move it all at once.' },
+    cnConnect: 'Connect', cnConnected: 'Connected', cnDisconnect: 'Disconnect', cnYouUse: 'You use it',
+    cnAskTitle: 'VendeAI will ask {name} for permission to:',
+    cnAskMsgs: 'Read your customers’ messages to find sales.',
+    cnAskOrders: 'See your orders and sales.',
+    cnAskNever: 'It never posts anything or writes to anyone for you. You can disconnect any time.',
+    cnAllow: 'Allow', cnCancel: 'Cancel',
+    cnConnectedToast: '{name} connected (demo).', cnDisconnectedToast: '{name} disconnected. Your saved sales stay.',
+    cnFound: 'Chats that look like sales', cnUnderstood: 'VendeAI understood:', cnReview: 'Check and save',
+    cnUpToDate: 'All caught up. We’ll let you know when something new comes in.',
+    cnOrdersTitle: 'New orders', cnOrderRow: '{qty} × {product} · {buyer}', cnPaid: 'paid',
+    cnImportAll: 'Move {n} to VendeAI', cnImportOne: 'Move 1 to VendeAI',
+    cnImported: 'Done: we moved {n} sales and your stock is up to date.',
+    cnSheetHelp: 'In Excel: File → Save as → CSV. One sale per row. Columns: date, product, quantity, price, customer, paid (leave it empty and it counts as paid in full).',
+    cnPickFile: 'Choose file', cnTemplate: 'Download template', cnUseSample: 'Try an example',
+    cnCsvHead: ['date', 'product', 'quantity', 'price', 'customer', 'paid'],
+    cnPreview: '{n} sales in your file', cnNewProduct: 'new product', cnRowOwes: 'owes {amount}',
+    cnBadFile: 'We couldn’t read the file. Check that it has product, quantity and price columns and is saved as CSV.',
+    cnVia: 'from {name}',
+    cnMsgs: [
+      { chat: 'Hi! can you save me {q} {p}? I’ll pay half now and the rest on Friday 🙏', sale: 'I sold {q} {p} to {from}, she paid half and the rest on Friday' },
+      { chat: 'I want {q} {p}, already paid you in full 🙌', sale: 'Sold {q} {p} to {from}, she paid in full' },
+      { chat: 'I’ll take {q} {p}, can I pay in 2 installments?', sale: 'Sold {q} {p} to {from}, she pays me in 2 installments' }
+    ],
     bizStepTitle: 'Your business',
     bizStepSub: 'Under a minute, just taps. This way the app fits how you sell.',
     bizDone: 'Done', bizSkip: 'Not now', bizSave: 'Save changes', bizCancel: 'Cancel',
@@ -694,6 +1060,19 @@ const I18N = {
     recTitle: 'What we recommend',
     recFree: 'Free forever: recording sales, seeing everything in one place, and alerts for what to restock and who to collect from.',
     recNone: 'From what you told us, the free version is enough for now.',
+    plTitle: 'Your plan',
+    plEyebrow: 'Our suggestion', plBasis: 'Based on what you told us about your business.',
+    plMonth: 'a month', plFreePrice: 'Free',
+    plShort: { 0: 'Record sales and see everything in one place', 1: '+ Suggested prices', 2: '+ Payment reminders', 3: '+ Promos and campaigns' },
+    plWhyRule: 'We suggest {name} {reasons}.',
+    plWhyFree: 'From what you told us, Freedom is enough for now: it is free forever.',
+    plByAI: 'Suggestion written with AI. The app checked the plan and the price.', plThinking: 'Thinking about the plan that suits you best…',
+    plSugTag: 'Suggested', plPayName: 'Pay for {name}', plPay: 'Choose', plYours: 'Your plan', plKeepFree: 'Stay free for now',
+    plAskBiz: 'Tell us about your business and we will suggest the plan that suits you best.', plAskBizBtn: 'Tell us about my business',
+    plOpening: 'Opening the payment page…',
+    plTest: 'Test mode: no real money is charged. Use card 4242 4242 4242 4242. Each plan includes the one before and you can cancel any time.',
+    plErr: { not_ready: 'Payments are not ready yet.', offline: 'No internet. Try again when you are connected.', down: 'We couldn’t open the payment page. Try again in a moment.' },
+    plPaidToast: 'Done: you now have {name}.',
     mods: { cobrar: ['Collect module', 'Ready-to-send WhatsApp reminders for whoever owes you.'], precios: ['Prices module', 'Suggests prices that cover everything it costs you.'], vender: ['Sell more module', 'Ready promo messages and what to restock before each campaign.'] },
     why: { credit: 'because you sell on credit or in installments', cobrar: 'because collecting is hard for you', precios: 'because setting prices is hard for you', ganancia: 'so every sale leaves you a profit', wholesale: 'because you have wholesale and retail prices', vender: 'because you want to sell more', catalogo: 'because you sell by catalog', reponer: 'because you want to know what to restock' },
     hCostPriceW: 'Cost you {cost} · you sell at {price} · wholesale {wholesale}',
@@ -719,12 +1098,45 @@ const I18N = {
     hBest: 'Your best sellers', hBestRow: '{qty} sold · earned you {earned}', hBestRowOne: '1 sold · earned you {earned}',
     hNoSalesPeriod: 'No sales in this period.',
     hChannels: 'Where you sell most',
+    aiReading: 'Reading…',
+    aiRead: 'Read with AI. Check before saving.',
+    aiFail: {
+      slow: 'The AI took too long, so we used the basic reader. Check the card carefully.',
+      busy: 'The AI is very busy right now, so we used the basic reader. Check the card carefully.',
+      limit: 'The AI has reached its free usage limit for now, so we used the basic reader. Check the card carefully.',
+      down: 'The AI is not available, so we used the basic reader. Check the card carefully.',
+      offline: 'No connection to the AI, so we used the basic reader. Check the card carefully.'
+    },
+    asTitle: 'Your assistant',
+    asNone: 'All good: your prices, stock and payments are up to date.',
+    asBusy: 'Your assistant is writing…',
+    asByAI: 'Written with AI. The app calculates every number.',
+    asFail: {
+      slow: 'The AI took too long: here is the basic check.',
+      busy: 'The AI is very busy right now: here is the basic check.',
+      limit: 'The AI has reached its free usage limit for now: here is the basic check.',
+      down: 'The AI is not available: here is the basic check.',
+      offline: 'No connection to the AI: here is the basic check.'
+    },
+    asRetry: 'Try again',
+    asKinds: { cobrar: 'Collect', precio: 'Price', reponer: 'Restock', promo: 'Sell more', olvido: 'You missed this' },
+    asT: {
+      late: '{customer} was due to pay you {amount} on {date}. It has been {days} days: send a reminder.',
+      noDue: '{customer} owes you {amount} with no payment date. Add one so you don’t forget to collect.',
+      negStock: 'The app shows {stock} of {product}: you sold more than you had recorded. Fix the stock.',
+      restock: 'You have {stock} of {product} left. At your pace, buy about {buy}.',
+      noCost: 'You didn’t record what {product} costs you. Without it, the app can’t tell what you really earn.',
+      price: '{product} costs you {cost} and you sell it for {price}: that leaves very little. Try {suggested}.',
+      noWholesale: '{product} has the same wholesale and retail price ({price}). Add a wholesale price.',
+      promo: '{product} hasn’t sold in over 14 days and you have {stock} left. Post it with an offer.',
+      idle: 'You haven’t recorded a sale in {days} days. Did you sell something and forget?'
+    },
     chTitle: 'My business',
     chSub: 'Tell us how you sell. VendeAI adapts to your business and to what people use in your country.',
     chSellTitle: 'Where you sell', chPayTitle: 'How you get paid',
     chPayCountry: 'Options for {country}.',
     chOn: 'I use it', chOff: 'I don\'t use it',
-    chSoon: 'Automatic connection: coming soon. For now you record sales with a message, and the channels you pick here show up when you record.',
+    chSoon: 'The channels you pick here show up when you record. To have sales come in on their own, try the Connect tab (demo).',
     paidQ: 'How much did they pay?',
     paidAll: 'All', paidHalf: 'Half', paidNone: 'Nothing', paidOther: 'Other amount',
     paidAsk: 'You didn\'t say how much they paid. Pick an option.',
@@ -753,14 +1165,40 @@ const I18N = {
     paidTag: 'paid in full',
     noCustomer: 'No name',
     reset: 'Reset test data',
-    resetConfirm: 'Delete everything (your details, sales and acceptances) and go back to the test products?',
+    resetConfirm: 'Delete your sales, products and “Your business” answers on this phone and go back to the test products? Your account is not deleted.',
     demoDate: 'Today: {date}',
-    obTitle: 'Before you start',
-    obSub: 'We only ask for what we need. Nothing more.',
+    obTitles: { signup: 'Create your account', signin: 'Sign in', reset: 'Forgot your password?', sent: 'Check your email', newpass: 'Choose a new password', reaccept: 'We updated our documents', demo: 'Try VendeAI' },
+    obSubs: { signup: 'We only ask for what we need. Nothing more.', signin: 'With your email and password.', reset: 'Enter your email and we’ll send you a link to choose a new one.', newpass: 'At least 8 characters.', reaccept: 'Read and accept them to keep using VendeAI.', demo: 'Test mode: accounts aren’t open yet. Your data stays only on this phone.' },
+    obSubmit: { signup: 'Create account', signin: 'Sign in', reset: 'Send link', newpass: 'Save password', reaccept: 'Accept and continue', demo: 'Start' },
+    obEmail: 'Your email',
+    obPass: 'Password',
+    obPassHint: 'At least 8 characters. Nobody else can see it, not even us.',
+    obForgot: 'Forgot your password?',
+    obHaveAccount: 'Already have an account?', obNoAccount: 'First time here?', obBack: 'Back to sign in',
+    obSentConfirm: 'We sent an email to {email}. Open it and tap the link to activate your account. If it doesn’t arrive, check spam.',
+    obSentReset: 'If there is an account for {email}, we sent a link to change your password.',
+    obWait: 'One moment…',
+    obPassSaved: 'Done, your new password is saved.',
+    obErr: {
+      name: 'Enter your name or nickname.',
+      email: 'Enter a valid email.',
+      pass: 'The password needs at least 8 characters.',
+      invalid_credentials: 'The email or password doesn’t match.',
+      email_not_confirmed: 'First activate your account with the link we emailed you.',
+      user_already_exists: 'There’s already an account with that email. Sign in with your password.',
+      weak_password: 'That password is too easy to guess. Try a longer one.',
+      rate: 'Too many tries in a row. Wait a few minutes and try again.',
+      offline: 'No connection. Check your internet and try again.',
+      generic: 'Something went wrong. Try again in a moment.'
+    },
+    signOut: 'Sign out',
+    instTitle: 'Use VendeAI as an app',
+    instBody: 'Install it on your phone: it opens with one tap, full screen, and works even without internet.',
+    instBodyIOS: 'On iPhone: tap Safari’s Share button, then “Add to Home Screen”.',
+    instBtn: 'Install', instLater: 'Not now', instFooter: 'Install the app', instOK: 'Got it',
+    instDone: 'Done: VendeAI is on your home screen.',
+    offlineNote: 'No internet. Your sales are saved on this phone.',
     obName: 'Your name or nickname',
-    obContact: 'Your phone or your email (just one)',
-    obContactHint: 'To sign in with a code. We never share it.',
-    obContactErr: 'Enter a phone (8 to 15 digits) or a valid email.',
     obCountry: 'Your country',
     obTermsA: 'I have read and accept the',
     obTermsLink: 'Terms and conditions',
@@ -768,7 +1206,6 @@ const I18N = {
     obPrivacyA: 'I have read and accept the',
     obPrivacyLink: 'Privacy policy',
     docLangNote: '(Document in Spanish. The English version is being prepared.)',
-    obStart: 'Start',
     obFoot: 'We don\'t ask for ID, address or card details.',
     hello: 'Hi, {name}',
     lgTerms: 'Terms', lgPrivacy: 'Privacy', lgCookies: 'Cookies', lgRefunds: 'Refunds'
@@ -794,15 +1231,16 @@ function seedData() {
     consents: [],       // append-only acceptance records, never edited
     customers: [],
     sales: [],
+    connections: {},    // demo: { [platform]: { connectedAt, done: [sample index] } }
     log: []
   };
 }
 
-const APP_VERSION = '0.1.0';
+const APP_VERSION = '0.4.1';
 // Current version of each legal document. Changing a version asks the seller to accept again.
 const DOCS = {
   terminos: { version: '1.0', language: 'es', file: '../legal/terminos-y-condiciones.html' },
-  privacidad: { version: '1.0', language: 'es', file: '../legal/politica-de-privacidad.html' }
+  privacidad: { version: '1.1', language: 'es', file: '../legal/politica-de-privacidad.html' }
 };
 const COUNTRIES = [
   { code: 'MX', es: 'México', pt: 'México', en: 'Mexico', currency: '$', pay: ['efectivo', 'spei', 'mercadopago', 'oxxo', 'otro'] },
@@ -823,12 +1261,13 @@ function store(key, value) {
   try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { /* app keeps working in memory */ }
 }
 
-let data = load(DATA_KEY, null) || seedData();
+let data = seedData();   // replaced by the signed-in account's data (openUserData)
+let dataKey = null;      // vendeai_datos:<user id> once signed in
 let prefs = load(PREF_KEY, {});
 let lang = prefs.lang || null;
 let draft = null;
 
-function saveData() { store(DATA_KEY, data); }
+function saveData() { if (dataKey) store(dataKey, data); }
 
 /* ------------------------------------------------------------------
    Dates and money
@@ -865,7 +1304,7 @@ function norm(s) { return String(s || '').toLowerCase().normalize('NFD').replace
 
 /* ------------------------------------------------------------------
    parseSale: reads a sale message (Spanish or Portuguese).
-   Prototype rules only; a real AI call replaces this later.
+   Built-in rules: the fallback when Gemini (readSale) is unavailable.
    It never invents a value: anything not in the message stays null.
 ------------------------------------------------------------------ */
 const NUM_WORDS = { un: 1, una: 1, uno: 1, um: 1, uma: 1, dos: 2, dois: 2, duas: 2, tres: 3, cuatro: 4, quatro: 4, cinco: 5, seis: 6, siete: 7, sete: 7, ocho: 8, oito: 8, nueve: 9, nove: 9, diez: 10, dez: 10, one: 1, an: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10 };
@@ -984,9 +1423,9 @@ function parseSale(text, products, today) {
 function productById(id) { return data.products.find(p => p.id === id) || null; }
 function findCustomer(name) { const k = norm(name).trim(); return k ? data.customers.find(c => norm(c.name) === k) || null : null; }
 
-function newDraft(text) {
+function newDraft(text, parsed) {
   const today = todayDate();
-  const p = parseSale(text, data.products, today);
+  const p = parsed || parseSale(text, data.products, today);
   const product = productById(p.productId);
   const priceFromList = p.unitPrice === null && !!product;
   return {
@@ -1064,6 +1503,7 @@ function renderCard() {
   host.innerHTML = `
   <section class="card" aria-label="${esc(t('cardTitle'))}">
     <h3>${esc(t('cardTitle'))}</h3>
+    ${d.byAI ? `<p class="ai-tag">${esc(t('aiRead'))}</p>` : ''}
 
     <div class="field" id="f-product">
       <label for="c-product">${esc(t('product'))}</label>
@@ -1264,6 +1704,12 @@ function saveSale() {
     paid: c.paid, owed: c.owed, schedule: c.schedule.map(s => ({ due: s.due || null, amount: s.amount, paid: false })),
     undone: false
   };
+  if (d.importRef) {
+    const [platform, idx] = d.importRef.split(':');
+    sale.source = platform;
+    const conn = data.connections[platform];
+    if (conn && !conn.done.includes(Number(idx))) conn.done.push(Number(idx));
+  }
   data.sales.push(sale);
   logChange('sale_saved', { saleId: sale.id, productId: product.id, stockFrom: from, stockTo: product.stock, owed: c.owed });
   saveData();
@@ -1307,7 +1753,7 @@ function renderSales() {
     return `<li>
       <div class="${s.undone ? 'undone' : ''}">
         <div class="main">${s.qty} × ${esc(p ? p.name : '?')} · <span class="num">${money(s.total)}</span></div>
-        <div class="meta">${esc(cu ? cu.name : t('noCustomer'))}${s.channel ? ' · ' + esc(t('channels')[s.channel]) : ''} · ${owesTxt}</div>
+        <div class="meta">${esc(cu ? cu.name : t('noCustomer'))}${s.channel ? ' · ' + esc(t('channels')[s.channel]) : ''}${s.source && s.source !== s.channel ? ' · ' + esc(t('cnVia', { name: connName(s.source) })) : ''} · ${owesTxt}</div>
       </div>
       ${s.undone ? `<span class="meta">${esc(t('undoneTag'))}</span>` : canUndo ? `<button class="linkbtn" data-undo="${s.id}">${esc(t('undo'))}</button>` : ''}
     </li>`;
@@ -1334,6 +1780,7 @@ function daysBetween(aISO, bISO) { return Math.round((parseISO(bISO) - parseISO(
 function renderHome() {
   const body = document.getElementById('homeBody');
   if (!body) return;
+  claimPayment();
   document.querySelectorAll('[data-period]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.period === period)));
   const start = periodStart();
   const todayISO = toISO(todayDate());
@@ -1374,6 +1821,7 @@ function renderHome() {
   const chMax = chans.length ? chans[0][1] : 1;
 
   const stock = data.products.slice().sort((a, b) => a.stock - b.stock);
+  const checks = buildChecks();
 
   body.innerHTML = `
     <div class="stats">
@@ -1382,6 +1830,8 @@ function renderHome() {
       <div class="stat"><div class="k">${esc(t('hSales'))}</div><div class="v">${money(totalSales)}</div><div class="small">${esc(t(sales.length === 1 ? 'hSalesSubOne' : 'hSalesSub', { n: sales.length }))}</div></div>
       <div class="stat" ${showDebts ? '' : 'hidden'}><div class="k">${esc(t('hOwed'))}</div><div class="v ${owedTotal > 0 ? 'owe' : ''}">${money(owedTotal)}</div><div class="small">${esc(t(owers.length === 1 ? 'hOwedSubOne' : 'hOwedSub', { n: owers.length }))}</div></div>
     </div>
+
+    ${assistantHTML(checks)}
 
     <div class="panel home-section" data-panel="who" ${showDebts ? '' : 'hidden'}>
       <h2>${esc(t('hWho'))}</h2>
@@ -1433,13 +1883,20 @@ function renderHome() {
         <div style="display:flex;justify-content:space-between"><span>${esc(t('channels')[ch] || ch)}</span><span class="num">${money(v)}</span></div>
         <div class="bar"><span style="width:${Math.max(4, Math.round(v / chMax * 100))}%"></span></div>
       </li>`).join('') : `<li class="empty">${esc(t('hNoSalesPeriod'))}</li>`}</ul>
-    </div>`;
+    </div>
+
+    ${plansHTML()}`;
 
   // Put the panels for the seller's biggest needs first.
   const NEED_PANELS = { cobrar: ['who'], inventario: ['stock'], reponer: ['stock'], precios: ['stock'], vender: ['best', 'channels'] };
   const first = [...new Set((bizOf().needs || []).flatMap(n => NEED_PANELS[n] || []))];
-  const order = [...first, ...['who', 'stock', 'best', 'channels'].filter(k => !first.includes(k))];
+  const order = ['assistant', ...first, ...['who', 'stock', 'best', 'channels'].filter(k => !first.includes(k)), 'plans'];
   order.forEach(k => { const el = body.querySelector(`[data-panel="${k}"]`); if (el) body.appendChild(el); });
+  const retry = body.querySelector('#asRetry');
+  if (retry) retry.addEventListener('click', () => { aiTried.clear(); aiState = null; renderHome(); });
+  if (!document.getElementById('tab-home').hidden) maybeWordWithAI(checks);
+  bindPlans(body);
+  if (!document.getElementById('tab-home').hidden) askPlanAI();
 
   body.querySelectorAll('[data-receive]').forEach(b => b.addEventListener('click', () => {
     const [sid, idx] = b.dataset.receive.split(':');
@@ -1525,11 +1982,11 @@ function recommendHTML() {
   return `<div class="rec">
     <h2>${esc(t('recTitle'))}</h2>
     <p class="rec-free">${esc(t('recFree'))}</p>
-    ${recs.length ? recs.map(r => `<div class="rec-item">
-      <strong>${esc(t('mods')[r.mod][0])}</strong>
-      <div>${esc(t('mods')[r.mod][1])}</div>
-      <div class="rec-why">${esc(r.reasons.map(k => t('why')[k]).join(', '))}.</div>
-    </div>`).join('') : `<p class="hint">${esc(t('recNone'))}</p>`}
+    ${(() => { const r = ruleTier(); return r.tier ? `<div class="rec-item">
+      <strong>${esc(TIER_NAMES[r.tier])} · ${esc(priceText(r.tier))}</strong>
+      <div>${esc(t('plShort')[r.tier])}</div>
+      <div class="rec-why">${esc(r.why)}</div>
+    </div>` : `<p class="hint">${esc(t('recNone'))}</p>`; })()}
   </div>`;
 }
 function bizOf() { const b = data.profile && data.profile.business; return b && !b.skipped ? b : {}; }
@@ -1696,7 +2153,7 @@ document.getElementById('bizDone').addEventListener('click', () => {
   const wasFirst = bizMode === 'first';
   bizMode = 'first';
   applyLang();
-  if (wasFirst) showTab('sell'); else renderHome();
+  if (wasFirst) { showTab('sell'); openPlanStep(); } else renderHome();
 });
 document.getElementById('bizCancel').addEventListener('click', () => {
   if (bizSnapshot) {
@@ -1715,14 +2172,311 @@ function applyPlaceholder() {
 }
 
 /* ------------------------------------------------------------------
+   Conectar (demo). Simulates the platforms a seller already uses.
+   Chats go through parseSale and the normal confirm card; orders and
+   spreadsheet rows become sales directly. In the real app each one is
+   an official API (WhatsApp Business, Instagram/Facebook Graph, TikTok
+   Shop, Mercado Libre) or a real file import; nothing here calls them.
+------------------------------------------------------------------ */
+const CONNECTORS = [
+  { key: 'whatsapp', kind: 'msgs', mono: 'Wa', buyers: ['María', 'Carmen'] },
+  { key: 'instagram', kind: 'msgs', mono: 'Ig', buyers: ['Lucía', 'Sofía'] },
+  { key: 'facebook', kind: 'msgs', mono: 'Fb', buyers: ['Rosa', 'Elena'] },
+  { key: 'tiktok', kind: 'msgs', mono: 'Tt', buyers: ['Valeria', 'Paola'] },
+  { key: 'mercadolibre', kind: 'orders', mono: 'Ml', buyers: ['Jimena R.', 'Andrés P.', 'Camila T.'] },
+  { key: 'sheet', kind: 'sheet', mono: 'Xl' }
+];
+let connAsking = null, sheetRows = null, sheetError = false;
+
+function connName(key) { return key === 'sheet' ? t('cnSheetName') : t('channels')[key] || key; }
+function fill(str, vars) { for (const k in vars) str = str.split('{' + k + '}').join(vars[k]); return str; }
+
+// The same sample chats every time, built from the seller's own products.
+function sampleChats(c, ci) {
+  const prods = data.products.filter(p => p.stock > 0);
+  if (!prods.length) return [];
+  return c.buyers.map((from, j) => {
+    const tpl = t('cnMsgs')[(ci + j) % 3];
+    const p = prods[(ci + j) % prods.length];
+    const v = { q: String(j % 2 + 1), p: p.name.toLowerCase(), from };
+    return { idx: j, from, chat: fill(tpl.chat, v), sale: fill(tpl.sale, v) };
+  });
+}
+function sampleOrders(c) {
+  const prods = data.products.filter(p => p.stock > 0);
+  return prods.length ? c.buyers.map((buyer, k) => {
+    const p = prods[k % prods.length];
+    return { idx: k, buyer, productId: p.id, qty: k === 1 ? 2 : 1, unit: p.retail };
+  }) : [];
+}
+
+// One sale from an order or a spreadsheet row. Same shape as saveSale().
+function addImportedSale(r, source) {
+  let product = r.productId ? productById(r.productId) : null;
+  if (!product) {
+    const word = norm(r.newName).split(/\s+/)[0];
+    product = { id: uid('p'), name: r.newName, aliases: [...new Set([word, word.replace(/s$/, '')])].filter(a => a.length >= 3),
+      stock: r.qty, cost: 0, retail: r.unit, wholesale: r.unit };
+    data.products.push(product);
+    logChange('product_added', { productId: product.id, name: product.name, stock: product.stock, source });
+  }
+  let customer = null;
+  if (r.customer) {
+    customer = findCustomer(r.customer);
+    if (!customer) { customer = { id: uid('c'), name: r.customer, phone: '' }; data.customers.push(customer); }
+  }
+  const total = round2(r.qty * r.unit);
+  const paid = Math.min(round2(r.paid ?? total), total), owed = round2(total - paid);
+  const from = product.stock;
+  product.stock = from - r.qty;
+  const sale = {
+    id: uid('s'), at: Date.now(), date: r.date || toISO(todayDate()), message: null,
+    productId: product.id, qty: r.qty, unitPrice: r.unit, unitCost: product.cost, total, wholesale: false,
+    customerId: customer ? customer.id : null, channel: r.channel || null, source,
+    paid, owed, schedule: owed > 0 ? [{ due: null, amount: owed, paid: false }] : [], undone: false
+  };
+  data.sales.push(sale);
+  data.productsAreStarters = false;
+  logChange('sale_imported', { saleId: sale.id, source, productId: product.id, stockFrom: from, stockTo: product.stock, owed });
+}
+
+// ----- Excel / Google Sheets saved as CSV -----
+function parseCSV(text) {
+  const lines = text.replace(/^\uFEFF/, '').split(/\r?\n/).filter(l => l.trim());
+  if (lines.length < 2) return null;
+  const counts = [';', ',', '\t'].map(d => [d, lines[0].split(d).length]);
+  const delim = counts.sort((a, b) => b[1] - a[1])[0][0];
+  const split = line => {
+    const out = []; let cur = '', q = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') { if (q && line[i + 1] === '"') { cur += '"'; i++; } else q = !q; }
+      else if (ch === delim && !q) { out.push(cur); cur = ''; }
+      else cur += ch;
+    }
+    out.push(cur);
+    return out.map(x => x.trim());
+  };
+  const KEYS = { date: ['fecha', 'date', 'data', 'dia'], product: ['producto', 'product', 'produto', 'articulo', 'item'],
+    qty: ['cantidad', 'cant', 'qty', 'quantity', 'quantidade', 'qtd'], price: ['precio', 'price', 'preco', 'valor'],
+    customer: ['cliente', 'customer', 'client', 'comprador', 'buyer'], paid: ['pagado', 'paid', 'pago', 'pagou', 'abono'] };
+  const head = split(lines[0]).map(h => norm(h));
+  const col = {};
+  for (const [k, words] of Object.entries(KEYS)) col[k] = head.findIndex(h => words.some(w => h.startsWith(w)));
+  if (col.product < 0 || col.qty < 0 || col.price < 0) return null;
+  const num = v => {
+    let x = String(v || '').replace(/[^\d.,-]/g, '');
+    if (!x) return null;
+    if (x.includes(',') && x.includes('.')) x = x.lastIndexOf(',') > x.lastIndexOf('.') ? x.replace(/\./g, '').replace(',', '.') : x.replace(/,/g, '');
+    else x = x.replace(',', '.');
+    const n = parseFloat(x); return isNaN(n) ? null : n;
+  };
+  const date = v => {
+    const s = String(v || '').trim();
+    let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+    if (m) return toISO(new Date(+m[1], +m[2] - 1, +m[3]));
+    m = s.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})$/);
+    if (m) return toISO(new Date(m[3].length === 2 ? 2000 + +m[3] : +m[3], +m[2] - 1, +m[1]));
+    return null;
+  };
+  const rows = [];
+  for (const line of lines.slice(1)) {
+    const c = split(line);
+    const name = c[col.product], qty = Math.floor(num(c[col.qty]) || 0), unit = num(c[col.price]);
+    if (!name || !(qty > 0) || !(unit > 0)) continue;
+    const n = norm(name).trim();
+    const p = data.products.find(x => norm(x.name) === n) ||
+      data.products.find(x => (x.aliases || []).some(a => n.split(/\s+/).some(w => w.startsWith(a))));
+    rows.push({
+      productId: p ? p.id : null, newName: p ? null : name, label: p ? p.name : name, qty, unit: round2(unit),
+      customer: col.customer >= 0 ? c[col.customer] || '' : '', paid: col.paid >= 0 ? num(c[col.paid]) : null,
+      date: col.date >= 0 ? date(c[col.date]) : null
+    });
+  }
+  return rows.length ? rows : null;
+}
+function sampleCSV() {
+  const p = data.products, h = t('cnCsvHead').join(';'), d0 = toISO(todayDate()), d1 = toISO(addDays(todayDate(), -1));
+  const rows = [h];
+  if (p[0]) rows.push([d1, p[0].name, 2, p[0].retail, 'Gabriela', p[0].retail * 2].join(';'));
+  if (p[1]) rows.push([d1, p[1].name, 1, p[1].retail, 'Diana', 0].join(';'));
+  if (p[2]) rows.push([d0, p[2].name, 1, p[2].retail, 'Patricia', round2(p[2].retail / 2)].join(';'));
+  rows.push([d0, lang === 'en' ? 'Gift bag' : lang === 'pt' ? 'Sacola de presente' : 'Bolsa de regalo', 3, 2, '', ''].join(';'));
+  return rows.join('\n');
+}
+function downloadTemplate() {
+  const blob = new Blob(['\uFEFF' + sampleCSV()], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'vendeai-' + norm(t('cnTemplate')).replace(/\s+/g, '-') + '.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+function renderConnect() {
+  const body = document.getElementById('connectBody');
+  if (!body) return;
+  const mine = (data.profile && data.profile.sellChannels) || [];
+  const list = CONNECTORS.map((c, ci) => ({ c, ci })).sort((a, b) => (mine.includes(b.c.key) ? 1 : 0) - (mine.includes(a.c.key) ? 1 : 0));
+  body.innerHTML = list.map(({ c, ci }) => {
+    const conn = c.kind === 'sheet' ? null : data.connections[c.key];
+    const name = connName(c.key);
+    let inner = '';
+    if (connAsking === c.key) {
+      inner = `<div class="ask-box"><strong>${esc(t('cnAskTitle', { name }))}</strong>
+        <ul><li>${esc(t(c.kind === 'msgs' ? 'cnAskMsgs' : 'cnAskOrders'))}</li></ul>
+        <p class="never">${esc(t('cnAskNever'))}</p>
+        <div class="row-actions" style="margin-top:0"><button class="btn sm" data-allow="${c.key}">${esc(t('cnAllow'))}</button>
+        <button class="btn ghost sm" data-cancel>${esc(t('cnCancel'))}</button></div></div>`;
+    } else if (conn && c.kind === 'msgs') {
+      const open = sampleChats(c, ci).filter(m => !conn.done.includes(m.idx));
+      inner = `<div class="conn-body"><h4>${esc(t('cnFound'))}</h4>${open.length ? open.map(m => `<div class="found">
+          <div class="chat"><b>${esc(m.from)}</b>${esc(m.chat)}</div>
+          <div class="understood">${esc(t('cnUnderstood'))} <em>“${esc(m.sale)}”</em></div>
+          <button class="linkbtn" data-review="${c.key}:${m.idx}">${esc(t('cnReview'))} →</button></div>`).join('')
+        : `<p class="empty">${esc(t('cnUpToDate'))}</p>`}</div>`;
+    } else if (conn && c.kind === 'orders') {
+      const open = sampleOrders(c).filter(o => !conn.done.includes(o.idx));
+      inner = `<div class="conn-body"><h4>${esc(t('cnOrdersTitle'))}</h4>${open.length ? `<ul class="rows">${open.map(o => {
+          const p = productById(o.productId);
+          return `<li><div><div>${esc(t('cnOrderRow', { qty: o.qty, product: p ? p.name : '?', buyer: o.buyer }))}</div>
+            <div class="meta">${money(o.qty * o.unit)} · ${esc(t('cnPaid'))}</div></div></li>`;
+        }).join('')}</ul>
+        <button class="btn sm" data-import-orders="${c.key}" style="margin-top:8px">${esc(open.length === 1 ? t('cnImportOne') : t('cnImportAll', { n: open.length }))}</button>`
+        : `<p class="empty">${esc(t('cnUpToDate'))}</p>`}</div>`;
+    } else if (c.kind === 'sheet') {
+      inner = `<div class="conn-body"><p class="hint" style="margin:0 0 8px">${esc(t('cnSheetHelp'))}</p>
+        <div class="file-row">
+          <label class="btn sm">${esc(t('cnPickFile'))}<input type="file" id="sheetFile" accept=".csv,.txt,text/csv" hidden></label>
+          <button class="btn ghost sm" id="sheetSample">${esc(t('cnUseSample'))}</button>
+          <button class="btn ghost sm" id="sheetTemplate">${esc(t('cnTemplate'))}</button>
+        </div>
+        ${sheetError ? `<p class="warn">${esc(t('cnBadFile'))}</p>` : ''}
+        ${sheetRows ? `<h4 style="margin-top:10px">${esc(t('cnPreview', { n: sheetRows.length }))}</h4><ul class="rows">${sheetRows.map(r => {
+            const total = round2(r.qty * r.unit), owed = r.paid === null ? 0 : round2(total - Math.min(r.paid, total));
+            return `<li><div><div>${r.qty} × ${esc(r.label)}${r.productId ? '' : ` <span class="tag">${esc(t('cnNewProduct'))}</span>`}</div>
+              <div class="meta">${money(total)}${r.customer ? ' · ' + esc(r.customer) : ''}${r.date ? ' · ' + esc(fmtDate(r.date)) : ''}${owed > 0 ? ' · <span class="owes" style="color:var(--warn)">' + esc(t('cnRowOwes', { amount: money(owed) })) + '</span>' : ''}</div></div></li>`;
+          }).join('')}</ul>
+          <button class="btn sm" id="sheetImport" style="margin-top:8px">${esc(sheetRows.length === 1 ? t('cnImportOne') : t('cnImportAll', { n: sheetRows.length }))}</button>` : ''}
+      </div>`;
+    }
+    const action = c.kind === 'sheet' || connAsking === c.key ? ''
+      : conn ? `<button class="linkbtn" data-disconnect="${c.key}">${esc(t('cnDisconnect'))}</button>`
+      : `<button class="btn sm" data-connect="${c.key}">${esc(t('cnConnect'))}</button>`;
+    return `<div class="conn">
+      <div class="conn-head"><span class="conn-ico" aria-hidden="true">${c.mono}</span>
+        <div><span class="conn-name">${esc(name)}</span>${conn ? `<span class="tag on">${esc(t('cnConnected'))}</span>` : mine.includes(c.key) ? `<span class="tag">${esc(t('cnYouUse'))}</span>` : ''}
+          <div class="meta">${esc(t('cnKinds')[c.kind])}</div></div>
+        ${action}</div>${inner}</div>`;
+  }).join('');
+
+  body.querySelectorAll('[data-connect]').forEach(b => b.addEventListener('click', () => { connAsking = b.dataset.connect; renderConnect(); }));
+  body.querySelectorAll('[data-cancel]').forEach(b => b.addEventListener('click', () => { connAsking = null; renderConnect(); }));
+  body.querySelectorAll('[data-allow]').forEach(b => b.addEventListener('click', () => {
+    const key = b.dataset.allow;
+    data.connections[key] = { connectedAt: new Date().toISOString(), done: [] };
+    connAsking = null;
+    logChange('connection_added', { platform: key, demo: true });
+    saveData(); renderConnect();
+    toast(t('cnConnectedToast', { name: connName(key) }));
+  }));
+  body.querySelectorAll('[data-disconnect]').forEach(b => b.addEventListener('click', () => {
+    const key = b.dataset.disconnect;
+    delete data.connections[key];
+    logChange('connection_removed', { platform: key });
+    saveData(); renderConnect();
+    toast(t('cnDisconnectedToast', { name: connName(key) }));
+  }));
+  body.querySelectorAll('[data-review]').forEach(b => b.addEventListener('click', () => {
+    const [key, idx] = b.dataset.review.split(':');
+    const ci = CONNECTORS.findIndex(c => c.key === key);
+    const m = sampleChats(CONNECTORS[ci], ci).find(x => x.idx === Number(idx));
+    if (!m) return;
+    showTab('sell');
+    document.getElementById('saleText').value = m.sale;
+    draft = newDraft(m.sale);
+    draft.channel = key;
+    draft.importRef = key + ':' + idx;
+    renderCard();
+    document.getElementById('cardHost').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }));
+  body.querySelectorAll('[data-import-orders]').forEach(b => b.addEventListener('click', () => {
+    const key = b.dataset.importOrders, c = CONNECTORS.find(x => x.key === key), conn = data.connections[key];
+    const open = sampleOrders(c).filter(o => !conn.done.includes(o.idx));
+    open.forEach(o => { addImportedSale({ productId: o.productId, qty: o.qty, unit: o.unit, customer: o.buyer, paid: null, channel: key }, key); conn.done.push(o.idx); });
+    saveData(); renderConnect(); renderSales(); renderHome();
+    toast(t('cnImported', { n: open.length }));
+  }));
+  const $ = id => document.getElementById(id);
+  if ($('sheetFile')) $('sheetFile').addEventListener('change', e => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => { sheetRows = parseCSV(String(reader.result)); sheetError = !sheetRows; renderConnect(); };
+    reader.readAsText(file);
+  });
+  if ($('sheetSample')) $('sheetSample').addEventListener('click', () => { sheetRows = parseCSV(sampleCSV()); sheetError = !sheetRows; renderConnect(); });
+  if ($('sheetTemplate')) $('sheetTemplate').addEventListener('click', downloadTemplate);
+  if ($('sheetImport')) $('sheetImport').addEventListener('click', () => {
+    const n = sheetRows.length;
+    sheetRows.forEach(r => addImportedSale(r, 'sheet'));
+    sheetRows = null;
+    saveData(); renderConnect(); renderSales(); renderHome();
+    toast(t('cnImported', { n }));
+  });
+}
+
+/* ------------------------------------------------------------------
+   App on the phone (PWA). Android and computers get an Install button;
+   iPhone needs Safari's Share > Add to Home Screen, so we explain that.
+   The offline helper (sw.js) keeps a copy of the app on the phone.
+------------------------------------------------------------------ */
+let installPrompt = null;
+const isInstalled = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+function renderInstall() {
+  const canInstall = !isInstalled() && (installPrompt || isIOS());
+  const card = document.getElementById('installCard');
+  card.hidden = !canInstall || !!prefs.installLater;
+  document.getElementById('instFooter').hidden = !canInstall;
+  document.getElementById('instBody').textContent = installPrompt ? t('instBody') : t('instBodyIOS');
+  document.getElementById('instBtn').textContent = installPrompt ? t('instBtn') : t('instOK');
+}
+async function doInstall() {
+  if (!installPrompt) { prefs.installLater = true; store(PREF_KEY, prefs); renderInstall(); return; }   // iPhone: they follow the steps
+  installPrompt.prompt();
+  const choice = await installPrompt.userChoice;
+  installPrompt = null;
+  if (choice.outcome === 'accepted') toast(t('instDone'));
+  renderInstall();
+}
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installPrompt = e; renderInstall(); });
+window.addEventListener('appinstalled', () => { installPrompt = null; renderInstall(); });
+document.getElementById('instBtn').addEventListener('click', doInstall);
+document.getElementById('instLater').addEventListener('click', () => { prefs.installLater = true; store(PREF_KEY, prefs); renderInstall(); });
+document.getElementById('instFooter').addEventListener('click', () => {
+  prefs.installLater = false; store(PREF_KEY, prefs); renderInstall(); showTab('sell');
+  if (installPrompt) doInstall();
+});
+
+function renderOnline() { document.getElementById('offlineBar').hidden = navigator.onLine; }
+window.addEventListener('online', renderOnline);
+window.addEventListener('offline', renderOnline);
+
+if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+  navigator.serviceWorker.register('sw.js').catch(() => { /* the app still works online */ });
+}
+
+/* ------------------------------------------------------------------
    Tabs
 ------------------------------------------------------------------ */
 function showTab(name) {
-  if (!['sell', 'home'].includes(name)) name = 'sell';
-  ['sell', 'home'].forEach(k => { document.getElementById('tab-' + k).hidden = k !== name; });
+  if (!['sell', 'home', 'connect'].includes(name)) name = 'sell';
+  ['sell', 'home', 'connect'].forEach(k => { document.getElementById('tab-' + k).hidden = k !== name; });
   document.querySelectorAll('[data-tab]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === name)));
   prefs.tab = name; store(PREF_KEY, prefs);
   if (name === 'home') renderHome();
+  if (name === 'connect') renderConnect();
   window.scrollTo(0, 0);
 }
 document.querySelectorAll('[data-tab]').forEach(b => b.addEventListener('click', () => showTab(b.dataset.tab)));
@@ -1747,6 +2501,7 @@ function applyLang() {
   ta.setAttribute('aria-label', t('newSaleTitle'));
   applyPlaceholder();
   if (document.getElementById('bizStep').style.display === 'flex') renderBizStep();
+  if (document.getElementById('planStep').style.display === 'flex') renderPlans();
   document.querySelectorAll('[data-lang]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
   document.getElementById('exampleList').innerHTML = examplesFor().map((ex, i) => `<button type="button" data-ex="${i}">${esc(ex)}</button>`).join('');
   document.querySelectorAll('[data-ex]').forEach(b => b.addEventListener('click', () => {
@@ -1754,17 +2509,18 @@ function applyLang() {
     readSale();
   }));
   document.getElementById('demoDate').textContent = t('demoDate', { date: fmtDate(toISO(todayDate())) });
-  document.getElementById('hello').textContent = data.profile ? t('hello', { name: data.profile.name }) : '';
-  document.getElementById('bizOpen').hidden = !(data.profile && data.profile.business && data.profile.business.answeredAt);
-  if (document.getElementById('onboard').style.display === 'flex') {
-    const sel = document.getElementById('ob-country'), v = sel.value;
-    sel.innerHTML = COUNTRIES.map(c => `<option value="${c.code}">${esc(c[lang] || c.es)}</option>`).join('');
-    sel.value = v;
-  }
+  const inside = user || (!sb && dataKey);   // signed in, or using demo mode
+  document.getElementById('bizOpen').hidden = !(inside && data.profile && data.profile.business && data.profile.business.answeredAt);
+  document.getElementById('signOutBtn').hidden = !user;
+  document.getElementById('hello').textContent = inside && data.profile ? t('hello', { name: data.profile.name }) : '';
+  if (document.getElementById('onboard').style.display === 'flex') renderAuth();
   renderCard();
   renderSales();
   renderHome();
   renderChannels();
+  renderConnect();
+  renderInstall();
+  renderOnline();
 }
 
 function setLang(l) {
@@ -1775,106 +2531,536 @@ function setLang(l) {
 }
 
 /* ------------------------------------------------------------------
-   Sign-up: minimum data plus two separate acceptances
+   Sign-in with Supabase Auth (email and password).
+   The password goes straight from this form to Supabase over HTTPS and is
+   never saved by the app. Supabase keeps the session (a short-lived access
+   token plus a refresh token) in this browser's localStorage and renews it
+   by itself. Each account keeps its own data on this phone.
 ------------------------------------------------------------------ */
+const cfg = window.VENDEAI_CONFIG || null;
+const sb = cfg && window.supabase ? window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseKey, {
+  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+}) : null;
+let user = null, obMode = 'signup', obBusy = false, obOk = '';
+const appUrl = () => location.origin + '/app/';
+
 function hasCurrentConsent(doc) {
   return data.consents.some(c => c.document === doc && c.document_version === DOCS[doc].version && c.action === 'accepted');
 }
-function needsOnboarding() {
-  return !data.profile || !hasCurrentConsent('terminos') || !hasCurrentConsent('privacidad');
+
+// Load this account's data. Data saved on this phone before sign-in existed is adopted once.
+function openUserData(u) {
+  dataKey = DATA_KEY + ':' + u.id;
+  let d = load(dataKey, null);
+  if (!d) {
+    const old = load(DATA_KEY, null);
+    if (old) { d = old; try { localStorage.removeItem(DATA_KEY); } catch (e) { /* keep going */ } }
+  }
+  data = d || seedData();
+  if (!data.consents) data.consents = [];
+  if (data.profile === undefined) data.profile = null;
+  if (!data.connections) data.connections = {};
+  const m = u.user_metadata || {}, p = data.profile || {};
+  data.profile = Object.assign({}, p, {
+    name: p.name || m.name || u.email.split('@')[0],
+    contact: u.email, contactType: 'email',
+    country: p.country || m.country || 'MX',
+    createdAt: p.createdAt || u.created_at
+  });
+  // The acceptances given at sign-up. The official record is in the database.
+  (Array.isArray(m.consents) ? m.consents : []).forEach(c => addLocalConsent(c.document, c.version, c.language, u.created_at, 'signup_v2'));
+  saveData();
 }
+function addLocalConsent(doc, version, language, at, form) {
+  if (!DOCS[doc] || data.consents.some(x => x.document === doc && x.document_version === version)) return;
+  data.consents.push({ id: uid('k'), document: doc, document_version: version, document_language: language || 'es',
+    action: 'accepted', accepted_at: at, method: 'checkbox', form_id: form, app_version: APP_VERSION, ui_language: lang });
+}
+// Acceptances made on another phone count here too.
+async function syncConsents() {
+  const { data: rows, error } = await sb.from('consents').select('document, document_version, document_language, accepted_at').eq('action', 'accepted');
+  if (error || !rows) return;
+  rows.forEach(r => addLocalConsent(r.document, r.document_version, r.document_language, r.accepted_at, 'server'));
+  saveData();
+  showOnboardingIfNeeded();
+}
+
+// Demo mode (no Supabase settings yet): one local profile on this phone, no account.
+function openDemoData() {
+  dataKey = DATA_KEY + ':demo';
+  let d = load(dataKey, null);
+  if (!d) {
+    const old = load(DATA_KEY, null);
+    if (old) { d = old; try { localStorage.removeItem(DATA_KEY); } catch (e) { /* keep going */ } }
+  }
+  data = d || seedData();
+  if (!data.consents) data.consents = [];
+  if (data.profile === undefined) data.profile = null;
+  if (!data.connections) data.connections = {};
+}
+
+function onSession(event, session) {
+  document.body.classList.remove('auth-wait');
+  if (!sb) { openDemoData(); applyLang(); showTab(prefs.tab || 'sell'); showOnboardingIfNeeded(); return; }
+  if (event === 'PASSWORD_RECOVERY') obMode = 'newpass';
+  let u = session ? session.user : null;
+  if (u && (u.is_anonymous || !u.email)) { sb.auth.signOut(); u = null; }   // email accounts only
+  if ((u && u.id) !== (user && user.id)) {
+    user = u;
+    draft = null; sheetRows = null; connAsking = null; aiWording.clear(); aiTried.clear(); aiState = null;
+    if (u) { openUserData(u); syncConsents(); }
+    else { dataKey = null; data = seedData(); }
+    applyLang();
+    showTab(prefs.tab || 'sell');
+  }
+  showOnboardingIfNeeded();
+}
+
 function showOnboardingIfNeeded() {
   const el = document.getElementById('onboard');
   const biz = document.getElementById('bizStep');
-  if (!needsOnboarding()) {
-    el.style.display = 'none';
-    // Step 2: the business questions, asked once after sign-up (they can be skipped).
-    if (data.profile && !(data.profile.business && data.profile.business.answeredAt)) { bizMode = 'first'; renderBizStep(); biz.style.display = 'flex'; biz.scrollTop = 0; }
-    else biz.style.display = 'none';
+  if (document.getElementById('langPicker').style.display === 'flex') return;   // language first
+  let mode = null;
+  if (!sb) mode = data.profile && hasCurrentConsent('terminos') && hasCurrentConsent('privacidad') ? null : 'demo';
+  else if (obMode === 'newpass') mode = 'newpass';
+  else if (!user) mode = ['signup', 'signin', 'reset', 'sent'].includes(obMode) ? obMode : 'signin';
+  else if (!hasCurrentConsent('terminos') || !hasCurrentConsent('privacidad')) mode = 'reaccept';
+  if (mode) {
+    obMode = mode;
+    biz.style.display = 'none';
+    renderAuth();
+    el.style.display = 'flex';
     return;
   }
-  biz.style.display = 'none';
-  const sel = document.getElementById('ob-country');
-  const current = sel.value || (data.profile && data.profile.country) || (lang === 'pt' ? 'BR' : 'MX');
+  el.style.display = 'none';
+  // Then the business questions, asked once.
+  if (data.profile && !(data.profile.business && data.profile.business.answeredAt)) { bizMode = 'first'; renderBizStep(); biz.style.display = 'flex'; biz.scrollTop = 0; }
+  else biz.style.display = 'none';
+}
+
+function renderAuth() {
+  const $ = id => document.getElementById(id);
+  $('ob-title').textContent = t('obTitles')[obMode];
+  const sub = obMode === 'sent' ? '' : t('obSubs')[obMode] || '';
+  $('ob-sub').textContent = sub; $('ob-sub').hidden = !sub;
+  document.querySelectorAll('#obForm [data-modes]').forEach(el => { el.hidden = !el.dataset.modes.split(' ').includes(obMode); });
+  const label = t('obSubmit')[obMode];
+  $('ob-submit').hidden = !label;
+  $('ob-submit').textContent = obBusy ? t('obWait') : label || '';
+  $('ob-pass').autocomplete = obMode === 'signin' ? 'current-password' : 'new-password';
+  const sw = { signup: ['obHaveAccount', 'signin'], signin: ['obNoAccount', 'signup'], reset: [null, 'signin'], sent: [null, 'signin'] }[obMode];
+  $('ob-switch-q').textContent = sw && sw[0] ? t(sw[0]) : '';
+  $('ob-switch').textContent = sw ? (sw[0] ? t('obSubmit')[sw[1]] : t('obBack')) : '';
+  $('ob-switch').dataset.to = sw ? sw[1] : '';
+  $('ob-ok').textContent = obOk; $('ob-ok').hidden = !obOk;
+  const sel = $('ob-country'), v = sel.value || (lang === 'pt' ? 'BR' : 'MX');
   sel.innerHTML = COUNTRIES.map(c => `<option value="${c.code}">${esc(c[lang] || c.es)}</option>`).join('');
-  sel.value = current;
-  if (data.profile) {
-    document.getElementById('ob-name').value = data.profile.name;
-    document.getElementById('ob-contact').value = data.profile.contact;
-  }
-  el.style.display = 'flex';
+  sel.value = v;
   obCheck();
 }
-
-function contactType(v) {
-  const s = v.trim();
-  if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s)) return 'email';
-  const digits = s.replace(/[\s\-().+]/g, '');
-  if (/^\d{8,15}$/.test(digits)) return 'phone';
-  return null;
-}
 function obCheck() {
-  const name = document.getElementById('ob-name').value.trim();
-  const contact = document.getElementById('ob-contact').value;
-  const ok = name && contactType(contact) &&
-    document.getElementById('ob-terms').checked && document.getElementById('ob-privacy').checked;
-  document.getElementById('ob-submit').disabled = !ok;
+  const needsChecks = ['signup', 'reaccept', 'demo'].includes(obMode);
+  const checked = document.getElementById('ob-terms').checked && document.getElementById('ob-privacy').checked;
+  document.getElementById('ob-submit').disabled = obBusy || (needsChecks && !checked);
+}
+function obError(key) {
+  const el = document.getElementById('ob-err');
+  el.textContent = key ? t('obErr')[key] || t('obErr').generic : '';
+  el.hidden = !key;
+}
+function authErrorKey(error) {
+  const code = error.code || '';
+  if (error.name === 'AuthRetryableFetchError' || /failed to fetch|network/i.test(error.message || '')) return 'offline';
+  if (/rate_limit/.test(code) || error.status === 429) return 'rate';
+  if (code === 'email_exists') return 'user_already_exists';
+  if (code === 'email_address_invalid') return 'email';
+  return ['invalid_credentials', 'email_not_confirmed', 'user_already_exists', 'weak_password'].includes(code) ? code : 'generic';
 }
 
-function recordConsent(doc) {
-  // One record per checkbox. In the real app this is written on the server, append-only,
-  // with the IP address and a hash of the exact text shown (see legal/compliance-checklist.md §3).
-  data.consents.push({
-    id: uid('k'),
-    document: doc,
-    document_version: DOCS[doc].version,
-    document_language: DOCS[doc].language,
-    action: 'accepted',
-    accepted_at: new Date().toISOString(),
-    method: 'checkbox',
-    form_id: 'signup_v1',
-    app_version: APP_VERSION,
-    ui_language: lang,
-    user_agent: navigator.userAgent
-  });
-}
-
-['ob-name', 'ob-contact'].forEach(id => document.getElementById(id).addEventListener('input', () => {
-  document.getElementById('ob-contact-err').hidden = true; obCheck();
-}));
-document.getElementById('ob-contact').addEventListener('blur', e => {
-  document.getElementById('ob-contact-err').hidden = !e.target.value.trim() || !!contactType(e.target.value);
-});
-['ob-terms', 'ob-privacy'].forEach(id => document.getElementById(id).addEventListener('change', obCheck));
-document.getElementById('obForm').addEventListener('submit', e => {
+async function submitAuth(e) {
   e.preventDefault();
-  const contact = document.getElementById('ob-contact').value.trim();
-  const type = contactType(contact);
-  if (!type) { document.getElementById('ob-contact-err').hidden = false; return; }
-  if (!document.getElementById('ob-terms').checked || !document.getElementById('ob-privacy').checked) return;
-  // Keep earlier answers (business, channels) if the seller is only accepting a new document version.
-  data.profile = Object.assign({}, data.profile, {
-    name: document.getElementById('ob-name').value.trim(),
-    contact, contactType: type,
-    country: document.getElementById('ob-country').value,
-    createdAt: (data.profile && data.profile.createdAt) || new Date().toISOString()
-  });
-  if (!hasCurrentConsent('terminos')) recordConsent('terminos');
-  if (!hasCurrentConsent('privacidad')) recordConsent('privacidad');
-  logChange('profile_saved', { country: data.profile.country, contactType: type });
-  saveData();
-  applyLang();
+  if (obBusy) return;
+  obError(null);
+  const $ = id => document.getElementById(id);
+  const name = $('ob-name').value.trim(), email = $('ob-email').value.trim(), pass = $('ob-pass').value;
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  if ((obMode === 'signup' || obMode === 'demo') && !name) return obError('name');
+  if (obMode === 'demo') {
+    data.profile = Object.assign({}, data.profile, { name, contact: null, contactType: null, country: $('ob-country').value,
+      createdAt: (data.profile && data.profile.createdAt) || new Date().toISOString() });
+    ['terminos', 'privacidad'].forEach(d => addLocalConsent(d, DOCS[d].version, DOCS[d].language, new Date().toISOString(), 'demo_v1'));
+    logChange('profile_saved', { country: data.profile.country, demo: true });
+    saveData(); applyLang(); showOnboardingIfNeeded();
+    return;
+  }
+  if (['signup', 'signin', 'reset'].includes(obMode) && !emailOk) return obError('email');
+  if (['signup', 'newpass'].includes(obMode) && pass.length < 8) return obError('pass');
+  if (obMode === 'signin' && !pass) return obError('pass');
+  obBusy = true; renderAuth();
+  let error = null;
+  try {
+    if (obMode === 'signup') {
+      const res = await sb.auth.signUp({ email, password: pass, options: {
+        emailRedirectTo: appUrl(),
+        data: { name, country: $('ob-country').value, language: lang,
+          consents: ['terminos', 'privacidad'].map(doc => ({ document: doc, version: DOCS[doc].version, language: DOCS[doc].language,
+            app_version: APP_VERSION, user_agent: navigator.userAgent.slice(0, 300) })) }
+      } });
+      error = res.error;
+      if (!error && !res.data.session) { obMode = 'sent'; obOk = t('obSentConfirm', { email }); }
+    } else if (obMode === 'signin') {
+      error = (await sb.auth.signInWithPassword({ email, password: pass })).error;
+    } else if (obMode === 'reset') {
+      error = (await sb.auth.resetPasswordForEmail(email, { redirectTo: appUrl() })).error;
+      if (!error) { obMode = 'sent'; obOk = t('obSentReset', { email }); }
+    } else if (obMode === 'newpass') {
+      error = (await sb.auth.updateUser({ password: pass })).error;
+      if (!error) { obMode = 'signin'; toast(t('obPassSaved')); }
+    } else if (obMode === 'reaccept') {
+      const docs = ['terminos', 'privacidad'].filter(d => !hasCurrentConsent(d));
+      error = (await sb.from('consents').insert(docs.map(d => ({ document: d, document_version: DOCS[d].version, document_language: DOCS[d].language,
+        action: 'accepted', method: 'checkbox', form_id: 'reaccept_v1', app_version: APP_VERSION, ui_language: lang, user_agent: navigator.userAgent.slice(0, 300) })))).error;
+      if (!error) { docs.forEach(d => addLocalConsent(d, DOCS[d].version, DOCS[d].language, new Date().toISOString(), 'reaccept_v1')); saveData(); }
+    }
+  } catch (err) { error = err; }
+  obBusy = false;
+  $('ob-pass').value = '';
+  if (error) { renderAuth(); obError(authErrorKey(error)); return; }
   showOnboardingIfNeeded();
+}
+
+document.getElementById('obForm').addEventListener('submit', submitAuth);
+['ob-terms', 'ob-privacy'].forEach(id => document.getElementById(id).addEventListener('change', obCheck));
+document.getElementById('ob-switch').addEventListener('click', e => {
+  obMode = e.currentTarget.dataset.to; obOk = ''; obError(null); renderAuth();
+});
+document.getElementById('ob-forgot').addEventListener('click', () => { obMode = 'reset'; obOk = ''; obError(null); renderAuth(); });
+document.getElementById('signOutBtn').addEventListener('click', async () => {
+  obMode = 'signin'; obOk = '';
+  await sb.auth.signOut();
 });
 
-function readSale() {
+/* ------------------------------------------------------------------
+   AI (Google Gemini) through our own server at /api/ai.
+   The browser never sees the API key: it only sends the message and
+   gets back an answer. If the AI is slow, busy, over its free limit or
+   unreachable, the app falls back to its built-in rules and says so.
+------------------------------------------------------------------ */
+/* ------------------------------------------------------------------
+   Plans and payment (Stripe Checkout, sandbox only). Prices follow prd.md.
+   "Pagar" asks our server (/api/checkout) to open a Stripe payment page and
+   sends the seller there. Stripe brings them back to /pago/exito.html, which
+   checks the payment with our server and leaves a note (vendeai_pago) that the
+   app picks up here. The card is typed on Stripe's page, never on ours.
+------------------------------------------------------------------ */
+const TIERS = { 0: 0, 1: 5.99, 2: 9.99, 3: 19.99 };
+const TIER_NAMES = { 0: 'Freedom', 1: 'Standard', 2: 'Medium', 3: 'Business' };
+const MOD_TIER = { precios: 1, cobrar: 2, vender: 3 };
+const PAY_KEY = 'vendeai_pago';
+const priceText = n => n ? 'US$ ' + TIERS[n].toFixed(2) : t('plFreePrice');
+
+function claimPayment() {
+  const p = load(PAY_KEY, null);
+  if (!p || !dataKey || !TIERS[p.tier]) return;
+  data.plan = { tier: p.tier, sessionId: p.sessionId, paidAt: p.paidAt, test: true };
+  logChange('plan_paid', { tier: p.tier, sessionId: p.sessionId });
+  saveData();
+  try { localStorage.removeItem(PAY_KEY); } catch (e) { /* keep going */ }
+  toast(t('plPaidToast', { name: TIER_NAMES[p.tier] }));
+}
+
+// The app's own suggestion: the smallest plan that covers every module recommend() found.
+function ruleTier() {
+  const recs = recommend();
+  const tier = Math.max(0, ...recs.map(r => MOD_TIER[r.mod]));
+  const reasons = [...new Set(recs.flatMap(r => r.reasons))].map(k => t('why')[k]);
+  return { tier, why: tier ? t('plWhyRule', { name: TIER_NAMES[tier], reasons: reasons.join(', ') }) : t('plWhyFree'), ai: false };
+}
+
+// The AI's suggestion, kept per set of answers so the same answers never cost a second call.
+const planTried = new Set(), planRetried = new Set();
+let planBusy = false;
+function bizKey() {
+  const p = data.profile || {}, b = bizOf();
+  return JSON.stringify([b.sector, b.sectorOther, !!b.credit, !!b.wholesale, b.needs || [], p.sellChannels || [], p.payMethods || [], lang]);
+}
+function suggestion() {
+  const a = data.planAI;
+  return a && a.key === bizKey() ? { tier: a.tier, why: a.why, ai: true } : ruleTier();
+}
+// The AI may only pick 0-3 and may only write the digits of that plan's price.
+function planFromAI(p) {
+  if (!p || !Number.isInteger(p.tier) || !(p.tier in TIERS)) return null;
+  const why = String(p.why || '').trim();
+  const allowed = new Set(TIERS[p.tier].toFixed(2).match(/\d+/g).concat(String(TIERS[p.tier])));
+  if (!why || why.length > 300 || !(why.match(/\d+/g) || []).every(n => allowed.has(n))) return null;
+  return { tier: p.tier, why };
+}
+function askPlanAI() {
+  const key = bizKey();
+  if (!bizOf().answeredAt || (data.planAI && data.planAI.key === key) || planTried.has(key) || planBusy) return;
+  planTried.add(key); planBusy = true;
+  const p = data.profile || {}, b = bizOf();
+  const names = (list, dict) => (list || []).map(k => dict[k] || k);
+  aiCall('plan', {
+    business: {
+      sector: b.sector === 'otro' ? (b.sectorOther || t('sectors').otro) : t('sectors')[b.sector] || '',
+      sells_on: names(p.sellChannels, t('channels')), gets_paid_with: names(p.payMethods, t('pay')),
+      sells_on_credit_or_installments: !!b.credit, also_sells_wholesale: !!b.wholesale,
+      hardest_for_them: names(b.needs, t('needs')),
+      sales_recorded: data.sales.filter(x => !x.undone).length, products: data.products.length
+    },
+    tiers: Object.keys(TIERS).map(n => ({ tier: Number(n), name: TIER_NAMES[n], price: n === '0' ? '0' : TIERS[n].toFixed(2), includes: t('plShort')[n] }))
+  }).then(res => {
+    planBusy = false;
+    if ((res.error === 'slow' || res.error === 'busy') && !planRetried.has(key)) { planRetried.add(key); planTried.delete(key); }   // one more try, on the next screen
+    const got = !res.error && planFromAI(res.plan);
+    if (got) { data.planAI = Object.assign({ key, at: new Date().toISOString() }, got); logChange('plan_suggested', { tier: got.tier, by: 'ai' }); saveData(); }
+    renderPlans();
+  });
+}
+
+function planPickHTML() {
+  const mine = (data.plan && data.plan.tier) || 0;
+  const sug = suggestion();
+  const action = n => n === mine ? `<span class="pill">${esc(t('plYours'))}</span>`
+    : n > 0 ? `<button class="btn" data-pay="${n}">${esc(t('plPay'))}</button>` : '';
+  return `<div class="plpick">
+    <div class="pl-sug">
+      <div class="pl-eyebrow">${esc(t('plEyebrow'))}</div>
+      <div class="pl-basis">${esc(t('plBasis'))}</div>
+      <div class="pl-name">${esc(TIER_NAMES[sug.tier])}</div>
+      <div class="pl-price">${esc(priceText(sug.tier))}${sug.tier ? ` <small>${esc(t('plMonth'))}</small>` : ''}</div>
+      <p class="pl-why">${esc(sug.why)}</p>
+      ${sug.tier === mine ? `<span class="pill">${esc(t('plYours'))}</span>`
+        : sug.tier > 0 ? `<button class="btn" data-pay="${sug.tier}">${esc(t('plPayName', { name: TIER_NAMES[sug.tier] }))}</button>` : ''}
+      <div class="pl-note">${esc(planBusy ? t('plThinking') : sug.ai ? t('plByAI') : '')}</div>
+    </div>
+    <div class="pl-grid">${Object.keys(TIERS).map(Number).map(n => `<div class="pl-col ${n === sug.tier ? 'sug' : ''}">
+      <div class="nm">${esc(TIER_NAMES[n])}</div>
+      <div class="pr">${n ? '$' + TIERS[n].toFixed(2) : '0'}</div>
+      <div class="wh">${esc(t('plShort')[n])}</div>
+      ${n === sug.tier && n !== mine ? `<div class="tag-sug">${esc(t('plSugTag'))}</div>` : ''}
+      ${action(n)}
+    </div>`).join('')}</div>
+    <p class="hint">${esc(t('plTest'))}</p>
+  </div>`;
+}
+
+function plansHTML() {
+  const answered = bizOf().answeredAt;
+  return `<div class="panel home-section" data-panel="plans">
+    <h2>${esc(t('plTitle'))}</h2>
+    ${answered ? planPickHTML() : `<p class="hint" style="margin:0 0 10px">${esc(t('plAskBiz'))}</p>
+      <p style="margin:0 0 12px"><button class="btn" id="plAskBiz">${esc(t('plAskBizBtn'))}</button></p>`}
+  </div>`;
+}
+
+function bindPlans(root) {
+  root.querySelectorAll('[data-pay]').forEach(b => b.addEventListener('click', () => payTier(Number(b.dataset.pay), b)));
+  const ask = root.querySelector('#plAskBiz');
+  if (ask) ask.addEventListener('click', () => {
+    if (!data.profile) return;
+    bizMode = 'first'; renderBizStep();
+    const el = document.getElementById('bizStep'); el.style.display = 'flex'; el.scrollTop = 0;
+  });
+}
+
+// Re-draw every place that shows plans (the plan screen and "Cómo te va").
+function renderPlans() {
+  const step = document.getElementById('planStep');
+  if (step.style.display === 'flex') { const host = document.getElementById('planStepBody'); host.innerHTML = planPickHTML(); bindPlans(host); }
+  if (!document.getElementById('tab-home').hidden) renderHome();
+}
+function openPlanStep() {
+  const el = document.getElementById('planStep');
+  el.style.display = 'flex'; el.scrollTop = 0;
+  renderPlans();
+  askPlanAI();
+}
+document.getElementById('planLater').addEventListener('click', () => {
+  document.getElementById('planStep').style.display = 'none';
+  logChange('plan_step_closed', { suggested: suggestion().tier });
+  saveData();
+  showTab('sell');
+});
+
+async function payTier(tier, btn) {
+  if (location.protocol === 'file:' || !navigator.onLine) return toast(t('plErr').offline);
+  btn.disabled = true;
+  toast(t('plOpening'));
+  logChange('plan_checkout_started', { tier });
+  try {
+    const r = await fetch('/api/checkout', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tier, lang }), signal: AbortSignal.timeout(15000)
+    });
+    const j = await r.json().catch(() => ({}));
+    if (r.ok && j.url && j.url.startsWith('https://checkout.stripe.com/')) { location.href = j.url; return; }
+    toast(t('plErr')[j.error] || t('plErr').down);
+  } catch (e) {
+    toast(t('plErr').down);
+  }
+  btn.disabled = false;
+}
+
+const AI_TIMEOUT_MS = 12000;
+async function aiCall(task, payload) {
+  if (location.protocol === 'file:') return { error: 'offline' };
+  try {
+    const r = await fetch('/api/ai', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(Object.assign({ task, lang }, payload)),
+      signal: AbortSignal.timeout(AI_TIMEOUT_MS)
+    });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) return { error: j.error || 'down' };
+    return j;
+  } catch (e) {
+    return { error: e && e.name === 'TimeoutError' ? 'slow' : 'offline' };
+  }
+}
+
+// The AI's reading of a sale, checked by the app. A number is kept only if it is in the
+// message itself; a product only if it is on the seller's list; a name only if it was written.
+const CHANNEL_WORDS = {
+  whatsapp: ['whats', 'wpp', 'wsp', 'zap'], instagram: ['insta'], facebook: ['face', 'fb', 'marketplace'], tiktok: ['tik'],
+  mercadolibre: ['mercado', 'meli'], persona: ['persona', 'pessoal', 'presencial', 'person'], catalogo: ['catalog']
+};
+const DAY_INDEX = { sunday: 0, monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5, saturday: 6 };
+function numbersIn(text) { return (String(text).match(/\d+(?:[.,]\d{1,2})?/g) || []).map(x => parseFloat(x.replace(',', '.'))); }
+function saleFromAI(a, text, rules) {
+  if (!a || typeof a !== 'object') return null;
+  const nums = numbersIn(text), words = norm(text).split(/[^a-z0-9]+/);
+  const count = v => Number.isInteger(v) && v > 0 && (nums.includes(v) || words.some(w => NUM_WORDS[w] === v));
+  const qty = count(a.quantity) ? a.quantity : null;
+  const stated = v => typeof v === 'number' && v > 0 && (nums.includes(v) || (qty && nums.includes(round2(v * qty))));
+  const product = data.products.find(p => p.id === a.product_id) || null;
+  const cname = typeof a.customer_name === 'string' ? a.customer_name.trim() : '';
+  const today = todayDate();
+  let due = null;
+  if (typeof a.due_date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(a.due_date) && a.due_date >= toISO(today)) due = a.due_date;
+  else if (a.due_day === 'tomorrow') due = toISO(addDays(today, 1));
+  else if (a.due_day in DAY_INDEX) due = toISO(addDays(today, ((DAY_INDEX[a.due_day] - today.getDay() + 7) % 7) || 7));
+  const paidMode = ['all', 'half', 'none', 'amount'].includes(a.paid) ? a.paid : null;
+  const paidAmount = paidMode === 'amount' && typeof a.paid_amount === 'number' && nums.includes(a.paid_amount) ? a.paid_amount : null;
+  const out = {
+    productId: product ? product.id : null,
+    productHint: !product && typeof a.product_words === 'string' ? a.product_words.trim().slice(0, 60) || null : null,
+    qty,
+    unitPrice: stated(a.unit_price) ? a.unit_price : null,
+    wholesale: !!a.wholesale || rules.wholesale,
+    customerName: cname && norm(text).includes(norm(cname)) ? cname.slice(0, 40) : null,
+    channel: SELL_CHANNELS.includes(a.channel) && CHANNEL_WORDS[a.channel].some(w => norm(text).includes(w)) ? a.channel : null,
+    paidMode: paidMode === 'amount' && paidAmount === null ? null : paidMode,
+    paidAmount,
+    installments: count(a.installments) && a.installments > 1 ? a.installments : null,
+    dueDate: due
+  };
+  // Where the AI left a gap, keep what the built-in reader found (it never invents either).
+  for (const k in out) if (out[k] === null && rules[k] !== null && rules[k] !== undefined) out[k] = rules[k];
+  return out;
+}
+
+let reading = false;
+async function readSale() {
   const text = document.getElementById('saleText').value.trim();
   const msg = document.getElementById('readMsg');
   if (!text) { msg.textContent = t('emptyInput'); msg.hidden = false; return; }
+  if (reading) return;
+  reading = true;
   msg.hidden = true;
-  draft = newDraft(text);
+  const btn = document.getElementById('readBtn');
+  btn.disabled = true; btn.textContent = t('aiReading');
+  const rules = parseSale(text, data.products, todayDate());
+  const res = await aiCall('sale', { text, products: data.products.map(p => ({ id: p.id, name: p.name })) });
+  const parsed = res.error ? null : saleFromAI(res.sale, text, rules);
+  btn.disabled = false; btn.textContent = t('readBtn');
+  reading = false;
+  if (!parsed) { msg.textContent = t('aiFail')[res.error] || t('aiFail').down; msg.hidden = false; }
+  draft = newDraft(text, parsed || rules);
+  draft.byAI = !!parsed;
   renderCard();
   document.getElementById('cardHost').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// The assistant: the app finds each issue and does the math; the AI only rewrites the sentence.
+function buildChecks() {
+  const today = todayDate(), todayISO = toISO(today), since = toISO(addDays(today, -14));
+  const live = data.sales.filter(s => !s.undone);
+  const sold14 = {}, lastSale = {};
+  live.forEach(s => {
+    if (s.date >= since) sold14[s.productId] = (sold14[s.productId] || 0) + s.qty;
+    if (!lastSale[s.productId] || s.date > lastSale[s.productId]) lastSale[s.productId] = s.date;
+  });
+  const firstSale = live.reduce((m, s) => (!m || s.date < m ? s.date : m), null);
+  const lastAny = live.reduce((m, s) => (!m || s.date > m ? s.date : m), null);
+  const out = [];
+  const add = (id, kind, tpl, facts, rank) => out.push({ id, kind, rank, facts, draft: t('asT')[tpl].replace(/\{(\w+)\}/g, (_, k) => facts[k]) });
+
+  live.forEach(s => s.schedule.forEach((x, i) => {
+    if (x.paid) return;
+    const cu = data.customers.find(c => c.id === s.customerId), customer = cu ? cu.name : t('noCustomer');
+    if (x.due && x.due < todayISO) add(`late-${s.id}-${i}`, 'cobrar', 'late', { customer, amount: money(x.amount), date: fmtDate(x.due), days: daysBetween(x.due, todayISO) }, 1);
+    else if (!x.due) add(`nodue-${s.id}-${i}`, 'cobrar', 'noDue', { customer, amount: money(x.amount) }, 3);
+  }));
+  data.products.forEach(p => {
+    if (p.stock < 0) add('neg-' + p.id, 'olvido', 'negStock', { product: p.name, stock: p.stock }, 1);
+    else if (p.stock <= 3) add('stock-' + p.id, 'reponer', 'restock', { product: p.name, stock: p.stock, buy: Math.max(3, Math.ceil((sold14[p.id] || 0) * 1.5) - p.stock) }, 2);
+    if (!(p.cost > 0)) add('cost-' + p.id, 'olvido', 'noCost', { product: p.name }, 3);
+    else if (p.retail < p.cost * 1.2) add('price-' + p.id, 'precio', 'price', { product: p.name, cost: money(p.cost), price: money(p.retail), suggested: money(Math.ceil(p.cost * 1.4 * 2) / 2) }, 2);
+    if (bizOf().wholesale && p.wholesale >= p.retail) add('whole-' + p.id, 'precio', 'noWholesale', { product: p.name, price: money(p.retail) }, 4);
+    if (firstSale && firstSale <= since && p.stock > 3 && (!lastSale[p.id] || lastSale[p.id] < since)) add('promo-' + p.id, 'promo', 'promo', { product: p.name, stock: p.stock }, 4);
+  });
+  if (lastAny && daysBetween(lastAny, todayISO) >= 3) add('idle', 'olvido', 'idle', { days: daysBetween(lastAny, todayISO) }, 3);
+  return out.sort((a, b) => a.rank - b.rank).slice(0, 8);
+}
+
+const aiWording = new Map();   // the app's sentence → the AI's rewrite
+const aiTried = new Set();
+let aiState = null;            // null, 'busy', 'ok', or an error code
+
+// The AI may only use numbers that are already in the app's sentence.
+function numbersOK(text, c) {
+  const allowed = new Set((Object.values(c.facts).join(' ') + ' ' + c.draft).match(/\d+/g) || []);
+  return (String(text).match(/\d+/g) || []).every(n => allowed.has(n));
+}
+function maybeWordWithAI(checks) {
+  const todo = checks.filter(c => !aiWording.has(c.draft) && !aiTried.has(c.draft));
+  if (!todo.length || aiState === 'busy') return;
+  todo.forEach(c => aiTried.add(c.draft));
+  aiState = 'busy';
+  aiCall('advice', {
+    sector: bizOf().sector ? t('sectors')[bizOf().sector] : '',
+    items: todo.map(c => ({ id: c.id, kind: c.kind, facts: c.facts, draft: c.draft }))
+  }).then(res => {
+    if (res.error) aiState = res.error;
+    else {
+      (res.items || []).forEach(i => {
+        const c = todo.find(x => x.id === i.id);
+        const text = String(i.text || '').trim();
+        if (c && text && text.length <= 300 && numbersOK(text, c)) aiWording.set(c.draft, text);
+      });
+      aiState = 'ok';
+    }
+    renderHome();
+  });
+}
+function assistantHTML(checks) {
+  const worded = checks.some(c => aiWording.has(c.draft));
+  const failed = aiState && aiState !== 'ok' && aiState !== 'busy';
+  const note = !checks.length ? ''
+    : aiState === 'busy' ? t('asBusy')
+    : failed ? (t('asFail')[aiState] || t('asFail').down)
+    : worded ? t('asByAI') : '';
+  return `<div class="panel home-section assistant" data-panel="assistant">
+    <h2>${esc(t('asTitle'))}</h2>
+    <ul class="rows">${checks.length ? checks.map(c => `<li style="display:block">
+      <span class="tag">${esc(t('asKinds')[c.kind])}</span>
+      <div class="as-text">${esc(aiWording.get(c.draft) || c.draft)}</div>
+    </li>`).join('') : `<li class="empty">${esc(t('asNone'))}</li>`}</ul>
+    ${note ? `<p class="as-note">${esc(note)}${failed ? ` <button class="linkbtn" id="asRetry">${esc(t('asRetry'))}</button>` : ''}</p>` : ''}
+  </div>`;
 }
 
 document.getElementById('readBtn').addEventListener('click', readSale);
@@ -1885,20 +3071,22 @@ document.querySelectorAll('[data-lang]').forEach(b => b.addEventListener('click'
 document.querySelectorAll('[data-pick]').forEach(b => b.addEventListener('click', () => setLang(b.dataset.pick)));
 document.getElementById('resetBtn').addEventListener('click', () => {
   if (!confirm(t('resetConfirm'))) return;
-  data = seedData(); saveData(); draft = null;
-  ['ob-name', 'ob-contact'].forEach(id => { document.getElementById(id).value = ''; });
-  ['ob-terms', 'ob-privacy'].forEach(id => { document.getElementById(id).checked = false; });
+  const p = data.profile || {};
+  data = Object.assign(seedData(), {
+    profile: { name: p.name, contact: p.contact, contactType: p.contactType, country: p.country, createdAt: p.createdAt },
+    consents: data.consents
+  });
+  saveData(); draft = null; sheetRows = null; connAsking = null;
   applyLang(); showOnboardingIfNeeded();
 });
-
-// Older saved data may predate sign-up.
-if (!data.consents) data.consents = [];
-if (data.profile === undefined) data.profile = null;
 
 if (!lang) { lang = 'es'; document.getElementById('langPicker').style.display = 'flex'; }
 applyLang();
 showTab(prefs.tab || 'sell');
-if (prefs.lang) showOnboardingIfNeeded();
+// Supabase says who is signed in (from the saved session, or a link from an email),
+// then the app shows either the sign-in screen or the seller's own data.
+if (sb) sb.auth.onAuthStateChange((event, session) => setTimeout(() => onSession(event, session), 0));
+else onSession('NO_CONFIG', null);
 </script>
 </body>
 </html>

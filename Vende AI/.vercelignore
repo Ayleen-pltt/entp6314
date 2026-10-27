@@ -1,0 +1,10 @@
+# Only the public pages go online: app/, landing/ and legal/*.html.
+# Internal documents and unfinished pages stay off the site.
+*.md
+strategy/
+toolspricing-simulator/
+probes/
+.env*
+.vercel
+supabase/
+dev-server.mjs
