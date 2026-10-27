@@ -1,5 +1,5 @@
 // Local stand-in for Vercel: serves the pages and runs the files in api/ on this computer.
-// Reads GEMINI_API_KEY, the Stripe test keys and the Supabase settings from .env.local. Never serves hidden files, api/ source or node_modules.
+// Reads GEMINI_API_KEY, the Stripe test keys, the Resend key and the Supabase settings from .env.local. Never serves hidden files, api/ source or node_modules.
 // Start: node dev-server.mjs   (then open http://localhost:5180)
 import http from 'node:http';
 import fs from 'node:fs/promises';
@@ -7,9 +7,10 @@ import path from 'node:path';
 import * as ai from './api/ai.js';
 import * as config from './api/config.js';
 import * as checkout from './api/checkout.js';
+import * as welcome from './api/welcome.js';
 
 const ROOT = import.meta.dirname;
-const API = { ai, config, checkout };   // /api/<name> -> api/<name>.js, like Vercel
+const API = { ai, config, checkout, welcome };   // /api/<name> -> api/<name>.js, like Vercel
 const PORT = 5180;
 try { process.loadEnvFile(path.join(ROOT, '.env.local')); } catch { console.warn('No .env.local found; the AI will use its fallback.'); }
 

@@ -3,10 +3,13 @@
 // and talks to Stripe; the browser only ever gets back a Stripe page address.
 //
 //   POST { tier, lang }   -> creates a Checkout Session and returns { url } (the Stripe-hosted page)
-//   GET  ?session_id=...  -> asks Stripe whether that session was paid; returns { paid, tier }
+//   GET  ?session_id=...  -> asks Stripe whether that session was paid; returns { paid, tier }.
+//                            The first time it sees a paid session, it also emails the receipt
+//                            (Resend, see _email.js) and marks the session receipt_sent in Stripe.
 //
 // Refuses to work with live keys: both STRIPE_PUBLISHABLE_KEY and STRIPE_SECRET_KEY must be test keys.
 // Prices follow prd.md (Plans), in US cents, charged every month.
+import { sendEmail, receiptEmail } from './_email.js';
 
 const TIERS = {
   1: { amount: 599, name: 'VendeAI Standard' },
@@ -80,6 +83,7 @@ export async function POST(request) {
       'line_items[0][price_data][recurring][interval]': 'month',
       'line_items[0][price_data][product_data][name]': tier.name,
       'metadata[tier]': String(input.tier),
+      'metadata[lang]': lang,
       'subscription_data[metadata][tier]': String(input.tier),
       locale: LOCALES[lang],
       success_url: `${origin}/pago/exito.html?session_id={CHECKOUT_SESSION_ID}`,
@@ -99,10 +103,23 @@ export async function GET(request) {
   if (!/^cs_test_[A-Za-z0-9]+$/.test(id)) return json(400, { error: 'bad_session' });
   try {
     const s = await stripe(sk, 'GET', 'checkout/sessions/' + id);
+    const meta = s.metadata || {};
+    const paid = s.status === 'complete' && s.payment_status === 'paid';
+    const tier = Number(meta.tier) || null;
+    if (paid && TIERS[tier] && !meta.receipt_sent) await sendReceipt(sk, s, tier);
     // Only what the page needs; never the buyer's email or card details.
-    return json(200, { paid: s.status === 'complete' && s.payment_status === 'paid', tier: Number(s.metadata && s.metadata.tier) || null });
+    return json(200, { paid, tier });
   } catch (e) {
     console.error('Stripe session check failed:', e.message);
     return json(502, { error: 'down' });
   }
+}
+
+// Receipt by email, once per payment. A failure is only logged: the seller still sees "¡Pago recibido!".
+async function sendReceipt(sk, s, tier) {
+  const t = TIERS[tier];
+  const mail = receiptEmail(s.metadata.lang, t.name.replace('VendeAI ', ''), (t.amount / 100).toFixed(2));
+  const sent = await sendEmail(Object.assign({ to: s.customer_details && s.customer_details.email }, mail));
+  if (sent) await stripe(sk, 'POST', 'checkout/sessions/' + s.id, { 'metadata[receipt_sent]': new Date().toISOString() })
+    .catch(e => console.error('Could not mark the receipt as sent:', e.message));
 }

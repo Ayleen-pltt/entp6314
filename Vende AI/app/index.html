@@ -1244,7 +1244,7 @@ function seedData() {
   };
 }
 
-const APP_VERSION = '0.4.3';
+const APP_VERSION = '0.4.4';
 // Current version of each legal document. Changing a version asks the seller to accept again.
 const DOCS = {
   terminos: { version: '1.0', language: 'es', file: '../legal/terminos-y-condiciones.html' },
@@ -2607,6 +2607,16 @@ function openDemoData() {
   if (!data.connections) data.connections = {};
 }
 
+// Welcome email, once per account: the server (api/welcome.js) checks who this is with Supabase,
+// sends it through Resend and marks the account. The app never waits for it or shows an error.
+function askWelcome(session) {
+  if (!session || !session.access_token || data.welcomeAsked) return;
+  fetch('/api/welcome', {
+    method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + session.access_token },
+    body: JSON.stringify({ lang })
+  }).then(r => r.json()).then(j => { if (j && (j.sent || j.already)) { data.welcomeAsked = new Date().toISOString(); saveData(); } }).catch(() => { /* email is optional */ });
+}
+
 function onSession(event, session) {
   document.body.classList.remove('auth-wait');
   if (!sb) { openDemoData(); applyLang(); showTab(prefs.tab || 'sell'); showOnboardingIfNeeded(); return; }
@@ -2616,7 +2626,7 @@ function onSession(event, session) {
   if ((u && u.id) !== (user && user.id)) {
     user = u;
     draft = null; sheetRows = null; connAsking = null; aiWording.clear(); aiTried.clear(); aiState = null;
-    if (u) { openUserData(u); syncConsents(); }
+    if (u) { openUserData(u); syncConsents(); askWelcome(session); }
     else { dataKey = null; data = seedData(); }
     applyLang();
     showTab(prefs.tab || 'sell');
