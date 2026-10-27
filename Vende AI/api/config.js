@@ -19,6 +19,7 @@ export function GET() {
   if (!url || !key) console.error('SUPABASE_URL or SUPABASE_PUBLISHABLE_KEY is not set');
   else if (looksSecret(key)) console.error('SUPABASE_PUBLISHABLE_KEY holds a SECRET key; refusing to send it to the browser');
   else if (!/^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(url)) console.error('SUPABASE_URL does not look like https://<project>.supabase.co');
+  else if (!key.startsWith('sb_publishable_') && key.split('.').length !== 3) console.error('SUPABASE_PUBLISHABLE_KEY does not look like a publishable key (sb_publishable_...); staying in demo mode');
   else config = { supabaseUrl: url, supabaseKey: key };
   return new Response(`window.VENDEAI_CONFIG = ${JSON.stringify(config)};\n`, {
     headers: { 'Content-Type': 'text/javascript; charset=utf-8', 'Cache-Control': 'no-store' }
