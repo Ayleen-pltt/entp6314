@@ -21,14 +21,19 @@ VendeAI **no** es un banco, **no** cobra a tus clientes por ti y **no** reemplaz
 
 ## 3. Tu cuenta
 
-- Para entrar usamos tu número de teléfono o tu correo y un código de verificación.
-- Cuida el acceso a tu teléfono. Si crees que alguien entró a tu cuenta, avísanos de inmediato.
+- Para entrar usas tu correo y una contraseña de al menos 8 caracteres. Guardamos tu contraseña cifrada: nadie puede leerla, ni nosotros.
+- No compartas tu contraseña y cuida el acceso a tu teléfono. Si crees que alguien entró a tu cuenta, cambia tu contraseña y avísanos de inmediato.
 
 ## 4. Lo que es gratis y lo que se paga
 
-- **Gratis para siempre:** anotar ventas, ver "Todo en un lugar" y los consejos de Cobrar y Reponer.
-- **Módulos pagos:** pagas solo por lo que usas. Hay tres módulos ("Cobrar", "Precios" y "Vender más"), que puedes contratar por separado o juntos. Se cobran cada mes en la moneda de tu país, y el precio exacto se muestra antes de pagar.
-- Pagas con los medios disponibles en tu país (por ejemplo Mercado Pago, OXXO o Yape). Esos pagos los procesa la empresa de pagos. **Nosotros nunca vemos ni guardamos los datos de tu tarjeta o cuenta.**
+- **Freedom, gratis para siempre:** anotar ventas, ver "Todo en un lugar" y los consejos de Cobrar y Reponer.
+- **Planes pagos, cada mes.** Cada plan incluye lo del anterior:
+  - **Standard (US$ 5.99 al mes):** precios sugeridos.
+  - **Medium (US$ 9.99 al mes):** además, recordatorios de cobro listos para enviar.
+  - **Business (US$ 19.99 al mes):** además, mensajes de promoción y qué reponer antes de cada campaña.
+- Después de que nos cuentas de tu negocio, te sugerimos un plan. La sugerencia la escribe una inteligencia artificial y es solo una recomendación: tú eliges, y siempre puedes quedarte en Freedom.
+- El precio exacto, en dólares o en la moneda de tu país, se muestra antes de pagar.
+- Pagas en la página de pago de Stripe o con los medios disponibles en tu país (por ejemplo Mercado Pago, OXXO o Yape). Esos pagos los procesa la empresa de pagos. **Nosotros nunca vemos ni guardamos los datos de tu tarjeta o cuenta.**
 - El plan se renueva cada mes hasta que lo canceles. Te avisamos antes de cada cobro.
 - Si algún día cambiamos un precio, te avisamos con al menos 30 días de anticipación, y puedes cancelar antes del cambio sin costo.
 - **Nunca cobraremos por anotar una venta.**

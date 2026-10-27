@@ -3,7 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VendeAI</title>
+<title>VendeAI: anota tus ventas y sabe cuánto ganas</title>
+<meta name="description" content="Anota cada venta con un mensaje, como se lo contarías a una amiga. VendeAI te dice cuánto ganaste, quién te debe y qué reponer. Gratis para empezar.">
+<link rel="canonical" href="https://vendeai-pi.vercel.app/app/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="VendeAI">
+<meta property="og:url" content="https://vendeai-pi.vercel.app/app/">
+<meta property="og:title" content="VendeAI: anota tus ventas y sabe cuánto ganas">
+<meta property="og:description" content="Anota cada venta con un mensaje y sabe cuánto ganaste, quién te debe y qué reponer.">
+<meta property="og:image" content="https://vendeai-pi.vercel.app/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <!-- Installable app (PWA): name, icon and colors for the phone's home screen. -->
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#111111">
@@ -1236,7 +1247,7 @@ function seedData() {
   };
 }
 
-const APP_VERSION = '0.4.1';
+const APP_VERSION = '0.4.2';
 // Current version of each legal document. Changing a version asks the seller to accept again.
 const DOCS = {
   terminos: { version: '1.0', language: 'es', file: '../legal/terminos-y-condiciones.html' },

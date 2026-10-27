@@ -15,9 +15,9 @@ try { process.loadEnvFile(path.join(ROOT, '.env.local')); } catch { console.warn
 
 const TYPES = {
   '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.json': 'application/json',
-  '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.woff2': 'font/woff2', '.txt': 'text/plain; charset=utf-8', '.csv': 'text/csv', '.webmanifest': 'application/manifest+json'
+  '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.woff2': 'font/woff2', '.txt': 'text/plain; charset=utf-8', '.csv': 'text/csv', '.webmanifest': 'application/manifest+json', '.xml': 'application/xml'
 };
-const BLOCKED = new Set(['api', 'node_modules', 'supabase', 'strategy', 'probes', 'package.json', 'package-lock.json', 'dev-server.mjs']);
+const BLOCKED = new Set(['api', 'node_modules', 'supabase', 'strategy', 'probes', 'tools', 'package.json', 'package-lock.json', 'dev-server.mjs']);
 
 http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
@@ -32,9 +32,10 @@ http.createServer(async (req, res) => {
     return res.end(await response.text());
   }
 
-  if (url.pathname === '/') { res.writeHead(302, { Location: '/app/' }); return res.end(); }
+  if (url.pathname === '/') { res.writeHead(302, { Location: '/landing/' }); return res.end(); }
   const parts = decodeURIComponent(url.pathname).split('/').filter(Boolean);
-  if (parts.some(p => p.startsWith('.')) || BLOCKED.has(parts[0]) || parts.at(-1)?.endsWith('.md')) { res.writeHead(404); return res.end('not found'); }
+  const notFound = async () => { res.writeHead(404, { 'Content-Type': TYPES['.html'] }); res.end(await fs.readFile(path.join(ROOT, '404.html'))); };   // like Vercel
+  if (parts.some(p => p.startsWith('.')) || BLOCKED.has(parts[0]) || parts.at(-1)?.endsWith('.md')) return notFound();
   let file = path.join(ROOT, ...parts);
   if (!file.startsWith(ROOT)) { res.writeHead(403); return res.end(); }
   try {
@@ -42,5 +43,5 @@ http.createServer(async (req, res) => {
     const body = await fs.readFile(file);
     res.writeHead(200, { 'Content-Type': TYPES[path.extname(file)] || 'application/octet-stream', 'Cache-Control': 'no-store' });
     res.end(body);
-  } catch { res.writeHead(404); res.end('not found'); }
+  } catch { await notFound(); }
 }).listen(PORT, () => console.log(`VendeAI on http://localhost:${PORT}`));

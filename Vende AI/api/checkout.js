@@ -15,6 +15,17 @@ const TIERS = {
 };
 const LOCALES = { es: 'es-419', pt: 'pt-BR', en: 'en' };
 const TIMEOUT_MS = 10000;
+const PER_MINUTE = 5;               // payment pages per visitor per minute (best effort, per server instance)
+const hits = new Map();
+
+function tooMany(request) {
+  const ip = (request.headers.get('x-forwarded-for') || 'local').split(',')[0].trim();
+  const now = Date.now();
+  const recent = (hits.get(ip) || []).filter(t => now - t < 60000);
+  recent.push(now);
+  hits.set(ip, recent);
+  return recent.length > PER_MINUTE;
+}
 
 function json(status, body) {
   return new Response(JSON.stringify(body), {
@@ -53,6 +64,7 @@ async function stripe(sk, method, path, form) {
 export async function POST(request) {
   const sk = testKey();
   if (!sk) return json(503, { error: 'not_ready' });
+  if (tooMany(request)) return json(429, { error: 'limit' });
   let input;
   try { input = await request.json(); } catch { return json(400, { error: 'bad_request' }); }
   const tier = TIERS[input && input.tier];

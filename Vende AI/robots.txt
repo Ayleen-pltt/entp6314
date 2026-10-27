@@ -1,0 +1,7 @@
+# VendeAI: everything public may be indexed except the server functions and the payment result pages.
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /pago/
+
+Sitemap: https://vendeai-pi.vercel.app/sitemap.xml

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>VendeAI · Página no encontrada</title>
+<meta name="description" content="Esta página no existe. Vuelve a VendeAI.">
+<link rel="icon" type="image/png" sizes="192x192" href="/app/icons/icon-192.png">
+<!-- Vercel shows this page for any address that doesn't exist. Paths are absolute because it can appear at any depth. -->
+<style>
+  @font-face { font-family: "Bodoni Moda"; font-style: normal; font-weight: 400 900; font-display: swap; src: url(/fonts/bodoni-moda-latin-wght-normal.woff2) format("woff2"); }
+  @font-face { font-family: "Bodoni Moda"; font-style: italic; font-weight: 400 900; font-display: swap; src: url(/fonts/bodoni-moda-latin-wght-italic.woff2) format("woff2"); }
+  @font-face { font-family: "Manrope"; font-style: normal; font-weight: 200 800; font-display: swap; src: url(/fonts/manrope-latin-wght-normal.woff2) format("woff2"); }
+  :root { --bg: #f3ecdc; --surface: #ffffff; --text: #111111; --muted: #4c5a62; --sand: #c9b48f; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #111111; --surface: #1c1b19; --text: #f3ecdc; --muted: #ceccc5; } }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: Manrope, system-ui, sans-serif; line-height: 1.5; }
+  main { max-width: 480px; margin: 0 auto; padding: 56px 16px; text-align: center; }
+  .logo { font-family: "Bodoni Moda", serif; font-size: 1.6rem; font-weight: 600; }
+  .logo span { font-style: italic; color: var(--muted); }
+  .card { background: var(--surface); border-radius: 16px; padding: 28px 20px; margin-top: 28px; }
+  .code { font-family: "Bodoni Moda", serif; font-style: italic; font-size: 3.4rem; line-height: 1; color: var(--muted); }
+  .code::after { content: ""; display: block; width: 56px; height: 3px; background: var(--sand); margin: 12px auto 0; border-radius: 2px; }
+  h1 { font-family: "Bodoni Moda", serif; font-size: 1.6rem; margin: 18px 0 8px; }
+  p { color: var(--muted); margin: 0 0 20px; }
+  a.btn { display: inline-block; background: var(--text); color: var(--bg); text-decoration: none; border-radius: 999px; padding: 12px 24px; font-weight: 600; }
+  a.alt { display: block; margin-top: 14px; color: var(--muted); font-size: 0.9rem; }
+</style>
+</head>
+<body>
+<main>
+  <div class="logo">Vende<span>AI</span></div>
+  <div class="card">
+    <div class="code">404</div>
+    <h1 id="title">Esta página no existe</h1>
+    <p id="body">Puede que el enlace esté mal escrito o que la página se haya movido.</p>
+    <a class="btn" href="/app/" id="app">Ir a la app</a>
+    <a class="alt" href="/landing/" id="home">Conoce VendeAI</a>
+  </div>
+</main>
+<script>
+const TEXT = {
+  pt: { title: 'Esta página não existe', body: 'Talvez o link esteja errado ou a página tenha mudado de lugar.', app: 'Ir para o app', home: 'Conheça o VendeAI' },
+  en: { title: 'This page doesn’t exist', body: 'The link may be mistyped, or the page may have moved.', app: 'Go to the app', home: 'About VendeAI' }
+};
+let lang = 'es';
+try { lang = (JSON.parse(localStorage.getItem('vendeai_preferencias') || '{}').lang) || 'es'; } catch (e) { /* Spanish */ }
+if (TEXT[lang]) {
+  document.documentElement.lang = lang;
+  for (const k of Object.keys(TEXT[lang])) document.getElementById(k).textContent = TEXT[lang][k];
+}
+</script>
+</body>
+</html>

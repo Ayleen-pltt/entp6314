@@ -8,3 +8,4 @@ probes/
 .vercel
 supabase/
 dev-server.mjs
+tools/

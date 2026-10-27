@@ -4,7 +4,7 @@
 // - /api/config: network first, last good copy when offline (it holds only public settings).
 // - Other /api/* (Gemini) and Supabase itself: never stored, always live.
 // Change VERSION on each release so phones drop the old copy.
-const VERSION = '0.4.1';
+const VERSION = '0.4.2';
 const CACHE = 'vendeai-' + VERSION;
 const SHELL = [
   './', 'manifest.webmanifest', 'vendor/supabase.js',

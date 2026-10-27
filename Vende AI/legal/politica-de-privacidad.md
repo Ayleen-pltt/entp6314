@@ -12,7 +12,7 @@ Solo pedimos lo que la app necesita para funcionar.
 | Dato | Para qué | ¿Obligatorio? |
 |---|---|---|
 | Nombre o apodo | Saludarte y personalizar los mensajes | Sí |
-| Teléfono **o** correo (uno solo) | Entrar a tu cuenta con un código y recuperarla | Sí |
+| Correo y contraseña | Entrar a tu cuenta y recuperarla. La contraseña se guarda cifrada (nadie puede leerla, ni nosotros) | Sí |
 | País | Mostrar precios en tu moneda y aplicar la ley de tu país | Sí |
 | Datos de tu negocio: qué vendes, dónde vendes, si vendes fiado o por mayor, cómo te pagan y qué te cuesta más | Adaptar la app a cómo vendes (qué ves primero, qué opciones aparecen) | No. Puedes saltarlo o cambiarlo cuando quieras |
 | Tus ventas, productos, costos y stock | Calcular lo que ganaste y darte consejos | Sí, si usas la app |
@@ -20,7 +20,7 @@ Solo pedimos lo que la app necesita para funcionar.
 | Registro de aceptación (fecha, hora, versión, forma de aceptar, dirección IP) | Probar que aceptaste estos documentos si una autoridad lo pide | Sí |
 | Plan contratado y estado del pago | Activar tu plan | Solo en planes pagos |
 
-**No pedimos:** documento de identidad, fecha de nacimiento, dirección, género, ni datos de tarjeta o cuenta bancaria. Los pagos los procesa la empresa de pagos (por ejemplo Mercado Pago), y nosotros solo recibimos la confirmación.
+**No pedimos:** documento de identidad, fecha de nacimiento, dirección, género, ni datos de tarjeta o cuenta bancaria. Los pagos los procesa la empresa de pagos (Stripe, o por ejemplo Mercado Pago): escribes tu tarjeta en su página, no en la nuestra, y nosotros solo recibimos la confirmación.
 
 ## 2. Datos de tus clientes
 
@@ -35,10 +35,11 @@ Los nombres, teléfonos y deudas de tus clientes los anotas tú. **Tú eres resp
 
 | Con quién | Qué | Por qué |
 |---|---|---|
-| Proveedor de inteligencia artificial: [NOMBRE] | El texto del mensaje o el audio, sin tu nombre ni teléfono | Leer la venta y redactar los consejos |
-| Proveedor de alojamiento: [NOMBRE] | Todos los datos de tu cuenta, cifrados | Guardarlos de forma segura |
+| Google (Estados Unidos), inteligencia artificial Gemini | El texto del mensaje, tu lista de productos, los datos de los consejos y las respuestas sobre tu negocio, sin tu nombre, correo ni teléfono | Leer la venta, redactar los consejos y sugerirte un plan |
+| Supabase (Estados Unidos), cuentas y base de datos | Tu correo, tu contraseña cifrada y los datos de tu cuenta | Que entres a tu cuenta y guardar tus datos de forma segura |
+| Vercel (Estados Unidos), alojamiento | Las páginas que pides y la dirección IP de tu conexión | Mostrarte la app |
 | Vercel (Estados Unidos), medición de visitas | La página que abres, de dónde llegaste, país y ciudad aproximados, tipo de dispositivo y navegador. Sin cookies, sin tu nombre ni tus ventas | Contar visitas en totales (ver la [Política de cookies](politica-de-cookies.md)) |
-| Empresa de pagos (Mercado Pago, OXXO, Yape, etc.) | Plan y monto | Cobrar tu plan |
+| Stripe (Estados Unidos) y otras empresas de pagos (Mercado Pago, OXXO, Yape, etc.) | Plan y monto. Tu tarjeta y tu correo de pago los escribes directamente en su página | Cobrar tu plan |
 | Autoridades | Lo que la ley exija | Solo con una orden válida |
 
 Algunos de estos proveedores pueden estar **fuera de tu país**. En ese caso exigimos por contrato que protejan tus datos al menos como lo exige la ley de tu país. **No vendemos tus datos ni los usamos para publicidad.**
