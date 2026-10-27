@@ -597,7 +597,6 @@ const I18N = {
     plSugTag: 'Sugerido', plPayName: 'Pagar {name}', plPay: 'Elegir', plYours: 'Tu plan', plKeepFree: 'Seguir gratis por ahora',
     plAskBiz: 'Cuéntanos de tu negocio y te sugerimos el plan que más te conviene.', plAskBizBtn: 'Contar de mi negocio',
     plOpening: 'Abriendo la página de pago…',
-    plTest: 'Modo de prueba: no se cobra dinero real. Usa la tarjeta 4242 4242 4242 4242. Cada plan incluye lo del anterior y cancelas cuando quieras.',
     plErr: { not_ready: 'Los pagos aún no están listos.', offline: 'Sin internet. Prueba de nuevo cuando tengas conexión.', down: 'No pudimos abrir la página de pago. Prueba en un momento.' },
     plPaidToast: 'Listo: ya tienes {name}.',
     mods: { cobrar: ['Módulo Cobrar', 'Recordatorios listos para enviar por WhatsApp a quien te debe.'], precios: ['Módulo Precios', 'Te sugiere precios que cubren todo lo que te cuesta.'], vender: ['Módulo Vender más', 'Mensajes de promoción listos y qué reponer antes de cada campaña.'] },
@@ -839,7 +838,6 @@ const I18N = {
     plSugTag: 'Sugerido', plPayName: 'Pagar {name}', plPay: 'Escolher', plYours: 'Seu plano', plKeepFree: 'Continuar grátis por enquanto',
     plAskBiz: 'Conte do seu negócio e sugerimos o plano que mais combina com você.', plAskBizBtn: 'Contar do meu negócio',
     plOpening: 'Abrindo a página de pagamento…',
-    plTest: 'Modo de teste: nenhum dinheiro real é cobrado. Use o cartão 4242 4242 4242 4242. Cada plano inclui o anterior e você cancela quando quiser.',
     plErr: { not_ready: 'Os pagamentos ainda não estão prontos.', offline: 'Sem internet. Tente de novo quando tiver conexão.', down: 'Não conseguimos abrir a página de pagamento. Tente daqui a pouco.' },
     plPaidToast: 'Pronto: você já tem o {name}.',
     mods: { cobrar: ['Módulo Cobrar', 'Lembretes prontos para enviar pelo WhatsApp a quem te deve.'], precios: ['Módulo Preços', 'Sugere preços que cobrem tudo o que te custa.'], vender: ['Módulo Vender mais', 'Mensagens de promoção prontas e o que repor antes de cada campanha.'] },
@@ -1081,7 +1079,6 @@ const I18N = {
     plSugTag: 'Suggested', plPayName: 'Pay for {name}', plPay: 'Choose', plYours: 'Your plan', plKeepFree: 'Stay free for now',
     plAskBiz: 'Tell us about your business and we will suggest the plan that suits you best.', plAskBizBtn: 'Tell us about my business',
     plOpening: 'Opening the payment page…',
-    plTest: 'Test mode: no real money is charged. Use card 4242 4242 4242 4242. Each plan includes the one before and you can cancel any time.',
     plErr: { not_ready: 'Payments are not ready yet.', offline: 'No internet. Try again when you are connected.', down: 'We couldn’t open the payment page. Try again in a moment.' },
     plPaidToast: 'Done: you now have {name}.',
     mods: { cobrar: ['Collect module', 'Ready-to-send WhatsApp reminders for whoever owes you.'], precios: ['Prices module', 'Suggests prices that cover everything it costs you.'], vender: ['Sell more module', 'Ready promo messages and what to restock before each campaign.'] },
@@ -1247,7 +1244,7 @@ function seedData() {
   };
 }
 
-const APP_VERSION = '0.4.2';
+const APP_VERSION = '0.4.3';
 // Current version of each legal document. Changing a version asks the seller to accept again.
 const DOCS = {
   terminos: { version: '1.0', language: 'es', file: '../legal/terminos-y-condiciones.html' },
@@ -2854,7 +2851,6 @@ function planPickHTML() {
       ${n === sug.tier && n !== mine ? `<div class="tag-sug">${esc(t('plSugTag'))}</div>` : ''}
       ${action(n)}
     </div>`).join('')}</div>
-    <p class="hint">${esc(t('plTest'))}</p>
   </div>`;
 }
 
