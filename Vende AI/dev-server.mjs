@@ -8,9 +8,10 @@ import * as ai from './api/ai.js';
 import * as config from './api/config.js';
 import * as checkout from './api/checkout.js';
 import * as welcome from './api/welcome.js';
+import * as weather from './api/weather.js';
 
 const ROOT = import.meta.dirname;
-const API = { ai, config, checkout, welcome };   // /api/<name> -> api/<name>.js, like Vercel
+const API = { ai, config, checkout, welcome, weather };   // /api/<name> -> api/<name>.js, like Vercel
 const PORT = 5180;
 try { process.loadEnvFile(path.join(ROOT, '.env.local')); } catch { console.warn('No .env.local found; the AI will use its fallback.'); }
 

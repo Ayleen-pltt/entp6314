@@ -38,6 +38,7 @@ Los nombres, teléfonos y deudas de tus clientes los anotas tú. **Tú eres resp
 |---|---|---|
 | Google (Estados Unidos), inteligencia artificial Gemini | El texto del mensaje, tu lista de productos, los datos de los consejos y las respuestas sobre tu negocio, sin tu nombre, correo ni teléfono | Leer la venta, redactar los consejos y sugerirte un plan |
 | Supabase (Estados Unidos), cuentas y base de datos | Tu correo, tu contraseña cifrada y los datos de tu cuenta | Que entres a tu cuenta y guardar tus datos de forma segura |
+| Supabase (Estados Unidos), archivos | Los comprobantes, catálogos, fotos y papeles o planillas de stock que subes (JPG, PNG, PDF o Excel, hasta 5 MB) | Guardarlos en una carpeta privada que solo tú puedes abrir |
 | Vercel (Estados Unidos), alojamiento | Las páginas que pides y la dirección IP de tu conexión | Mostrarte la app |
 | Vercel (Estados Unidos), medición de visitas | La página que abres, de dónde llegaste, país y ciudad aproximados, tipo de dispositivo y navegador. Sin cookies, sin tu nombre ni tus ventas | Contar visitas en totales (ver la [Política de cookies](politica-de-cookies.md)) |
 | Resend (Estados Unidos), envío de emails | Tu nombre, tu correo, tu idioma y tu plan | Enviarte el email de bienvenida, los recibos de pago y, si lo pediste, novedades |
@@ -49,6 +50,7 @@ Algunos de estos proveedores pueden estar **fuera de tu país**. En ese caso exi
 ## 5. Cuánto tiempo los guardamos
 
 - **Datos de tu cuenta y ventas:** mientras tengas la cuenta. Si la borras, se eliminan en un máximo de 30 días.
+- **Archivos que subes:** hasta que los borres en "Tus archivos", o hasta 30 días después de borrar tu cuenta.
 - **Registro de aceptación de términos y privacidad:** hasta [5] años después de cerrar la cuenta, para poder demostrar el consentimiento ante una autoridad. [VERIFICAR el plazo de prescripción en cada país.]
 - **Datos de facturación:** el tiempo que exija la ley tributaria de tu país.
 

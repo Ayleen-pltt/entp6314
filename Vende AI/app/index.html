@@ -91,6 +91,10 @@
   header .wrap { display: flex; align-items: center; justify-content: space-between; height: 56px; }
   .logo { font-family: var(--serif); font-weight: 600; font-size: 1.3rem; letter-spacing: 0.01em; }
   .logo > span:first-child { font-style: italic; color: var(--logo-ai); }
+  .brand { display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+  .brand .logo { line-height: 1.15; }
+  .wx { font-size: 0.72rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .wx b { color: var(--text); font-weight: 700; }
   h1, h2, h3 { font-family: var(--serif); font-weight: 600; }
   .lang { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
   .lang button { background: none; border: 0; padding: 4px 10px; font-size: 0.85rem; cursor: pointer; color: var(--muted); }
@@ -228,6 +232,9 @@
   .rows li { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); }
   .rows li:last-child { border-bottom: 0; }
   .rows .meta { font-size: 0.82rem; color: var(--muted); }
+  .files-add { padding: 10px 0 4px; }
+  .files-add .msg.ok { color: var(--muted); }
+  .rows .fname { overflow-wrap: anywhere; }
   .rows .late { color: var(--danger); }
   .pill { font-size: 0.75rem; padding: 2px 8px; border-radius: 999px; background: var(--warn-soft); color: var(--warn); font-weight: 600; white-space: nowrap; }
   .stock-input { width: 64px; text-align: right; background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 5px 6px; }
@@ -402,7 +409,10 @@
 
 <header>
   <div class="wrap">
-    <div class="logo">Vende<span>AI</span> <span class="hello" id="hello"></span></div>
+    <div class="brand">
+      <div class="logo">Vende<span>AI</span> <span class="hello" id="hello"></span></div>
+      <div class="wx" id="wx" role="status" hidden></div>
+    </div>
     <div class="head-actions">
     <button class="bizbtn" id="bizOpen" data-t="tabChannels" hidden></button>
     <button class="bizbtn" id="signOutBtn" data-t="signOut" hidden></button>
@@ -629,6 +639,21 @@ const I18N = {
     hBest: 'Lo que más vendes', hBestRow: '{qty} vendidos · te dejó {earned}', hBestRowOne: '1 vendido · te dejó {earned}',
     hNoSalesPeriod: 'Sin ventas en este periodo.',
     hChannels: 'Dónde vendes más',
+    wxLoading: 'Buscando el clima…', wxFail: 'El clima no cargó, ya volverá',
+    fTitle: 'Tus archivos',
+    fSub: 'Guarda comprobantes de pago, catálogos, fotos de productos y papeles de tu stock. Fotos JPG o PNG, o PDF (en stock, también Excel), hasta 5 MB. Solo tú puedes verlos.',
+    fKind: '¿Qué vas a subir?',
+    fKinds: { comprobantes: 'Comprobante de pago', catalogos: 'Catálogo o foto de producto', stock: 'Stock o proveedor' },
+    fPick: 'Subir archivo', fUploading: 'Subiendo…', fSaved: 'Listo: archivo guardado.',
+    fTooBig: 'Este archivo pesa {size}. El máximo es 5 MB. Prueba con una foto más pequeña o un PDF más corto.',
+    fBadType: 'Ese archivo no se puede subir. Solo fotos JPG o PNG, o PDF.',
+    fBadTypeStock: 'Ese archivo no se puede subir. Solo Excel (.xlsx o .xls), fotos JPG o PNG, o PDF.',
+    fFailed: 'No se pudo subir. Revisa tu conexión e inténtalo otra vez.',
+    fNone: 'Todavía no subiste archivos.', fLoading: 'Cargando tus archivos…',
+    fLoadErr: 'No pudimos mostrar tus archivos. Revisa tu conexión.', fRetry: 'Reintentar',
+    fOpen: 'Abrir', fDelete: 'Borrar', fDelAsk: '¿Borrar "{name}"? No se puede deshacer.',
+    fDeleted: 'Archivo borrado.', fOpenErr: 'No se pudo abrir el archivo.', fDelErr: 'No se pudo borrar. Inténtalo otra vez.',
+    fSignIn: 'Entra a tu cuenta para guardar archivos.',
     aiReading: 'Leyendo…',
     aiRead: 'Leído con IA. Revisa antes de guardar.',
     aiFail: {
@@ -874,6 +899,21 @@ const I18N = {
     hBest: 'O que você mais vende', hBestRow: '{qty} vendidos · te deixou {earned}', hBestRowOne: '1 vendido · te deixou {earned}',
     hNoSalesPeriod: 'Sem vendas neste período.',
     hChannels: 'Onde você mais vende',
+    wxLoading: 'Buscando o clima…', wxFail: 'O clima não carregou, já volta',
+    fTitle: 'Seus arquivos',
+    fSub: 'Guarde comprovantes de pagamento, catálogos, fotos de produtos e papéis do seu estoque. Fotos JPG ou PNG, ou PDF (no estoque, também Excel), até 5 MB. Só você pode ver.',
+    fKind: 'O que você vai enviar?',
+    fKinds: { comprobantes: 'Comprovante de pagamento', catalogos: 'Catálogo ou foto de produto', stock: 'Estoque ou fornecedor' },
+    fPick: 'Enviar arquivo', fUploading: 'Enviando…', fSaved: 'Pronto: arquivo salvo.',
+    fTooBig: 'Este arquivo tem {size}. O máximo é 5 MB. Tente uma foto menor ou um PDF mais curto.',
+    fBadType: 'Esse arquivo não pode ser enviado. Só fotos JPG ou PNG, ou PDF.',
+    fBadTypeStock: 'Esse arquivo não pode ser enviado. Só Excel (.xlsx ou .xls), fotos JPG ou PNG, ou PDF.',
+    fFailed: 'Não foi possível enviar. Confira sua conexão e tente de novo.',
+    fNone: 'Você ainda não enviou arquivos.', fLoading: 'Carregando seus arquivos…',
+    fLoadErr: 'Não conseguimos mostrar seus arquivos. Confira sua conexão.', fRetry: 'Tentar de novo',
+    fOpen: 'Abrir', fDelete: 'Apagar', fDelAsk: 'Apagar "{name}"? Não dá para desfazer.',
+    fDeleted: 'Arquivo apagado.', fOpenErr: 'Não foi possível abrir o arquivo.', fDelErr: 'Não foi possível apagar. Tente de novo.',
+    fSignIn: 'Entre na sua conta para guardar arquivos.',
     aiReading: 'Lendo…',
     aiRead: 'Lido com IA. Confira antes de salvar.',
     aiFail: {
@@ -1119,6 +1159,21 @@ const I18N = {
     hBest: 'Your best sellers', hBestRow: '{qty} sold · earned you {earned}', hBestRowOne: '1 sold · earned you {earned}',
     hNoSalesPeriod: 'No sales in this period.',
     hChannels: 'Where you sell most',
+    wxLoading: 'Getting the weather…', wxFail: 'Weather didn’t load, back soon',
+    fTitle: 'Your files',
+    fSub: 'Keep payment proof, catalogs, product photos and stock papers. JPG or PNG photos, or PDF (Excel too, for stock), up to 5 MB. Only you can see them.',
+    fKind: 'What are you uploading?',
+    fKinds: { comprobantes: 'Payment proof', catalogos: 'Catalog or product photo', stock: 'Stock or supplier' },
+    fPick: 'Upload a file', fUploading: 'Uploading…', fSaved: 'Done: file saved.',
+    fTooBig: 'This file is {size}. The limit is 5 MB. Try a smaller photo or a shorter PDF.',
+    fBadType: 'That file can’t be uploaded. Only JPG or PNG photos, or PDF.',
+    fBadTypeStock: 'That file can’t be uploaded. Only Excel (.xlsx or .xls), JPG or PNG photos, or PDF.',
+    fFailed: 'The upload didn’t work. Check your connection and try again.',
+    fNone: 'You haven’t uploaded any files yet.', fLoading: 'Loading your files…',
+    fLoadErr: 'We couldn’t show your files. Check your connection.', fRetry: 'Try again',
+    fOpen: 'Open', fDelete: 'Delete', fDelAsk: 'Delete "{name}"? This can’t be undone.',
+    fDeleted: 'File deleted.', fOpenErr: 'The file couldn’t be opened.', fDelErr: 'The file couldn’t be deleted. Try again.',
+    fSignIn: 'Sign in to keep files.',
     aiReading: 'Reading…',
     aiRead: 'Read with AI. Check before saving.',
     aiFail: {
@@ -1261,7 +1316,7 @@ function seedData() {
   };
 }
 
-const APP_VERSION = '0.5.0';
+const APP_VERSION = '0.7.0';
 // Current version of each legal document. Changing a version asks the seller to accept again.
 const DOCS = {
   terminos: { version: '1.0', language: 'es', file: '../legal/terminos-y-condiciones.html' },
@@ -1910,17 +1965,23 @@ function renderHome() {
       </li>`).join('') : `<li class="empty">${esc(t('hNoSalesPeriod'))}</li>`}</ul>
     </div>
 
+    <div class="panel home-section" data-panel="files">
+      <h2>${esc(t('fTitle'))}</h2>
+      <div id="filesBody"></div>
+    </div>
+
     ${plansHTML()}`;
 
   // Put the panels for the seller's biggest needs first.
   const NEED_PANELS = { cobrar: ['who'], inventario: ['stock'], reponer: ['stock'], precios: ['stock'], vender: ['best', 'channels'] };
   const first = [...new Set((bizOf().needs || []).flatMap(n => NEED_PANELS[n] || []))];
-  const order = ['assistant', ...first, ...['who', 'stock', 'best', 'channels'].filter(k => !first.includes(k)), 'plans'];
+  const order = ['assistant', ...first, ...['who', 'stock', 'best', 'channels'].filter(k => !first.includes(k)), 'files', 'plans'];
   order.forEach(k => { const el = body.querySelector(`[data-panel="${k}"]`); if (el) body.appendChild(el); });
   const retry = body.querySelector('#asRetry');
   if (retry) retry.addEventListener('click', () => { aiTried.clear(); aiState = null; renderHome(); });
   if (!document.getElementById('tab-home').hidden) maybeWordWithAI(checks);
   bindPlans(body);
+  renderFiles();
   if (!document.getElementById('tab-home').hidden) askPlanAI();
 
   body.querySelectorAll('[data-receive]').forEach(b => b.addEventListener('click', () => {
@@ -2493,6 +2554,161 @@ if ('serviceWorker' in navigator && location.protocol !== 'file:') {
 }
 
 /* ------------------------------------------------------------------
+   Weather (Open-Meteo, no key). The page asks our own server, GET /api/weather?country=XX,
+   which asks Open-Meteo for the current temperature in °C in the main city of the
+   seller's country. Asked when the app opens, every 30 minutes while it is on screen,
+   and when the seller comes back to it after that. If it fails or takes over 6 seconds,
+   a short note shows instead and nothing else is affected.
+------------------------------------------------------------------ */
+const WX_EVERY = 30 * 60 * 1000;
+let wx = { country: null, at: 0, state: 'idle', city: '', temp: null };
+
+function renderWeather() {
+  const el = document.getElementById('wx');
+  const country = data.profile && data.profile.country;
+  if (!country || location.protocol === 'file:') { el.hidden = true; return; }
+  if (wx.country !== country || (Date.now() - wx.at > WX_EVERY && wx.state !== 'loading')) loadWeather(country);
+  el.hidden = false;
+  if (wx.state === 'ok') el.innerHTML = `${esc(wx.city)} · <b>${wx.temp} °C</b>`;
+  else el.textContent = t(wx.state === 'loading' ? 'wxLoading' : 'wxFail');
+}
+
+async function loadWeather(country) {
+  wx = { country, at: Date.now(), state: 'loading', city: '', temp: null };
+  let next = { state: 'fail' };
+  try {
+    const res = await fetch('/api/weather?country=' + encodeURIComponent(country), { signal: AbortSignal.timeout(6000) });
+    const body = await res.json();
+    if (res.ok && typeof body.temp === 'number') next = { state: 'ok', city: body.city, temp: body.temp };
+  } catch (e) { /* slow, offline or refused: the note says so */ }
+  if (wx.country !== country) return;   // the seller changed country meanwhile
+  Object.assign(wx, next, { at: Date.now() });
+  renderWeather();
+}
+setInterval(() => { if (!document.hidden) renderWeather(); }, 60 * 1000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) renderWeather(); });
+
+/* ------------------------------------------------------------------
+   Files (Supabase Storage). Three private buckets: comprobantes, catalogos, stock.
+   Each file is saved as <bucket>/<user id>/<time>-<name>. The storage rule in
+   supabase/migrations/0003_storage.sql lets only that signed-in seller list, open,
+   add or delete files in their own folder, and Storage itself refuses anything that
+   is not JPG, PNG or PDF (plus Excel in "stock"), or is over 5 MB. The app checks the
+   same first, to explain.
+   Files open through a link that works for 60 seconds.
+------------------------------------------------------------------ */
+const FILE_BUCKETS = ['comprobantes', 'catalogos', 'stock'];
+const FILE_MAX = 5 * 1024 * 1024;
+// What the first bytes of each allowed type look like, so a renamed file is refused.
+// Excel files also need the right ending, since .xlsx starts like any zip file.
+const XLSX = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', XLS = 'application/vnd.ms-excel';
+const FILE_TYPES = [
+  { mime: 'image/jpeg', sig: [0xFF, 0xD8, 0xFF] },
+  { mime: 'image/png', sig: [0x89, 0x50, 0x4E, 0x47] },
+  { mime: 'application/pdf', sig: [0x25, 0x50, 0x44, 0x46] },
+  { mime: XLSX, sig: [0x50, 0x4B, 0x03, 0x04], ext: /.xlsx$/i },
+  { mime: XLS, sig: [0xD0, 0xCF, 0x11, 0xE0], ext: /.xls$/i }
+];
+const BASIC = ['image/jpeg', 'image/png', 'application/pdf'];
+const FILE_ALLOW = { comprobantes: BASIC, catalogos: BASIC, stock: BASIC.concat(XLSX, XLS) };
+const fileAccept = b => '.jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf' + (b === 'stock' ? ',.xlsx,.xls,' + XLSX + ',' + XLS : '');
+let files = { uid: null, list: [], error: false, loading: false }, fileKind = 'comprobantes', fileMsg = null, fileBusy = false;
+
+async function fileType(file) {
+  const head = new Uint8Array(await file.slice(0, 4).arrayBuffer());
+  const hit = FILE_TYPES.find(k => k.sig.every((b, i) => head[i] === b) && (!k.ext || k.ext.test(file.name)));
+  return hit ? hit.mime : null;
+}
+const fileSize = n => n < 1024 * 1024 ? Math.max(1, Math.round(n / 1024)) + ' KB' : (n / 1024 / 1024).toFixed(1) + ' MB';
+// Storage keys allow only plain letters, digits and . _ -
+const cleanName = n => n.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^A-Za-z0-9._-]+/g, '_').replace(/^_+/, '').slice(-80) || 'archivo';
+
+async function loadFiles() {
+  if (!sb || !user) return;
+  const uid = user.id;
+  files = { uid, list: files.uid === uid ? files.list : [], error: false, loading: true };
+  const res = await Promise.all(FILE_BUCKETS.map(b =>
+    sb.storage.from(b).list(uid, { limit: 100, sortBy: { column: 'created_at', order: 'desc' } }).catch(() => ({ error: true }))));
+  if (!user || user.id !== uid) return;
+  files = { uid, loading: false, error: res.some(x => x.error),
+    list: res.flatMap((x, i) => (x.data || []).filter(o => o.id).map(o => ({
+      bucket: FILE_BUCKETS[i], path: uid + '/' + o.name, name: o.name.replace(/^\d+-/, ''),
+      size: (o.metadata && o.metadata.size) || 0, at: o.created_at || ''
+    }))).sort((a, b) => b.at.localeCompare(a.at)) };
+  renderFiles();
+}
+
+function renderFiles() {
+  const box = document.getElementById('filesBody');
+  if (!box) return;
+  if (!sb || !user) { box.innerHTML = `<p class="empty" style="padding:6px 0 12px">${esc(t('fSignIn'))}</p>`; return; }
+  if (files.uid !== user.id && !files.loading) { loadFiles(); }
+  const kinds = t('fKinds');
+  const list = files.uid === user.id ? files.list : [];
+  box.innerHTML = `
+    <p class="meta" style="margin:0 0 10px">${esc(t('fSub'))}</p>
+    <div class="files-add">
+      <div class="field"><label for="f-kind">${esc(t('fKind'))}</label>
+        <select id="f-kind">${FILE_BUCKETS.map(b => `<option value="${b}" ${b === fileKind ? 'selected' : ''}>${esc(kinds[b])}</option>`).join('')}</select></div>
+      <input type="file" id="f-input" accept="${fileAccept(fileKind)}" hidden>
+      <button class="btn" id="f-pick" ${fileBusy ? 'disabled' : ''}>${esc(fileBusy ? t('fUploading') : t('fPick'))}</button>
+      ${fileMsg ? `<div class="msg ${fileMsg.ok ? 'ok' : ''}" role="status">${esc(fileMsg.text)}</div>` : ''}
+    </div>
+    <ul class="rows">${list.length ? list.map((f, i) => `<li>
+      <div><div class="fname"><strong>${esc(f.name)}</strong></div>
+        <div class="meta">${esc(kinds[f.bucket])} · ${fileSize(f.size)}${f.at ? ' · ' + esc(fmtDate(f.at.slice(0, 10))) : ''}</div></div>
+      <div><button class="linkbtn" data-fopen="${i}">${esc(t('fOpen'))}</button> <button class="linkbtn" data-fdel="${i}">${esc(t('fDelete'))}</button></div>
+    </li>`).join('') : `<li class="empty">${esc(files.loading ? t('fLoading') : files.error ? t('fLoadErr') : t('fNone'))}</li>`}</ul>
+    ${files.error && !files.loading ? `<p style="margin:0 0 12px"><button class="linkbtn" id="f-retry">${esc(t('fRetry'))}</button></p>` : ''}`;
+
+  const input = box.querySelector('#f-input');
+  box.querySelector('#f-kind').addEventListener('change', e => { fileKind = e.target.value; fileMsg = null; renderFiles(); });
+  box.querySelector('#f-pick').addEventListener('click', () => input.click());
+  input.addEventListener('change', () => { if (input.files[0]) uploadFile(input.files[0], fileKind); });
+  const retry = box.querySelector('#f-retry');
+  if (retry) retry.addEventListener('click', loadFiles);
+  box.querySelectorAll('[data-fopen]').forEach(b => b.addEventListener('click', () => openFile(list[Number(b.dataset.fopen)])));
+  box.querySelectorAll('[data-fdel]').forEach(b => b.addEventListener('click', () => deleteFile(list[Number(b.dataset.fdel)])));
+}
+
+async function uploadFile(file, bucket) {
+  if (!sb || !user || fileBusy || !FILE_BUCKETS.includes(bucket)) return;
+  fileMsg = null;
+  if (file.size > FILE_MAX) { fileMsg = { text: t('fTooBig', { size: fileSize(file.size) }) }; return renderFiles(); }
+  const type = await fileType(file).catch(() => null);
+  if (!type || !FILE_ALLOW[bucket].includes(type)) { fileMsg = { text: t(bucket === 'stock' ? 'fBadTypeStock' : 'fBadType') }; return renderFiles(); }
+  fileBusy = true; renderFiles();
+  const path = user.id + '/' + Date.now() + '-' + cleanName(file.name);
+  const res = await sb.storage.from(bucket).upload(path, file, { contentType: type, upsert: false }).catch(e => ({ error: e }));
+  fileBusy = false;
+  if (res.error) {
+    const big = /size|413/i.test(String(res.error.message || '') + (res.error.statusCode || ''));
+    fileMsg = { text: big ? t('fTooBig', { size: fileSize(file.size) }) : t('fFailed') };
+    return renderFiles();
+  }
+  fileMsg = { text: t('fSaved'), ok: true };
+  logChange('file_added', { bucket, name: file.name }); saveData();
+  await loadFiles();
+}
+
+async function openFile(f) {
+  if (!f || !sb) return;
+  const w = window.open('', '_blank');   // opened now, so the phone does not block it as a pop-up
+  const res = await sb.storage.from(f.bucket).createSignedUrl(f.path, 60).catch(() => ({ error: true }));
+  if (res.error || !res.data) { if (w) w.close(); return toast(t('fOpenErr')); }
+  if (w) w.location = res.data.signedUrl; else location.href = res.data.signedUrl;
+}
+
+async function deleteFile(f) {
+  if (!f || !sb || !confirm(t('fDelAsk', { name: f.name }))) return;
+  const res = await sb.storage.from(f.bucket).remove([f.path]).catch(() => ({ error: true }));
+  if (res.error) return toast(t('fDelErr'));
+  logChange('file_deleted', { bucket: f.bucket, name: f.name }); saveData();
+  toast(t('fDeleted'));
+  await loadFiles();
+}
+
+/* ------------------------------------------------------------------
    Tabs
 ------------------------------------------------------------------ */
 function showTab(name) {
@@ -2538,6 +2754,7 @@ function applyLang() {
   document.getElementById('bizOpen').hidden = !(inside && data.profile && data.profile.business && data.profile.business.answeredAt);
   document.getElementById('signOutBtn').hidden = !user;
   renderNewsBtn();
+  renderWeather();
   document.getElementById('hello').textContent = inside && data.profile ? t('hello', { name: data.profile.name }) : '';
   if (document.getElementById('onboard').style.display === 'flex') renderAuth();
   renderCard();
