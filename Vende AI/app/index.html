@@ -91,9 +91,10 @@
   header .wrap { display: flex; align-items: center; justify-content: space-between; height: 56px; }
   .logo { font-family: var(--serif); font-weight: 600; font-size: 1.3rem; letter-spacing: 0.01em; }
   .logo > span:first-child { font-style: italic; color: var(--logo-ai); }
-  .brand { display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+  header .wrap { gap: 10px; }
+  .brand { display: flex; flex-direction: column; justify-content: center; flex: none; }
   .brand .logo { line-height: 1.15; }
-  .wx { font-size: 0.72rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .wx { font-size: 0.72rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px; }
   .wx b { color: var(--text); font-weight: 700; }
   h1, h2, h3 { font-family: var(--serif); font-weight: 600; }
   .lang { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
@@ -202,7 +203,13 @@
   .onboard .btn { margin-top: 18px; }
   .head-actions { display: flex; align-items: center; gap: 8px; }
   .bizbtn { background: none; border: 1px solid var(--line); border-radius: 8px; padding: 4px 10px; font-size: 0.85rem; cursor: pointer; color: var(--accent); font-weight: 600; white-space: nowrap; }
-  @media (max-width: 440px) { .hello { display: none; } .lang button { padding: 4px 8px; } }
+  .head-actions { min-width: 0; }
+  @media (max-width: 440px) {
+    .hello { display: none; }
+    .head-actions { gap: 5px; }
+    .bizbtn { padding: 4px 7px; font-size: 0.78rem; }
+    .lang button { padding: 4px 6px; font-size: 0.78rem; }
+  }
   .hello { font-weight: 400; color: var(--muted); font-size: 0.9rem; margin-left: 6px; }
   header .tabs { display: flex; height: auto; justify-content: flex-start; gap: 4px; overflow-x: auto; }
   .tabs button {
@@ -1316,7 +1323,7 @@ function seedData() {
   };
 }
 
-const APP_VERSION = '0.7.0';
+const APP_VERSION = '0.7.1';
 // Current version of each legal document. Changing a version asks the seller to accept again.
 const DOCS = {
   terminos: { version: '1.0', language: 'es', file: '../legal/terminos-y-condiciones.html' },

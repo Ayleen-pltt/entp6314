@@ -6,7 +6,7 @@
 // about 4 times an hour per country, however many sellers open the app.
 
 const CITIES = {
-  MX: { city: 'Ciudad de México', lat: 19.43, lon: -99.13 },
+  MX: { city: 'CDMX', lat: 19.43, lon: -99.13 },
   CO: { city: 'Bogotá', lat: 4.71, lon: -74.07 },
   PE: { city: 'Lima', lat: -12.05, lon: -77.04 },
   AR: { city: 'Buenos Aires', lat: -34.61, lon: -58.38 },
