@@ -1204,7 +1204,7 @@ const I18N = {
     fLoadErr: 'We couldn’t show your files. Check your connection.', fRetry: 'Try again',
     fOpen: 'Open', fDelete: 'Delete', fDelAsk: 'Delete "{name}"? This can’t be undone.',
     fDeleted: 'File deleted.', fOpenErr: 'The file couldn’t be opened.', fDelErr: 'The file couldn’t be deleted. Try again.',
-    fSignIn: 'Sign in to keep files.',
+    fSignIn: 'Log in to keep files.',
     aiReading: 'Reading…',
     aiRead: 'Read with AI. Check before saving.',
     aiFail: {
@@ -1274,14 +1274,14 @@ const I18N = {
     reset: 'Reset test data',
     resetConfirm: 'Delete your sales, products and “Your business” answers on this phone and go back to the test products? Your account is not deleted.',
     demoDate: 'Today: {date}',
-    obTitles: { signup: 'Create your account', signin: 'Sign in', reset: 'Forgot your password?', sent: 'Check your email', newpass: 'Choose a new password', reaccept: 'We updated our documents', demo: 'Try VendeAI' },
+    obTitles: { signup: 'Create your account', signin: 'Log in', reset: 'Forgot your password?', sent: 'Check your email', newpass: 'Choose a new password', reaccept: 'We updated our documents', demo: 'Try VendeAI' },
     obSubs: { signup: 'We only ask for what we need. Nothing more.', signin: 'With your email and password.', reset: 'Enter your email and we’ll send you a link to choose a new one.', newpass: 'At least 8 characters.', reaccept: 'Read and accept them to keep using VendeAI.', demo: 'Test mode: accounts aren’t open yet. Your data stays only on this phone.' },
-    obSubmit: { signup: 'Create account', signin: 'Sign in', reset: 'Send link', newpass: 'Save password', reaccept: 'Accept and continue', demo: 'Start' },
+    obSubmit: { signup: 'Create account', signin: 'Log in', reset: 'Send link', newpass: 'Save password', reaccept: 'Accept and continue', demo: 'Start' },
     obEmail: 'Your email',
     obPass: 'Password',
     obPassHint: 'At least 8 characters. Nobody else can see it, not even us.',
     obForgot: 'Forgot your password?',
-    obHaveAccount: 'Already have an account?', obNoAccount: 'First time here?', obBack: 'Back to sign in',
+    obHaveAccount: 'Already have an account?', obNoAccount: 'First time here?', obBack: 'Back to log in',
     obSentConfirm: 'We sent an email to {email}. Open it and tap the link to activate your account. If it doesn’t arrive, check spam.',
     obSentReset: 'If there is an account for {email}, we sent a link to change your password.',
     obWait: 'One moment…',
@@ -1292,7 +1292,7 @@ const I18N = {
       pass: 'The password needs at least 8 characters.',
       invalid_credentials: 'The email or password doesn’t match.',
       email_not_confirmed: 'First activate your account with the link we emailed you.',
-      user_already_exists: 'There’s already an account with that email. Sign in with your password.',
+      user_already_exists: 'There’s already an account with that email. Log in with your password.',
       weak_password: 'That password is too easy to guess. Try a longer one.',
       rate: 'Too many tries in a row. Wait a few minutes and try again.',
       offline: 'No connection. Check your internet and try again.',
@@ -1315,7 +1315,7 @@ const I18N = {
     obNews: 'I want VendeAI news and tips by email (optional, you can stop any time).',
     newsOn: 'News by email: on', newsOff: 'News by email: off',
     newsOnToast: 'Done: we will send you news and tips.', newsOffToast: 'Done: we will stop sending you news.',
-    newsOffSignIn: 'Sign in to stop the news emails.',
+    newsOffSignIn: 'Log in to stop the news emails.',
     docLangNote: '(Document in Spanish. The English version is being prepared.)',
     obFoot: 'We don\'t ask for ID, address or card details.',
     hello: 'Hi, {name}',
@@ -1347,7 +1347,7 @@ function seedData() {
   };
 }
 
-const APP_VERSION = '0.11.0';
+const APP_VERSION = '0.11.1';
 // Current version of each legal document. Changing a version asks the seller to accept again.
 const DOCS = {
   terminos: { version: '1.0', language: 'es', file: '../legal/terminos-y-condiciones.html' },
@@ -2831,6 +2831,8 @@ const sb = cfg && window.supabase ? window.supabase.createClient(cfg.supabaseUrl
   auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
 }) : null;
 let user = null, obMode = 'signup', obBusy = false, obOk = '';
+// The landing's "Entrar" button sends people who already have an account to /app/#entrar: open on log in, not sign up.
+if (location.hash === '#entrar') { obMode = 'signin'; history.replaceState(null, '', location.pathname); }
 const appUrl = () => location.origin + '/app/';
 
 function hasCurrentConsent(doc) {
