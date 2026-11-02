@@ -99,6 +99,13 @@
   footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 10px; }
   footer a { color: var(--muted-foreground); }
 
+  .head-right { display: flex; align-items: center; gap: 10px; }
+  .lang { display: flex; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+  .lang button { background: none; border: 0; min-height: 40px; padding: 4px 10px; font: inherit; font-size: 0.875rem; cursor: pointer; color: var(--muted-foreground); }
+  .lang button[aria-pressed="true"] { background: var(--secondary); color: var(--primary); font-weight: 700; }
+  .lang button:focus-visible { outline: 2px solid var(--ring); outline-offset: -2px; }
+  .signin { display: inline-flex; align-items: center; min-height: 40px; }
+
   footer { background: var(--muted); padding: 28px 0; color: var(--muted-foreground); font-size: 0.9rem; }
 
   @media (max-width: 820px) {
@@ -111,64 +118,143 @@
   <header>
     <div class="wrap">
       <div class="logo">Vende<span>AI</span></div>
-      <a class="signin" href="/app/">Entrar</a>
+      <div class="head-right">
+        <div class="lang" role="group" aria-label="Idioma / Language">
+          <button type="button" data-lang="es" aria-pressed="true">ES</button><button type="button" data-lang="pt" aria-pressed="false">PT</button><button type="button" data-lang="en" aria-pressed="false">EN</button>
+        </div>
+        <a class="signin" href="/app/" data-t="signin">Entrar</a>
+      </div>
     </div>
   </header>
 
   <main class="wrap">
     <section class="hero">
       <div>
-        <span class="eyebrow">Para quienes venden por su cuenta</span>
-        <h1>Vendes por WhatsApp, Instagram y en persona, pero no sabes cuánto ganas ni quién te debe.</h1>
-        <p class="lead">VendeAI junta todas tus ventas en un solo lugar. Las anotas con un mensaje, como se lo contarías a una amiga, y cada día te dice qué hacer.</p>
+        <span class="eyebrow" data-t="eyebrow">Para quienes venden por su cuenta</span>
+        <h1 data-t="h1">Vendes por WhatsApp, Instagram y en persona, pero no sabes cuánto ganas ni quién te debe.</h1>
+        <p class="lead" data-t="lead">VendeAI junta todas tus ventas en un solo lugar. Las anotas con un mensaje, como se lo contarías a una amiga, y cada día te dice qué hacer.</p>
         <div class="cta">
-          <a class="btn" href="/app/">Empieza gratis</a>
-          <small>Sin tarjeta. Anotar ventas es gratis, siempre.</small>
+          <a class="btn" href="/app/" data-t="cta">Empieza gratis</a>
+          <small data-t="ctaNote">Sin tarjeta. Anotar ventas es gratis, siempre.</small>
         </div>
 
         <ul class="benefits">
           <li>
             <span class="check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
             <div>
-              <strong>Anota una venta con un mensaje</strong>
-              <p>Escribe <em>"Vendí 2 labiales a María, pagó la mitad"</em> y queda guardada, con tu stock al día. Anotar ventas es gratis, siempre.</p>
+              <strong data-t="b1">Anota una venta con un mensaje</strong>
+              <p><span data-t="b1a">Escribe</span> <em data-t="b1ex">"Vendí 2 labiales a María, pagó la mitad"</em> <span data-t="b1b">y queda guardada, con tu stock al día. Anotar ventas es gratis, siempre.</span></p>
             </div>
           </li>
           <li>
             <span class="check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
             <div>
-              <strong>Sabe quién te debe y cuándo te paga</strong>
-              <p>Ve en un vistazo cuánto te deben y te prepara un recordatorio amable para enviar por WhatsApp.</p>
+              <strong data-t="b2">Sabe quién te debe y cuándo te paga</strong>
+              <p data-t="b2p">Ve en un vistazo cuánto te deben y te prepara un recordatorio amable para enviar por WhatsApp.</p>
             </div>
           </li>
           <li>
             <span class="check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
             <div>
-              <strong>Mira lo que de verdad ganaste</strong>
-              <p>Contando envío y empaque. También te dice qué producto se vende más y qué te conviene reponer.</p>
+              <strong data-t="b3">Mira lo que de verdad ganaste</strong>
+              <p data-t="b3p">Contando envío y empaque. También te dice qué producto se vende más y qué te conviene reponer.</p>
             </div>
           </li>
         </ul>
       </div>
 
-      <div class="shot" role="img" aria-label="Vista de la app: lo que ganaste esta semana, cuánto te deben y un consejo del asistente">
-        <div class="hd">Cómo te va</div>
-        <div class="card"><div class="k">Lo que ganaste</div><div class="v money">S/ 486.50</div><div class="bar"></div></div>
-        <div class="card"><div class="k">Te deben</div><div class="v money owe">S/ 120.00</div></div>
-        <div class="card tip">María te debe S/ 40.00 desde el viernes. ¿Le enviamos un recordatorio amable?</div>
+      <div class="shot" role="img" data-t-label="shotLabel" aria-label="Vista de la app: lo que ganaste esta semana, cuánto te deben y un consejo del asistente">
+        <div class="hd" data-t="shotTitle">Cómo te va</div>
+        <div class="card"><div class="k" data-t="shotEarned">Lo que ganaste</div><div class="v money" data-t="shotEarnedV">S/ 486.50</div><div class="bar"></div></div>
+        <div class="card"><div class="k" data-t="shotOwed">Te deben</div><div class="v money owe" data-t="shotOwedV">S/ 120.00</div></div>
+        <div class="card tip" data-t="shotTip">María te debe S/ 40.00 desde el viernes. ¿Le enviamos un recordatorio amable?</div>
       </div>
     </section>
   </main>
 
   <footer>
-    <div class="wrap">© 2026 VendeAI · Prototipo de presentación
-      <nav aria-label="Documentos legales">
-        <a href="../legal/terminos-y-condiciones.html">Términos</a>
-        <a href="../legal/politica-de-privacidad.html">Privacidad</a>
-        <a href="../legal/politica-de-cookies.html">Cookies</a>
-        <a href="../legal/politica-de-reembolsos.html">Reembolsos</a>
+    <div class="wrap"><span data-t="foot">© 2026 VendeAI · Prototipo de presentación</span>
+      <nav aria-label="Documentos legales" data-t-label="legalNav">
+        <a href="../legal/terminos-y-condiciones.html" data-t="terms">Términos</a>
+        <a href="../legal/politica-de-privacidad.html" data-t="privacy">Privacidad</a>
+        <a href="../legal/politica-de-cookies.html" data-t="cookies">Cookies</a>
+        <a href="../legal/politica-de-reembolsos.html" data-t="refunds">Reembolsos</a>
       </nav>
     </div>
   </footer>
+<script>
+/* Same three languages as the app. The choice is saved where the app keeps it
+   (vendeai_preferencias.lang), so "Empieza gratis" opens the app in that language. */
+const I18N = {
+  es: {
+    title: 'VendeAI: todas tus ventas en un solo lugar',
+    desc: 'VendeAI junta todas tus ventas en un solo lugar. Anótalas con un mensaje y sabe cuánto ganas y quién te debe.',
+    signin: 'Entrar',
+    eyebrow: 'Para quienes venden por su cuenta',
+    h1: 'Vendes por WhatsApp, Instagram y en persona, pero no sabes cuánto ganas ni quién te debe.',
+    lead: 'VendeAI junta todas tus ventas en un solo lugar. Las anotas con un mensaje, como se lo contarías a una amiga, y cada día te dice qué hacer.',
+    cta: 'Empieza gratis', ctaNote: 'Sin tarjeta. Anotar ventas es gratis, siempre.',
+    b1: 'Anota una venta con un mensaje', b1a: 'Escribe', b1ex: '"Vendí 2 labiales a María, pagó la mitad"', b1b: 'y queda guardada, con tu stock al día. Anotar ventas es gratis, siempre.',
+    b2: 'Sabe quién te debe y cuándo te paga', b2p: 'Ve en un vistazo cuánto te deben y te prepara un recordatorio amable para enviar por WhatsApp.',
+    b3: 'Mira lo que de verdad ganaste', b3p: 'Contando envío y empaque. También te dice qué producto se vende más y qué te conviene reponer.',
+    shotLabel: 'Vista de la app: lo que ganaste esta semana, cuánto te deben y un consejo del asistente',
+    shotTitle: 'Cómo te va', shotEarned: 'Lo que ganaste', shotEarnedV: 'S/ 486.50', shotOwed: 'Te deben', shotOwedV: 'S/ 120.00',
+    shotTip: 'María te debe S/ 40.00 desde el viernes. ¿Le enviamos un recordatorio amable?',
+    foot: '© 2026 VendeAI · Prototipo de presentación', legalNav: 'Documentos legales',
+    terms: 'Términos', privacy: 'Privacidad', cookies: 'Cookies', refunds: 'Reembolsos'
+  },
+  pt: {
+    title: 'VendeAI: todas as suas vendas em um só lugar',
+    desc: 'O VendeAI junta todas as suas vendas em um só lugar. Anote com uma mensagem e saiba quanto você ganha e quem te deve.',
+    signin: 'Entrar',
+    eyebrow: 'Para quem vende por conta própria',
+    h1: 'Você vende pelo WhatsApp, Instagram e pessoalmente, mas não sabe quanto ganha nem quem te deve.',
+    lead: 'O VendeAI junta todas as suas vendas em um só lugar. Você anota com uma mensagem, como contaria para uma amiga, e todo dia ele te diz o que fazer.',
+    cta: 'Comece grátis', ctaNote: 'Sem cartão. Anotar vendas é grátis, sempre.',
+    b1: 'Anote uma venda com uma mensagem', b1a: 'Escreva', b1ex: '"Vendi 2 batons para a Maria, ela pagou metade"', b1b: 'e ela fica salva, com seu estoque em dia. Anotar vendas é grátis, sempre.',
+    b2: 'Saiba quem te deve e quando vai pagar', b2p: 'Veja num relance quanto te devem, e ele prepara um lembrete gentil para enviar pelo WhatsApp.',
+    b3: 'Veja o que você ganhou de verdade', b3p: 'Contando frete e embalagem. Também mostra qual produto vende mais e o que vale a pena repor.',
+    shotLabel: 'Tela do app: o que você ganhou esta semana, quanto te devem e uma dica do assistente',
+    shotTitle: 'Como você está indo', shotEarned: 'O que você ganhou', shotEarnedV: 'R$ 486,50', shotOwed: 'Te devem', shotOwedV: 'R$ 120,00',
+    shotTip: 'A Maria te deve R$ 40,00 desde sexta. Vamos enviar um lembrete gentil?',
+    foot: '© 2026 VendeAI · Protótipo de apresentação', legalNav: 'Documentos legais',
+    terms: 'Termos', privacy: 'Privacidade', cookies: 'Cookies', refunds: 'Reembolsos'
+  },
+  en: {
+    title: 'VendeAI: all your sales in one place',
+    desc: 'VendeAI keeps all your sales in one place. Note them with a message and know what you earn and who owes you.',
+    signin: 'Sign in',
+    eyebrow: 'For people who sell on their own',
+    h1: 'You sell on WhatsApp, Instagram and in person, but you don\'t know what you earn or who owes you.',
+    lead: 'VendeAI keeps all your sales in one place. You note them with a message, the way you\'d tell a friend, and every day it tells you what to do.',
+    cta: 'Start free', ctaNote: 'No card. Recording sales is free, always.',
+    b1: 'Record a sale with a message', b1a: 'Write', b1ex: '"Sold 2 lipsticks to María, she paid half"', b1b: 'and it\'s saved, with your stock up to date. Recording sales is free, always.',
+    b2: 'Know who owes you and when they\'ll pay', b2p: 'See at a glance what you\'re owed, and get a friendly reminder ready to send on WhatsApp.',
+    b3: 'See what you really earned', b3p: 'Counting shipping and packaging. It also tells you which product sells best and what to restock.',
+    shotLabel: 'App view: what you earned this week, what you\'re owed and a tip from the assistant',
+    shotTitle: 'How you\'re doing', shotEarned: 'What you earned', shotEarnedV: '$486.50', shotOwed: 'You\'re owed', shotOwedV: '$120.00',
+    shotTip: 'María has owed you $40.00 since Friday. Shall we send a friendly reminder?',
+    foot: '© 2026 VendeAI · Presentation prototype', legalNav: 'Legal documents',
+    terms: 'Terms', privacy: 'Privacy', cookies: 'Cookies', refunds: 'Refunds'
+  }
+};
+const PREF_KEY = 'vendeai_preferencias';
+function readPrefs() { try { return JSON.parse(localStorage.getItem(PREF_KEY)) || {}; } catch (e) { return {}; } }
+function setLang(l, save) {
+  const t = I18N[l];
+  document.documentElement.lang = l;
+  document.title = t.title;
+  document.querySelector('meta[name="description"]').content = t.desc;
+  document.querySelectorAll('[data-t]').forEach(el => { el.textContent = t[el.dataset.t]; });
+  document.querySelectorAll('[data-t-label]').forEach(el => el.setAttribute('aria-label', t[el.dataset.tLabel]));
+  document.querySelectorAll('[data-lang]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === l)));
+  if (save) { const p = readPrefs(); p.lang = l; try { localStorage.setItem(PREF_KEY, JSON.stringify(p)); } catch (e) { /* the page still works */ } }
+}
+document.querySelectorAll('[data-lang]').forEach(b => b.addEventListener('click', () => setLang(b.dataset.lang, true)));
+// A saved choice wins; otherwise the phone's language; otherwise Spanish.
+const saved = readPrefs().lang, phone = (navigator.language || '').slice(0, 2);
+const start = I18N[saved] ? saved : I18N[phone] ? phone : 'es';
+if (start !== 'es') setLang(start, false);
+</script>
 </body>
 </html>
