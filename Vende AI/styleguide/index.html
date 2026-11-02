@@ -61,7 +61,7 @@
   </div>
 
   <h2 class="sg-title">Type scale</h2>
-  <p class="sg-note">The sizes the app uses, largest first.</p>
+  <p class="sg-note">The type scale: 12 / 14 / 16 / 20 / 24 / 32 / 48. Nothing else.</p>
   <div id="typeRows"></div>
 
   <h2 class="sg-title">Corners</h2>
@@ -202,17 +202,13 @@
 
 <script>
 const TYPE = [
-  ['2.6rem', '.stat.big .v', 'Vende', 'font-family:var(--font-heading);font-weight:800'],
-  ['2rem', '.pl-name', 'Standard', 'font-family:var(--font-heading);font-weight:600'],
-  ['1.6rem', 'h1', 'Heading one', 'font-family:var(--font-heading);font-weight:700'],
-  ['1.35rem', '.logo, .stat .v', 'Heading scale', 'font-family:var(--font-heading);font-weight:800'],
-  ['1.15rem', 'h2', 'Heading two', 'font-family:var(--font-heading);font-weight:700'],
-  ['1rem', 'body, .card h3', 'Body text, 16px', ''],
-  ['0.9rem', '.msg, .rec-free', 'Small text', ''],
-  ['0.82rem', '.meta, .rows .meta', 'Meta line', ''],
-  ['0.75rem', '.pill, .as-note', 'Tiny text', ''],
-  ['0.72rem', 'field labels', 'LABEL', 'font-weight:700;letter-spacing:.08em'],
-  ['0.68rem', '.tag', 'TAG', 'font-weight:700;letter-spacing:.06em'],
+  ['48px','.stat.big .v (32px when long)','S/ 486.50','font-family:var(--font-heading);font-weight:800'],
+  ['32px','.pl-name, .greet .ico','Standard','font-family:var(--font-heading);font-weight:600'],
+  ['24px','h1, .stat .v, .pl-price','Heading one','font-family:var(--font-heading);font-weight:700'],
+  ['20px','h2, .logo, .pl-col .pr, .drop strong','Heading two','font-family:var(--font-heading);font-weight:700'],
+  ['16px','body, .meta, .hint, .msg, .linkbtn, .as-text','Body text, the minimum for reading',''],
+  ['14px','.wx, footer, .as-note, header buttons, .btn.sm','Small print and compact controls',''],
+  ['12px','labels, .k, .tag, .pill, tab names','LABEL','font-weight:700;letter-spacing:.08em'],
 ];
 document.getElementById('typeRows').innerHTML = TYPE.map(([size, where, text, css]) =>
   `<div class="sg-type"><div style="font-size:${size};${css}">${text}</div><small>${size} · ${where}</small></div>`).join('');

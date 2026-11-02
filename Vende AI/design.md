@@ -401,7 +401,7 @@ Both are self-hosted in `fonts/`, never loaded from Google Fonts (see `legal/pol
 - Minimum body size 16px on phones, because many sellers read without glasses.
 - No all-caps for long text; small labels like "QUIÉN TE DEBE" can be caps with a little letter spacing.
 
-**Not in the app yet:** meta lines, hints, lists and cards are still smaller than 16px.
+Everything you read is 16px. Only caps labels and tags (12px), and small print and compact controls such as the weather, footer, language and "Mi negocio" buttons (14px), are smaller.
 
 ## Type and spacing scales
 
@@ -409,7 +409,7 @@ Both are self-hosted in `fonts/`, never loaded from Google Fonts (see `legal/pol
 - **Spacing scale:** 4 / 8 / 12 / 16 / 24 / 32 / 48.
 - **Corners:** radius tokens only, no custom values.
 
-**Not in the app yet:** these two scales are the target. The app still uses sizes and spacing outside them, such as 0.82rem text and 10px gaps. New work follows the scales; old screens move over when they are next changed.
+The app uses only the type scale: 12 labels, 14 small print, 16 body, 20 h2 and card numbers, 24 h1 and money stats, 32 plan names, 48 the big number (32 when the amount is longer than 11 characters). **Not in the app yet:** the spacing scale; the app still has gaps such as 10px and 14px.
 
 ## Layout
 
@@ -439,7 +439,7 @@ Both are self-hosted in `fonts/`, never loaded from Google Fonts (see `legal/pol
 | **Text link button** (`.linkbtn`) | No border, small (Abrir, Borrar, Reintentar) |
 | **Card / panel** | `--card`, 1px `--border` border, `--radius-xl` corners |
 | **"Para hoy"** | Card with one tick box per task. Ticks last for the day |
-| **Big number** (`.stat.big`) | Card with an uppercase label and a 2.6rem `.money` number: the number that matters most |
+| **Big number** (`.stat.big`) | Card with an uppercase label and a 48px `.money` number (32px for long amounts): the number that matters most |
 | **Chat box** (`.composer`) | Round white box. Empty: round microphone. With text: round send arrow, like WhatsApp. Enter sends. While recording: the box pulses, shows the time, and the button becomes stop |
 | **Chips** | Round, thin border; selected = `--primary` fill |
 | **Pill** | Small round `--secondary` tag: "Se está acabando", "Agotado" |
@@ -462,7 +462,7 @@ Same brand in a simpler form, light only, because email apps do not load our fon
 ## Accessibility
 
 - Text contrast at least 4.5:1 (that's why Arena is never body text on ivory).
-- Everything works with a tap target of at least 40px high and with the keyboard; focus shows a 2px outline.
+- Everything works with a tap target of at least 40px high and with the keyboard; focus shows a 2px outline (the chat box outlines the whole box).
 - Warnings never rely on color alone: they also have words ("Se está acabando", "3 días de atraso").
 - Status updates (toasts, upload messages, weather) use `role="status"` so screen readers announce them.
 
