@@ -17,7 +17,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <!-- Installable app (PWA): name, icon and colors for the phone's home screen. -->
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#111111">
+<meta name="theme-color" content="#f3ecdc" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#111111" media="(prefers-color-scheme: dark)">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="mobile-web-app-capable" content="yes">
@@ -30,155 +31,113 @@
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
 </script>
 <script defer src="/_vercel/insights/script.js"></script>
+<link rel="stylesheet" href="../tokens.css">
 <style>
-
-  @font-face { font-family: "Bodoni Moda"; font-style: normal; font-weight: 400 900; font-display: swap; src: url(../fonts/bodoni-moda-latin-wght-normal.woff2) format("woff2"); }
-  @font-face { font-family: "Bodoni Moda"; font-style: italic; font-weight: 400 900; font-display: swap; src: url(../fonts/bodoni-moda-latin-wght-italic.woff2) format("woff2"); }
-  @font-face { font-family: "Manrope"; font-style: normal; font-weight: 200 800; font-display: swap; src: url(../fonts/manrope-latin-wght-normal.woff2) format("woff2"); }
-
-  /* Brand: Negro 40%, Marfil 35%, Blanco 15%, Arena 6%, Gris azulado 4%. */
-  :root {
-    --bg: #f3ecdc;          /* Marfil */
-    --surface: #ffffff;     /* Blanco */
-    --text: #111111;        /* Negro */
-    --muted: #4c5a62;       /* Gris azulado */
-    --line: #ceccc5;        /* Piedra */
-    --accent: #111111;      /* buttons and active states are black */
-    --on-accent: #f3ecdc;
-    --accent-soft: #ebe1cb;
-    --sand: #c9b48f;        /* Arena: details only, never body text on ivory */
-    --logo-ai: #4c5a62;
-    --warn: #a35a00;
-    --warn-soft: #fdf1e2;
-    --danger: #b3261e;
-    --serif: "Bodoni Moda", "Didot", "Bodoni 72", Georgia, serif;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #111111;
-      --surface: #1c1b19;
-      --text: #f3ecdc;
-      --muted: #ceccc5;
-      --line: #34312b;
-      --accent: #f3ecdc;
-      --on-accent: #111111;
-      --accent-soft: #2a261f;
-      --logo-ai: #c9b48f;
-      --warn: #f0a94b;
-      --warn-soft: #33281a;
-      --danger: #f2867f;
-    }
-  }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   [hidden] { display: none !important; }
   /* Until Supabase says who is signed in, show nothing behind the sign-in screen. */
   body.auth-wait > header, body.auth-wait > main, body.auth-wait > footer { visibility: hidden; }
   body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--foreground);
+    padding-bottom: 72px;
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
   }
   .wrap { max-width: 560px; margin: 0 auto; padding: 0 16px; }
   button, input, select, textarea { font: inherit; color: inherit; }
 
-  /* The header is the big black block of the brand; the variables flip to light-on-black inside it. */
-  header {
-    --text: #f3ecdc; --muted: #ceccc5; --line: #2e2c28; --accent: #c9b48f; --accent-soft: #2a261f; --logo-ai: #c9b48f;
-    background: #111111; color: var(--text); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 5;
-  }
+  header { background: var(--background); color: var(--foreground); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 5; }
   header .wrap { display: flex; align-items: center; justify-content: space-between; height: 56px; }
-  .logo { font-family: var(--serif); font-weight: 600; font-size: 1.3rem; letter-spacing: 0.01em; }
-  .logo > span:first-child { font-style: italic; color: var(--logo-ai); }
+  .logo { font-family: var(--font-heading); font-weight: 800; font-size: 1.35rem; }
+  .logo > span:first-child { color: var(--muted-foreground); }
   header .wrap { gap: 10px; }
   .brand { display: flex; flex-direction: column; justify-content: center; flex: none; }
   .brand .logo { line-height: 1.15; }
-  .wx { font-size: 0.72rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px; }
-  .wx b { color: var(--text); font-weight: 700; }
-  h1, h2, h3 { font-family: var(--serif); font-weight: 600; }
-  .lang { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
-  .lang button { background: none; border: 0; padding: 4px 10px; font-size: 0.85rem; cursor: pointer; color: var(--muted); }
-  .lang button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+  .wx { font-size: 0.72rem; color: var(--muted-foreground); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px; }
+  .wx b { color: var(--foreground); font-weight: 700; }
+  h1, h2, h3 { font-weight: 700; line-height: 1.2; }
+  .lang { display: flex; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+  .lang button { background: none; border: 0; padding: 4px 10px; font-size: 0.85rem; cursor: pointer; color: var(--muted-foreground); }
+  .lang button[aria-pressed="true"] { background: var(--secondary); color: var(--primary); font-weight: 700; }
 
   main { padding: 24px 0 64px; }
   h1 { font-size: 1.6rem; letter-spacing: -0.005em; margin-bottom: 4px; }
-  .sub { color: var(--muted); margin-bottom: 16px; }
+  .sub { color: var(--muted-foreground); margin-bottom: 16px; }
   h2 { font-size: 1.15rem; margin: 32px 0 10px; }
 
   textarea {
     width: 100%; min-height: 96px; resize: vertical;
-    background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+    background: var(--card); border: 1px solid var(--input); border-radius: var(--radius-lg);
     padding: 12px 14px; font-size: 1rem;
   }
-  textarea:focus, input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  textarea:focus, input:focus, select:focus { outline: 2px solid var(--ring); outline-offset: 1px; }
   .row-actions { display: flex; gap: 10px; margin-top: 10px; align-items: center; flex-wrap: wrap; }
   .btn {
-    border: 0; border-radius: 10px; padding: 11px 18px; font-weight: 600; cursor: pointer;
-    background: var(--accent); color: var(--on-accent); letter-spacing: 0.02em;
+    border: 0; border-radius: var(--radius-lg); padding: 11px 18px; font-weight: 700; cursor: pointer;
+    background: var(--primary); color: var(--primary-foreground); letter-spacing: 0.02em;
   }
   .btn:disabled { opacity: 0.45; cursor: not-allowed; }
-  .btn.ghost { background: none; color: var(--muted); border: 1px solid var(--line); }
-  .examples { margin-top: 14px; font-size: 0.85rem; color: var(--muted); }
+  .btn.ghost { background: none; color: var(--muted-foreground); border: 1px solid var(--border); }
+  .examples { margin-top: 14px; font-size: 0.85rem; color: var(--muted-foreground); }
   .examples button {
     display: block; width: 100%; text-align: left; margin-top: 6px;
-    background: var(--surface); border: 1px dashed var(--line); border-radius: 8px;
-    padding: 8px 10px; cursor: pointer; color: var(--text); font-size: 0.88rem;
+    background: var(--card); border: 1px dashed var(--border); border-radius: var(--radius-sm);
+    padding: 8px 10px; cursor: pointer; color: var(--foreground); font-size: 0.88rem;
   }
-  .msg { margin-top: 10px; font-size: 0.9rem; color: var(--warn); }
+  .msg { margin-top: 10px; font-size: 0.9rem; color: var(--destructive); }
 
   .card {
-    margin-top: 20px; background: var(--surface);
-    border: 1px solid var(--line); border-radius: 16px; padding: 18px 16px;
+    margin-top: 20px; background: var(--card);
+    border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 18px 16px;
   }
   .card h3 { font-size: 1rem; margin-bottom: 14px; }
   .field { margin-bottom: 14px; }
-  .field > label, .field > .label { display: block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  .field > label, .field > .label { display: block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-foreground); margin-bottom: 6px; }
   .field input, .field select {
-    width: 100%; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px;
+    width: 100%; background: var(--background); border: 1px solid var(--input); border-radius: var(--radius-sm); padding: 9px 10px;
   }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-  .field.ask input, .field.ask select, .field.ask .chips { border-color: var(--warn); background: var(--warn-soft); }
-  .ask-note { display: none; font-size: 0.8rem; color: var(--warn); margin-top: 4px; }
+  .field.ask input, .field.ask select, .field.ask .chips { border-color: var(--ring); background: var(--secondary); }
+  .ask-note { display: none; font-size: 0.8rem; color: var(--muted-foreground); margin-top: 4px; }
   .field.ask .ask-note { display: block; }
-  .hint { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
-  .sub-box { border-left: 3px solid var(--accent-soft); padding-left: 10px; margin-top: 8px; }
-  .chips { display: flex; flex-wrap: wrap; gap: 6px; border: 1px solid transparent; border-radius: 10px; padding: 2px; }
+  .hint { font-size: 0.8rem; color: var(--muted-foreground); margin-top: 4px; }
+  .sub-box { border-left: 3px solid var(--secondary); padding-left: 10px; margin-top: 8px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; border: 1px solid transparent; border-radius: var(--radius-md); padding: 2px; }
   .chips button {
-    border: 1px solid var(--line); background: var(--bg); border-radius: 999px;
+    border: 1px solid var(--border); background: var(--background); border-radius: 999px;
     padding: 6px 12px; cursor: pointer; font-size: 0.9rem;
   }
-  .chips button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
-  .total { display: flex; justify-content: space-between; font-weight: 600; padding: 10px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-bottom: 14px; }
-  .num { font-variant-numeric: tabular-nums; }
-  .schedule { list-style: none; font-size: 0.88rem; color: var(--muted); margin-top: 6px; }
-  .effect { background: var(--accent-soft); border-radius: 10px; padding: 10px 12px; font-size: 0.92rem; margin: 6px 0 14px; }
+  .chips button[aria-pressed="true"] { background: var(--primary); border-color: var(--primary); color: var(--primary-foreground); }
+  .total { display: flex; justify-content: space-between; font-weight: 700; padding: 10px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-bottom: 14px; }
+  .num { font-family: var(--font-heading); font-variant-numeric: tabular-nums; }   /* DM Sans has no same-width digits */
+  .schedule { list-style: none; font-size: 0.88rem; color: var(--muted-foreground); margin-top: 6px; }
+  .effect { background: var(--muted); border-radius: var(--radius-md); padding: 10px 12px; font-size: 0.92rem; margin: 6px 0 14px; }
   .effect div + div { margin-top: 2px; }
-  .warn { color: var(--danger); font-size: 0.88rem; margin-bottom: 10px; }
+  .warn { color: var(--destructive); font-size: 0.88rem; margin-bottom: 10px; }
 
   .sales { list-style: none; }
   .sales li {
     display: flex; justify-content: space-between; gap: 12px; align-items: center;
-    padding: 12px 0; border-bottom: 1px solid var(--line);
+    padding: 12px 0; border-bottom: 1px solid var(--border);
   }
-  .sales .main { font-weight: 600; }
-  .sales .meta { font-size: 0.85rem; color: var(--muted); }
-  .sales .owes { color: var(--warn); }
+  .sales .main { font-weight: 700; }
+  .sales .meta { font-size: 0.85rem; color: var(--muted-foreground); }
+  .sales .owes { color: var(--owed); }
   .sales .undone { text-decoration: line-through; opacity: 0.6; }
-  .linkbtn { background: none; border: 0; color: var(--accent); cursor: pointer; font-size: 0.88rem; white-space: nowrap; }
-  .empty { color: var(--muted); font-size: 0.92rem; }
+  .linkbtn { background: none; border: 0; color: var(--primary); cursor: pointer; font-size: 0.88rem; white-space: nowrap; }
+  .empty { color: var(--muted-foreground); font-size: 0.92rem; }
 
   .toast {
-    position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%);
-    background: var(--text); color: var(--bg); padding: 10px 16px; border-radius: 10px;
+    position: fixed; left: 50%; bottom: 76px; transform: translateX(-50%); width: max-content;
+    background: var(--foreground); color: var(--background); padding: 10px 16px; border-radius: var(--radius-md);
     font-size: 0.92rem; max-width: calc(100% - 32px); display: none; z-index: 20;
   }
-  footer { border-top: 1px solid var(--line); padding: 20px 0 32px; font-size: 0.82rem; color: var(--muted); }
+  footer { border-top: 1px solid var(--border); padding: 20px 0 32px; font-size: 0.82rem; color: var(--muted-foreground); }
   footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 
   .overlay {
-    position: fixed; inset: 0; background: var(--bg); z-index: 30;
+    position: fixed; inset: 0; background: var(--background); z-index: 30;
     display: none; align-items: center; justify-content: center; padding: 16px;
   }
   .overlay .box { max-width: 360px; width: 100%; text-align: center; }
@@ -188,21 +147,21 @@
   .onboard { align-items: flex-start; overflow-y: auto; }
   .onboard .box { text-align: left; max-width: 420px; padding: 32px 0; }
   .onboard h2 { margin: 16px 0 4px; }
-  .ob-sub { color: var(--muted); margin-bottom: 20px; }
-  .onboard .field input, .onboard .field select { width: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
+  .ob-sub { color: var(--muted-foreground); margin-bottom: 20px; }
+  .onboard .field input, .onboard .field select { width: 100%; background: var(--card); border: 1px solid var(--input); border-radius: var(--radius-sm); padding: 10px; }
   .check-row { display: grid; grid-template-columns: 22px 1fr; gap: 10px; align-items: start; margin: 14px 0; font-size: 0.92rem; cursor: pointer; }
-  .check-row input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--accent); }
-  .check-row a { color: var(--accent); font-weight: 600; }
-  .doc-lang { color: var(--muted); font-size: 0.82rem; }
-  .ob-error { color: var(--danger); font-size: 0.82rem; margin-top: 4px; }
+  .check-row input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--primary); }
+  .check-row a { color: var(--primary); font-weight: 700; }
+  .doc-lang { color: var(--muted-foreground); font-size: 0.82rem; }
+  .ob-error { color: var(--destructive); font-size: 0.82rem; margin-top: 4px; }
   .ob-foot { margin-top: 12px; text-align: center; }
-  .ob-ok { background: var(--accent-soft); border-radius: 10px; padding: 12px; font-size: 0.92rem; margin: 6px 0 4px; }
-  .ob-switch { margin-top: 16px; text-align: center; font-size: 0.9rem; color: var(--muted); }
+  .ob-ok { background: var(--muted); border-radius: var(--radius-md); padding: 12px; font-size: 0.92rem; margin: 6px 0 4px; }
+  .ob-switch { margin-top: 16px; text-align: center; font-size: 0.9rem; color: var(--muted-foreground); }
   #ob-forgot { display: block; margin: 12px auto 0; }
   #ob-err { margin-top: 10px; font-size: 0.88rem; }
   .onboard .btn { margin-top: 18px; }
   .head-actions { display: flex; align-items: center; gap: 8px; }
-  .bizbtn { background: none; border: 1px solid var(--line); border-radius: 8px; padding: 4px 10px; font-size: 0.85rem; cursor: pointer; color: var(--accent); font-weight: 600; white-space: nowrap; }
+  .bizbtn { background: none; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 4px 10px; font-size: 0.85rem; cursor: pointer; color: var(--primary); font-weight: 700; white-space: nowrap; }
   .head-actions { min-width: 0; }
   @media (max-width: 440px) {
     .hello { display: none; }
@@ -210,135 +169,198 @@
     .bizbtn { padding: 4px 7px; font-size: 0.78rem; }
     .lang button { padding: 4px 6px; font-size: 0.78rem; }
   }
-  .hello { font-weight: 400; color: var(--muted); font-size: 0.9rem; margin-left: 6px; }
-  header .tabs { display: flex; height: auto; justify-content: flex-start; gap: 4px; overflow-x: auto; }
+  .hello { display: none; }   /* the greeting lives on Inicio now */
+  /* Four tabs at the bottom, always in reach of the thumb. */
+  .tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 4; background: var(--card); border-top: 1px solid var(--border); padding-bottom: env(safe-area-inset-bottom, 0); }
+  .tabs .wrap { display: grid; grid-template-columns: repeat(4, 1fr); padding: 0 8px; height: auto; gap: 0; }
   .tabs button {
-    background: none; border: 0; border-bottom: 2px solid transparent;
-    padding: 10px 10px 9px; cursor: pointer; color: var(--muted); font-weight: 600; font-size: 0.92rem; white-space: nowrap;
+    display: flex; flex-direction: column; align-items: center; gap: 1px; min-height: 58px; justify-content: center;
+    background: none; border: 0; cursor: pointer; color: var(--muted-foreground); font-weight: 700; font-size: 0.74rem;
   }
-  .tabs button { font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; }
-  .tabs button[aria-selected="true"] { color: var(--text); border-bottom-color: var(--sand); }
+  /* Inicio: greeting, today's to-do, the week's number, chat box. */
+  .greet { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .greet .ico { font-size: 2rem; line-height: 1; }
+  .greet h1 { margin: 0; }
+  .greet .sub { margin: 0; }
+  #todoHost { display: grid; gap: 12px; }
+  #todoHost .assistant { border-left: 1px solid var(--border); margin: 0; }
+  #todoHost .assistant h2 { font-family: var(--font-body); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-foreground); margin: 12px 0 2px; }
+  .todo label { display: flex; align-items: flex-start; gap: 12px; cursor: pointer; }
+  .todo input { width: 24px; height: 24px; flex: none; margin-top: 1px; accent-color: var(--primary); }
+  .todo .tag { margin-bottom: 4px; }
+  .todo.done .as-text { text-decoration: line-through; color: var(--muted-foreground); }
+  #tab-sell { padding-bottom: 76px; }
+  #cardHost .card { margin: 0 0 12px; }
+  #tab-sell:has(#cardHost .card) .composer { display: none; }   /* one thing at a time: the card has her full attention */
+  .composer { position: fixed; left: 0; right: 0; bottom: calc(59px + env(safe-area-inset-bottom, 0)); z-index: 3; padding: 8px 0; }
+  .composer .box { display: flex; align-items: flex-end; gap: 8px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 6px 6px 6px 16px; }
+  .composer textarea { flex: 1; min-width: 0; min-height: 40px; max-height: 120px; height: 40px; resize: none; border: 0; border-radius: 0; padding: 8px 0; background: none; outline: none; }
+  .composer .msg { background: var(--card); border-radius: var(--radius-lg); padding: 6px 12px; margin: 0 0 6px; }
+  .send { flex: none; width: 40px; height: 40px; border: 0; border-radius: 50%; background: var(--primary); color: var(--primary-foreground); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .send:disabled { opacity: 0.45; cursor: not-allowed; }
+  .composer .box.rec { outline: 2px solid var(--ring); animation: rec 1.4s ease-in-out infinite; }
+  @keyframes rec { 50% { outline-color: transparent; } }
+  @media (prefers-reduced-motion: reduce) { .composer .box.rec { animation: none; } }
+  .composer .cancel { flex: none; align-self: center; padding: 0 4px; }
+  /* Who owes: plain notebook lines. */
+  #cobrarBody .rows li { border-bottom-color: var(--notebook-line); }
+  .tabs button span:first-child { font-size: 1.25rem; line-height: 1.2; }
+  .icon-people { fill: var(--icon-people); vertical-align: -0.125em; }   /* a drawn icon: the 👥 emoji is dark purple on some phones */
+  .tabs button[aria-selected="true"] { color: var(--foreground); font-weight: 700; }
 
   .home-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
-  .seg { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
-  .seg button { background: none; border: 0; padding: 6px 12px; cursor: pointer; color: var(--muted); font-size: 0.88rem; }
-  .seg button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+  .seg { display: flex; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+  .seg button { background: none; border: 0; padding: 6px 12px; cursor: pointer; color: var(--muted-foreground); font-size: 0.88rem; }
+  .seg button[aria-pressed="true"] { background: var(--secondary); color: var(--primary); font-weight: 700; }
   .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .stat { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
-  .stat .k { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
-  .stat .v { font-size: 1.35rem; font-weight: 700; font-variant-numeric: tabular-nums; margin-top: 2px; }
+  .stat { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 14px 16px; }
+  .stat .k { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-foreground); }
+  .stat .v { font-size: 1.35rem; margin-top: 2px; }
   .stat.big { grid-column: 1 / -1; }
-  .stat.big { background: #111111; border-color: #111111; color: #f3ecdc; }
-  .stat.big .k, .stat.big .small { color: #c9b48f; }
-  .stat.big .v { font-size: 2rem; }
-  .stat .v.owe { color: var(--warn); }
-  .stat .small { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
-  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 4px 14px; }
+  .stat.big .v { font-size: 2.6rem; line-height: 1.15; }
+  .stat .v.owe { color: var(--owed); }
+  .stat.big .v.owe { color: var(--destructive); }   /* a loss, not money owed */
+  .stat .small { font-size: 0.8rem; color: var(--muted-foreground); margin-top: 2px; }
+  .panel { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 4px 16px; }
   .panel h2 { margin: 12px 0 4px; }
   .rows { list-style: none; }
-  .rows li { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .rows li { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
   .rows li:last-child { border-bottom: 0; }
-  .rows .meta { font-size: 0.82rem; color: var(--muted); }
+  .rows .meta { font-size: 0.82rem; color: var(--muted-foreground); }
   .files-add { padding: 10px 0 4px; }
-  .files-add .msg.ok { color: var(--muted); }
+  .files-add .msg.ok { color: var(--muted-foreground); }
+  .files-head { display: flex; justify-content: flex-end; margin-bottom: 8px; }
+  .files-count { font-size: 0.85rem; color: var(--muted-foreground); background: var(--muted); border-radius: 999px; padding: 4px 12px; }
+  .files-count b { color: var(--foreground); }
+  /* Drop zone: the wallet sits across its bottom edge, and the file lands inside it. */
+  .drop { position: relative; display: block; width: 100%; margin-bottom: 52px; padding: 18px 16px 62px; text-align: center; cursor: pointer; background: var(--background); border: 2px dashed var(--border); border-radius: var(--radius-xl); }
+  .drop:hover, .drop.over { border-color: var(--ring); }
+  .drop:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+  .drop:disabled { cursor: default; }
+  .drop.busy .or, .drop.over .or { visibility: hidden; }
+  .drop .up { display: block; margin: 0 auto 6px; color: var(--muted-foreground); }
+  .drop strong { display: block; font-family: var(--font-heading); font-size: 1.15rem; line-height: 1.25; }
+  .drop .or { display: block; color: var(--muted-foreground); }
+  .wallet { position: absolute; left: 50%; bottom: -46px; width: 120px; height: 84px; margin-left: -60px; overflow: visible; }
+  .w-back { fill: var(--foreground); }
+  .w-doc rect { fill: var(--card); stroke: var(--muted-foreground); stroke-width: 2; }
+  .w-doc path { fill: none; stroke: var(--muted-foreground); stroke-width: 2; stroke-linecap: round; }
+  .w-doc { opacity: 0; transform: translateY(-34px); }
+  .w-body { fill: var(--accent); }
+  .w-flap { fill: var(--foreground); transform-origin: 60px 28px; transform: scaleY(0); }
+  .w-clasp { fill: var(--foreground); }
+  .w-ok { display: none; }
+  .w-ok circle { fill: var(--paid); }
+  .w-ok path { fill: none; stroke: var(--paid-foreground); stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
+  .drop.over .w-doc { opacity: 1; }
+  .drop.busy .w-doc { animation: into-wallet 1.1s ease-in infinite; }
+  .drop.done .w-flap { animation: wallet-shut 0.35s ease-out both; }
+  .drop.done .w-clasp { display: none; }
+  .drop.done .w-ok { display: block; animation: wallet-ok 0.3s 0.25s ease-out backwards; }
+  @keyframes into-wallet { 0% { opacity: 1; transform: translateY(-34px); } 75% { opacity: 1; transform: translateY(14px); } 100% { opacity: 0; transform: translateY(14px); } }
+  @keyframes wallet-shut { to { transform: scaleY(1); } }
+  @keyframes wallet-ok { from { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) {
+    .drop.busy .w-doc { animation: none; opacity: 1; transform: none; }
+    .drop.done .w-flap { animation: none; transform: scaleY(1); }
+    .drop.done .w-ok { animation: none; }
+  }
   .rows .fname { overflow-wrap: anywhere; }
-  .rows .late { color: var(--danger); }
-  .pill { font-size: 0.75rem; padding: 2px 8px; border-radius: 999px; background: var(--warn-soft); color: var(--warn); font-weight: 600; white-space: nowrap; }
-  .stock-input { width: 64px; text-align: right; background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 5px 6px; }
-  .bar { height: 8px; background: var(--accent-soft); border-radius: 4px; margin-top: 4px; overflow: hidden; }
-  .bar span { display: block; height: 100%; background: var(--sand); }
+  .rows .late { color: var(--owed); }
+  .pill { font-size: 0.75rem; padding: 2px 8px; border-radius: 999px; background: var(--secondary); color: var(--secondary-foreground); font-weight: 700; white-space: nowrap; }
+  .stock-input { width: 64px; text-align: right; background: var(--background); border: 1px solid var(--input); border-radius: var(--radius-sm); padding: 5px 6px; }
+  .bar { height: 8px; background: var(--muted); border-radius: var(--radius-sm); margin-top: 4px; overflow: hidden; }
+  .bar span { display: block; height: 100%; background: var(--accent); }
   .home-section { margin-top: 18px; }
 
   .toggles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .toggle {
     display: flex; align-items: center; gap: 10px; text-align: left;
-    background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px; cursor: pointer;
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 12px; cursor: pointer;
   }
-  .toggle[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
-  .toggle .dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--line); flex: none; }
-  .toggle[aria-pressed="true"] .dot { border-color: var(--accent); background: var(--accent); box-shadow: inset 0 0 0 3px var(--accent-soft); }
-  .toggle .name { font-weight: 600; font-size: 0.92rem; }
-  .toggle .st { font-size: 0.75rem; color: var(--muted); }
+  .toggle[aria-pressed="true"] { border-color: var(--primary); background: var(--secondary); }
+  .toggle .dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--border); flex: none; }
+  .toggle[aria-pressed="true"] .dot { border-color: var(--primary); background: var(--primary); box-shadow: inset 0 0 0 3px var(--secondary); }
+  .toggle .name { font-weight: 700; font-size: 0.92rem; }
+  .toggle .st { font-size: 0.75rem; color: var(--muted-foreground); }
   .biz h2 { margin: 22px 0 8px; }
   .biz h2:first-child { margin-top: 4px; }
   .biz .hint { margin: -4px 0 8px; }
   .toggles.flags { margin-top: 8px; }
-  .rec { margin-top: 26px; background: var(--accent-soft); border-radius: 14px; padding: 4px 14px 14px; }
-  .rec { border-left: 3px solid var(--sand); }
+  .rec { margin-top: 26px; background: var(--muted); border-radius: var(--radius-lg); padding: 4px 14px 14px; }
+  .rec { border-left: 3px solid var(--accent); }
   .rec-free { font-size: 0.9rem; margin-bottom: 10px; }
-  .rec-item { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin-top: 8px; font-size: 0.9rem; }
-  .rec-why { color: var(--muted); font-size: 0.82rem; margin-top: 2px; }
+  .rec-item { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 10px 12px; margin-top: 8px; font-size: 0.9rem; }
+  .rec-why { color: var(--muted-foreground); font-size: 0.82rem; margin-top: 2px; }
   .plpick { text-align: left; }
-  .pl-sug { background: #111111; color: #f3ecdc; border: 1px solid #c9b48f; border-radius: 16px; padding: 18px 16px 16px; }
-  @media (prefers-color-scheme: dark) { .pl-sug { background: #1c1b19; } }
-  .pl-eyebrow { font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: #c9b48f; font-weight: 600; }
-  .pl-basis { font-size: 0.82rem; color: #ceccc5; margin-top: 2px; }
-  .pl-name { font-family: var(--serif); font-size: 2rem; font-weight: 600; line-height: 1.1; margin-top: 12px; }
-  .pl-price { font-family: var(--serif); font-size: 1.35rem; margin-top: 2px; }
-  .pl-price small, .pl-col .pr small { font-family: var(--sans, inherit); font-size: 0.75rem; font-weight: 400; opacity: 0.75; }
-  .pl-why { font-size: 0.9rem; color: #f3ecdc; margin: 10px 0 14px; border-left: 2px solid #c9b48f; padding-left: 10px; }
-  .pl-note { font-size: 0.74rem; color: #ceccc5; margin-top: 10px; }
+  .pl-sug { background: var(--card); color: var(--foreground); border: 1.5px solid var(--accent); border-radius: var(--radius-xl); padding: 18px 16px 16px; }
+  .pl-eyebrow { font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted-foreground); font-weight: 700; }
+  .pl-basis { font-size: 0.82rem; color: var(--muted-foreground); margin-top: 2px; }
+  .pl-name { font-family: var(--font-heading); font-size: 2rem; font-weight: 600; line-height: 1.1; margin-top: 12px; }
+  .pl-price { font-size: 1.35rem; margin-top: 2px; }
+  .pl-price small, .pl-col .pr small { font-family: var(--font-body); font-size: 0.75rem; font-weight: 400; opacity: 0.75; }
+  .pl-why { font-size: 0.9rem; margin: 10px 0 14px; border-left: 2px solid var(--accent); padding-left: 10px; }
+  .pl-note { font-size: 0.74rem; color: var(--muted-foreground); margin-top: 10px; }
   .plpick .btn { display: inline-block; width: auto; margin-top: 0; }
-  .pl-sug .btn { background: #f3ecdc; color: #111111; }
-  .pl-sug .pill { background: #c9b48f; color: #111111; }
+  .pl-sug .pill { background: var(--accent); color: var(--accent-foreground); }
   .pl-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 12px; }
-  .pl-col { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 8px; display: flex; flex-direction: column; gap: 4px; text-align: center; }
-  .pl-col.sug { border-color: var(--sand); box-shadow: inset 0 3px 0 var(--sand); }
-  .pl-col .nm { font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; color: var(--muted); }
-  .pl-col .pr { font-family: var(--serif); font-size: 1.2rem; font-weight: 600; }
-  .pl-col .wh { font-size: 0.74rem; color: var(--muted); flex: 1; }
+  .pl-col { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 10px 8px; display: flex; flex-direction: column; gap: 4px; text-align: center; }
+  .pl-col.sug { border-color: var(--accent); box-shadow: inset 0 3px 0 var(--accent); }
+  .pl-col .nm { font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; color: var(--muted-foreground); }
+  .pl-col .pr { font-size: 1.2rem; }
+  .pl-col .wh { font-size: 0.74rem; color: var(--muted-foreground); flex: 1; }
   .pl-col .btn, .pl-col .pill { align-self: center; padding: 6px 12px; font-size: 0.78rem; }
-  .pl-col .tag-sug { font-size: 0.66rem; color: var(--muted); font-weight: 600; }
+  .pl-col .tag-sug { font-size: 0.66rem; color: var(--muted-foreground); font-weight: 700; }
   @media (max-width: 380px) { .pl-grid { grid-template-columns: repeat(2, 1fr); } }
   #planStep .box { max-width: 520px; }
-  .onboard .biz .toggle { background: var(--surface); }
+  .onboard .biz .toggle { background: var(--card); }
   .onboard .btn.ghost { margin-top: 8px; }
-  .soon { margin-top: 20px; font-size: 0.85rem; color: var(--muted); background: var(--surface); border: 1px dashed var(--line); border-radius: 10px; padding: 10px 12px; }
+  .soon { margin-top: 20px; font-size: 0.85rem; color: var(--muted-foreground); background: var(--card); border: 1px dashed var(--border); border-radius: var(--radius-md); padding: 10px 12px; }
 
-  .ai-tag { font-family: var(--serif); font-style: italic; font-size: 0.85rem; color: var(--muted); margin: -8px 0 12px; }
-  .assistant { border-left: 3px solid var(--sand); }
+  .ai-tag { font-family: var(--font-heading); font-size: 0.85rem; color: var(--muted-foreground); margin: -8px 0 12px; }
+  .assistant { border-left: 3px solid var(--accent); }
   .assistant .as-text { margin-top: 4px; font-size: 0.92rem; }
   .assistant .tag { margin-left: 0; }
-  .as-note { font-size: 0.78rem; color: var(--muted); padding: 2px 0 12px; }
-  .install { display: grid; grid-template-columns: 44px 1fr; gap: 12px; align-items: start; background: #111111; color: #f3ecdc; border-radius: 14px; padding: 14px; margin-bottom: 20px; }
-  .install img { width: 44px; height: 44px; border-radius: 10px; }
-  .install strong { font-family: var(--serif); font-size: 1.05rem; font-weight: 600; }
-  .install p { font-size: 0.85rem; color: #ceccc5; margin: 2px 0 10px; }
-  .install .btn { background: #f3ecdc; color: #111111; padding: 7px 14px; font-size: 0.85rem; }
-  .install .linkbtn { color: #c9b48f; margin-left: 8px; }
-  .offline-bar { background: var(--warn-soft); color: var(--warn); font-size: 0.82rem; text-align: center; padding: 6px 16px; }
-  .demo-note { font-size: 0.82rem; color: var(--muted); border-left: 3px solid var(--sand); padding: 6px 10px; margin-bottom: 18px; background: var(--surface); border-radius: 0 8px 8px 0; }
-  .conn { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-top: 12px; }
+  .as-note { font-size: 0.78rem; color: var(--muted-foreground); padding: 2px 0 12px; }
+  .install { display: grid; grid-template-columns: 44px 1fr; gap: 12px; align-items: start; background: var(--card); color: var(--foreground); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 14px; margin-bottom: 20px; }
+  .install img { width: 44px; height: 44px; border-radius: var(--radius-md); }
+  .install strong { font-family: var(--font-heading); font-size: 1.05rem; font-weight: 600; }
+  .install p { font-size: 0.85rem; color: var(--muted-foreground); margin: 2px 0 10px; }
+  .install .btn { padding: 7px 14px; font-size: 0.85rem; }
+  .install .linkbtn { margin-left: 8px; }
+  .offline-bar { background: var(--secondary); color: var(--secondary-foreground); font-size: 0.82rem; text-align: center; padding: 6px 16px; }
+  .demo-note { font-size: 0.82rem; color: var(--muted-foreground); border-left: 3px solid var(--accent); padding: 6px 10px; margin-bottom: 18px; background: var(--card); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+  .conn { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px; margin-top: 12px; }
   .conn-head { display: grid; grid-template-columns: 40px 1fr auto; gap: 12px; align-items: center; }
-  .conn-ico { width: 40px; height: 40px; border-radius: 50%; background: #111111; color: #c9b48f; display: flex; align-items: center; justify-content: center; font-family: var(--serif); font-style: italic; font-weight: 600; font-size: 0.95rem; }
+  .conn-ico { width: 40px; height: 40px; border-radius: 50%; background: var(--muted); color: var(--foreground); display: flex; align-items: center; justify-content: center; font-family: var(--font-heading); font-weight: 600; font-size: 0.95rem; }
   .conn-name { font-weight: 700; }
-  .conn .meta { font-size: 0.82rem; color: var(--muted); }
-  .tag { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 2px 7px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); margin-left: 4px; white-space: nowrap; }
-  .tag.on { background: #111111; border-color: #111111; color: #c9b48f; }
+  .conn .meta { font-size: 0.82rem; color: var(--muted-foreground); }
+  .tag { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 2px 7px; border-radius: 999px; border: 1px solid var(--border); color: var(--muted-foreground); margin-left: 4px; white-space: nowrap; }
+  .tag.on { background: var(--primary); border-color: var(--primary); color: var(--primary-foreground); }
   .btn.sm { padding: 7px 12px; font-size: 0.85rem; }
-  .ask-box { margin-top: 12px; background: var(--bg); border-radius: 10px; padding: 12px; font-size: 0.9rem; }
+  .ask-box { margin-top: 12px; background: var(--background); border-radius: var(--radius-md); padding: 12px; font-size: 0.9rem; }
   .ask-box ul { margin: 6px 0 10px 18px; }
-  .ask-box .never { color: var(--muted); font-size: 0.82rem; margin-bottom: 10px; }
-  .conn-body { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 10px; }
-  .conn-body h4 { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
-  .chat { background: var(--bg); border-radius: 12px 12px 12px 2px; padding: 8px 12px; font-size: 0.9rem; max-width: 92%; }
-  .chat b { display: block; font-size: 0.75rem; color: var(--muted); }
+  .ask-box .never { color: var(--muted-foreground); font-size: 0.82rem; margin-bottom: 10px; }
+  .conn-body { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 10px; }
+  .conn-body h4 { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-foreground); margin-bottom: 8px; }
+  .chat { background: var(--background); border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg) 2px; padding: 8px 12px; font-size: 0.9rem; max-width: 92%; }
+  .chat b { display: block; font-size: 0.75rem; color: var(--muted-foreground); }
   .understood { font-size: 0.85rem; margin: 6px 0 4px; }
-  .understood em { font-family: var(--serif); }
-  .found { padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .understood em { font-family: var(--font-heading); }
+  .found { padding: 10px 0; border-bottom: 1px solid var(--border); }
   .found:last-child { border-bottom: 0; }
   .file-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
   .file-row label.btn { display: inline-block; }
   .legal-links { display: flex; flex-wrap: wrap; gap: 4px 14px; }
-  .legal-links a { color: var(--muted); }
+  .legal-links a { color: var(--muted-foreground); }
 </style>
 </head>
-<body class="auth-wait">
+<body class="auth-wait bg-notebook">
 
 <div class="overlay" id="langPicker" role="dialog" aria-modal="true">
   <div class="box">
     <div class="logo">Vende<span>AI</span></div>
-    <h2>¿En qué idioma quieres usar VendeAI?<br><span style="color:var(--muted);font-weight:400;font-style:italic">Em qual idioma você quer usar o VendeAI?<br>Which language do you want to use?</span></h2>
+    <h2>¿En qué idioma quieres usar VendeAI?<br><span style="color:var(--muted-foreground);font-weight:400;font-style:italic">Em qual idioma você quer usar o VendeAI?<br>Which language do you want to use?</span></h2>
     <button class="btn" data-pick="es">Español</button>
     <button class="btn" data-pick="pt">Português</button>
     <button class="btn" data-pick="en">English</button>
@@ -431,11 +453,6 @@
     </div>
   </div>
   <div class="offline-bar" id="offlineBar" role="status" hidden data-t="offlineNote"></div>
-  <nav class="wrap tabs" role="tablist">
-    <button role="tab" data-tab="sell" data-t="tabSell"></button>
-    <button role="tab" data-tab="home" data-t="tabHome"></button>
-    <button role="tab" data-tab="connect" data-t="tabConnect"></button>
-  </nav>
 </header>
 
 <main class="wrap">
@@ -448,24 +465,48 @@
       <button class="btn" id="instBtn" data-t="instBtn"></button><button class="linkbtn" id="instLater" data-t="instLater"></button>
     </div>
   </div>
-  <h1 data-t="newSaleTitle"></h1>
-  <p class="sub" data-t="newSaleSub"></p>
-
-  <textarea id="saleText" aria-label=""></textarea>
-  <div class="row-actions">
-    <button class="btn" id="readBtn" data-t="readBtn"></button>
+  <div class="greet">
+    <span class="ico" aria-hidden="true">🏪</span>
+    <div><h1 id="greet"></h1><p class="sub" data-t="greetSub"></p></div>
   </div>
-  <div class="msg" id="readMsg" hidden></div>
+
+  <div id="cardHost"></div>
+  <div id="todoHost"></div>
 
   <div class="examples">
     <span data-t="examplesLabel"></span>
     <div id="exampleList"></div>
   </div>
 
-  <div id="cardHost"></div>
-
   <h2 data-t="recent"></h2>
   <ul class="sales" id="salesList"></ul>
+
+  <div class="composer">
+    <div class="wrap">
+      <div class="msg" id="readMsg" hidden></div>
+      <div class="box">
+        <textarea id="saleText" rows="1" aria-label=""></textarea>
+        <button class="linkbtn cancel" id="micCancel" data-t="voiceCancel" hidden></button>
+        <button class="send" id="micBtn" aria-label="" hidden>
+          <svg id="micIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+          <svg id="stopIcon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" hidden><rect x="5" y="5" width="14" height="14" rx="3"/></svg>
+        </button>
+        <button class="send" id="readBtn" aria-label="">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="tab-cobrar" role="tabpanel" hidden>
+  <h1 data-t="tabCobrar"></h1>
+  <div id="cobrarBody"></div>
+</section>
+
+<section id="tab-stock" role="tabpanel" hidden>
+  <h1 data-t="tabStock"></h1>
+  <div id="stockBody"></div>
 </section>
 
 <section id="tab-home" role="tabpanel" hidden>
@@ -500,10 +541,20 @@
   </div>
   <div class="wrap" style="margin-top:12px">
     <span id="demoDate"></span>
+    <button class="linkbtn" data-tab="connect" data-t="tabConnect"></button>
     <button class="linkbtn" id="resetBtn" data-t="reset"></button>
     <button class="linkbtn" id="newsBtn" hidden></button>
   </div>
 </footer>
+
+<nav class="tabs" role="tablist">
+  <div class="wrap">
+    <button role="tab" data-tab="sell"><span aria-hidden="true">🏠</span><span data-t="tabSell"></span></button>
+    <button role="tab" data-tab="cobrar"><span aria-hidden="true"><svg class="icon-people" viewBox="0 0 24 24" width="1em" height="1em"><circle cx="8" cy="8" r="4"/><circle cx="16.5" cy="8.5" r="3.5"/><path d="M1 20c0-4 3.1-7 7-7s7 3 7 7v1H1z"/><path d="M17 21v-1c0-2.4-.9-4.6-2.4-6.2.6-.2 1.2-.3 1.9-.3 3.6 0 6.5 2.9 6.5 6.5v1z"/></svg></span><span data-t="tabCobrar"></span></button>
+    <button role="tab" data-tab="stock"><span aria-hidden="true">📦</span><span data-t="tabStock"></span></button>
+    <button role="tab" data-tab="home"><span aria-hidden="true">📊</span><span data-t="tabHome"></span></button>
+  </div>
+</nav>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -555,7 +606,13 @@ const I18N = {
     channels: { none: 'Sin indicar', whatsapp: 'WhatsApp', instagram: 'Instagram', facebook: 'Facebook', tiktok: 'TikTok', mercadolibre: 'Mercado Libre', persona: 'En persona', catalogo: 'Catálogo' },
     pay: { efectivo: 'Efectivo', transferencia: 'Transferencia', spei: 'Transferencia SPEI', mercadopago: 'Mercado Pago', pagoefectivo: 'PagoEfectivo', oxxo: 'OXXO', yape: 'Yape', plin: 'Plin', sip: 'SIP (Interbank / Oh!)', nequi: 'Nequi', daviplata: 'Daviplata', mach: 'MACH', pix: 'Pix', picpay: 'PicPay', otro: 'Otro' },
     payOtherLabel: '¿Cuál? Escribe el nombre', payOtherPh: 'Ej.: Izipay, BIM, Tunki',
-    tabSell: 'Anotar', tabHome: 'Todo en un lugar', tabChannels: 'Mi negocio',
+    tabSell: 'Inicio', tabHome: 'Ganancia', tabCobrar: 'Cobrar', tabStock: 'Stock',
+    greet: '¡Hola, {name}!', greetAnon: '¡Hola!', greetSub: 'Mira cómo vas hoy', hEarnedWeek: 'Ganaste esta semana', hEarnedMonth: 'Ganaste este mes', composer: 'Pega o dicta una venta…',
+    voiceStart: 'Grabar nota de voz', voiceStop: 'Detener y enviar', voiceCancel: 'Cancelar', voiceRec: 'Te escucho… {time}', voiceWorking: 'Pasando tu nota a texto…',
+    voiceLimit: 'Usaste tus {n} notas de voz de este mes. Puedes seguir escribiendo o pegando tus ventas, gratis siempre, o pasarte a un plan para dictar sin límite.',
+    voiceLeft: 'Te quedan {n} notas de voz este mes.', voiceLeftOne: 'Te queda 1 nota de voz este mes.', voiceLeftNone: 'Ya no te quedan notas de voz este mes.', voiceDenied: 'Para usar el micrófono, permite el acceso en tu navegador. También puedes escribir la venta.',
+    voiceNoMic: 'No encontramos un micrófono. Puedes escribir la venta.', voiceEmpty: 'No te escuché. Prueba otra vez, un poco más cerca del teléfono.',
+    voiceFail: 'No pudimos pasar tu nota a texto. Inténtalo otra vez o escribe la venta.', voiceOffline: 'Sin internet no puedo escuchar notas de voz. Escribe la venta y la leo igual.', tabChannels: 'Mi negocio',
     tabConnect: 'Conectar',
     cnTitle: 'Tus canales',
     cnSub: 'Conecta donde vendes y tus ventas llegan solas. Tú solo revisas y guardas.',
@@ -651,7 +708,7 @@ const I18N = {
     fSub: 'Guarda comprobantes de pago, catálogos, fotos de productos y papeles de tu stock. Fotos JPG o PNG, o PDF (en stock, también Excel), hasta 5 MB. Solo tú puedes verlos.',
     fKind: '¿Qué vas a subir?',
     fKinds: { comprobantes: 'Comprobante de pago', catalogos: 'Catálogo o foto de producto', stock: 'Stock o proveedor' },
-    fPick: 'Subir archivo', fUploading: 'Subiendo…', fSaved: 'Listo: archivo guardado.',
+    fDrop: 'Guarda tu archivo aquí', fDropOr: 'Toca para elegirlo o arrástralo', fCount: 'Guardados', fUploading: 'Subiendo…', fSaved: 'Listo: archivo guardado.',
     fTooBig: 'Este archivo pesa {size}. El máximo es 5 MB. Prueba con una foto más pequeña o un PDF más corto.',
     fBadType: 'Ese archivo no se puede subir. Solo fotos JPG o PNG, o PDF.',
     fBadTypeStock: 'Ese archivo no se puede subir. Solo Excel (.xlsx o .xls), fotos JPG o PNG, o PDF.',
@@ -670,7 +727,7 @@ const I18N = {
       down: 'La IA no está disponible, así que usamos el lector básico. Revisa bien la tarjeta.',
       offline: 'Sin conexión con la IA, así que usamos el lector básico. Revisa bien la tarjeta.'
     },
-    asTitle: 'Tu asistente',
+    asTitle: 'Para hoy',
     asNone: 'Todo en orden: tus precios, tu stock y tus cobros están al día.',
     asBusy: 'Tu asistente está escribiendo…',
     asByAI: 'Redactado con IA. Los números los calcula la app.',
@@ -815,7 +872,13 @@ const I18N = {
     channels: { none: 'Não informado', whatsapp: 'WhatsApp', instagram: 'Instagram', facebook: 'Facebook', tiktok: 'TikTok', mercadolibre: 'Mercado Livre', persona: 'Pessoalmente', catalogo: 'Catálogo' },
     pay: { efectivo: 'Dinheiro', transferencia: 'Transferência', spei: 'Transferência SPEI', mercadopago: 'Mercado Pago', pagoefectivo: 'PagoEfectivo', oxxo: 'OXXO', yape: 'Yape', plin: 'Plin', sip: 'SIP (Interbank / Oh!)', nequi: 'Nequi', daviplata: 'Daviplata', mach: 'MACH', pix: 'Pix', picpay: 'PicPay', otro: 'Outro' },
     payOtherLabel: 'Qual? Escreva o nome', payOtherPh: 'Ex.: Nubank, Inter, PagBank',
-    tabSell: 'Anotar', tabHome: 'Tudo em um lugar', tabChannels: 'Meu negócio',
+    tabSell: 'Início', tabHome: 'Ganho', tabCobrar: 'Cobrar', tabStock: 'Estoque',
+    greet: 'Olá, {name}!', greetAnon: 'Olá!', greetSub: 'Veja como você está hoje', hEarnedWeek: 'Você ganhou esta semana', hEarnedMonth: 'Você ganhou este mês', composer: 'Cole ou dite uma venda…',
+    voiceStart: 'Gravar nota de voz', voiceStop: 'Parar e enviar', voiceCancel: 'Cancelar', voiceRec: 'Estou ouvindo… {time}', voiceWorking: 'Passando sua nota para texto…',
+    voiceLimit: 'Você usou suas {n} notas de voz deste mês. Pode continuar escrevendo ou colando suas vendas, grátis sempre, ou mudar para um plano e ditar sem limite.',
+    voiceLeft: 'Restam {n} notas de voz este mês.', voiceLeftOne: 'Resta 1 nota de voz este mês.', voiceLeftNone: 'Não restam notas de voz este mês.', voiceDenied: 'Para usar o microfone, permita o acesso no navegador. Você também pode escrever a venda.',
+    voiceNoMic: 'Não encontramos um microfone. Você pode escrever a venda.', voiceEmpty: 'Não ouvi nada. Tente de novo, um pouco mais perto do telefone.',
+    voiceFail: 'Não conseguimos passar sua nota para texto. Tente de novo ou escreva a venda.', voiceOffline: 'Sem internet não consigo ouvir notas de voz. Escreva a venda e eu leio do mesmo jeito.', tabChannels: 'Meu negócio',
     tabConnect: 'Conectar',
     cnTitle: 'Seus canais',
     cnSub: 'Conecte onde você vende e as vendas chegam sozinhas. Você só confere e salva.',
@@ -911,7 +974,7 @@ const I18N = {
     fSub: 'Guarde comprovantes de pagamento, catálogos, fotos de produtos e papéis do seu estoque. Fotos JPG ou PNG, ou PDF (no estoque, também Excel), até 5 MB. Só você pode ver.',
     fKind: 'O que você vai enviar?',
     fKinds: { comprobantes: 'Comprovante de pagamento', catalogos: 'Catálogo ou foto de produto', stock: 'Estoque ou fornecedor' },
-    fPick: 'Enviar arquivo', fUploading: 'Enviando…', fSaved: 'Pronto: arquivo salvo.',
+    fDrop: 'Guarde seu arquivo aqui', fDropOr: 'Toque para escolher ou arraste', fCount: 'Guardados', fUploading: 'Enviando…', fSaved: 'Pronto: arquivo salvo.',
     fTooBig: 'Este arquivo tem {size}. O máximo é 5 MB. Tente uma foto menor ou um PDF mais curto.',
     fBadType: 'Esse arquivo não pode ser enviado. Só fotos JPG ou PNG, ou PDF.',
     fBadTypeStock: 'Esse arquivo não pode ser enviado. Só Excel (.xlsx ou .xls), fotos JPG ou PNG, ou PDF.',
@@ -930,7 +993,7 @@ const I18N = {
       down: 'A IA não está disponível, então usamos o leitor básico. Confira bem o cartão.',
       offline: 'Sem conexão com a IA, então usamos o leitor básico. Confira bem o cartão.'
     },
-    asTitle: 'Seu assistente',
+    asTitle: 'Para hoje',
     asNone: 'Tudo certo: seus preços, seu estoque e suas cobranças estão em dia.',
     asBusy: 'Seu assistente está escrevendo…',
     asByAI: 'Escrito com IA. Os números são calculados pelo app.',
@@ -1075,7 +1138,13 @@ const I18N = {
     channels: { none: 'Not specified', whatsapp: 'WhatsApp', instagram: 'Instagram', facebook: 'Facebook', tiktok: 'TikTok', mercadolibre: 'Mercado Libre', persona: 'In person', catalogo: 'Catalog' },
     pay: { efectivo: 'Cash', transferencia: 'Bank transfer', spei: 'SPEI transfer', mercadopago: 'Mercado Pago', pagoefectivo: 'PagoEfectivo', oxxo: 'OXXO', yape: 'Yape', plin: 'Plin', sip: 'SIP (Interbank / Oh!)', nequi: 'Nequi', daviplata: 'Daviplata', mach: 'MACH', pix: 'Pix', picpay: 'PicPay', otro: 'Other' },
     payOtherLabel: 'Which one? Write the name', payOtherPh: 'E.g.: Izipay, BIM, Tunki',
-    tabSell: 'Record', tabHome: 'All in one place', tabChannels: 'My business',
+    tabSell: 'Home', tabHome: 'Profit', tabCobrar: 'Collect', tabStock: 'Stock',
+    greet: 'Hi, {name}!', greetAnon: 'Hi!', greetSub: 'See how you’re doing today', hEarnedWeek: 'You earned this week', hEarnedMonth: 'You earned this month', composer: 'Paste or say a sale…',
+    voiceStart: 'Record a voice note', voiceStop: 'Stop and send', voiceCancel: 'Cancel', voiceRec: 'Listening… {time}', voiceWorking: 'Turning your note into text…',
+    voiceLimit: 'You used your {n} voice notes this month. You can keep typing or pasting your sales, free always, or move to a plan to speak without a limit.',
+    voiceLeft: '{n} voice notes left this month.', voiceLeftOne: '1 voice note left this month.', voiceLeftNone: 'No voice notes left this month.', voiceDenied: 'To use the microphone, allow it in your browser. You can also type the sale.',
+    voiceNoMic: 'We couldn’t find a microphone. You can type the sale.', voiceEmpty: 'I didn’t hear you. Try again, a little closer to the phone.',
+    voiceFail: 'We couldn’t turn your note into text. Try again or type the sale.', voiceOffline: 'Without internet I can’t hear voice notes. Type the sale and I’ll still read it.', tabChannels: 'My business',
     tabConnect: 'Connect',
     cnTitle: 'Your channels',
     cnSub: 'Connect where you sell and your sales come in on their own. You just check and save.',
@@ -1171,7 +1240,7 @@ const I18N = {
     fSub: 'Keep payment proof, catalogs, product photos and stock papers. JPG or PNG photos, or PDF (Excel too, for stock), up to 5 MB. Only you can see them.',
     fKind: 'What are you uploading?',
     fKinds: { comprobantes: 'Payment proof', catalogos: 'Catalog or product photo', stock: 'Stock or supplier' },
-    fPick: 'Upload a file', fUploading: 'Uploading…', fSaved: 'Done: file saved.',
+    fDrop: 'Keep your file here', fDropOr: 'Tap to choose it or drag it in', fCount: 'Saved', fUploading: 'Uploading…', fSaved: 'Done: file saved.',
     fTooBig: 'This file is {size}. The limit is 5 MB. Try a smaller photo or a shorter PDF.',
     fBadType: 'That file can’t be uploaded. Only JPG or PNG photos, or PDF.',
     fBadTypeStock: 'That file can’t be uploaded. Only Excel (.xlsx or .xls), JPG or PNG photos, or PDF.',
@@ -1190,7 +1259,7 @@ const I18N = {
       down: 'The AI is not available, so we used the basic reader. Check the card carefully.',
       offline: 'No connection to the AI, so we used the basic reader. Check the card carefully.'
     },
-    asTitle: 'Your assistant',
+    asTitle: 'For today',
     asNone: 'All good: your prices, stock and payments are up to date.',
     asBusy: 'Your assistant is writing…',
     asByAI: 'Written with AI. The app calculates every number.',
@@ -1323,7 +1392,7 @@ function seedData() {
   };
 }
 
-const APP_VERSION = '0.7.1';
+const APP_VERSION = '0.10.2';
 // Current version of each legal document. Changing a version asks the seller to accept again.
 const DOCS = {
   terminos: { version: '1.0', language: 'es', file: '../legal/terminos-y-condiciones.html' },
@@ -1835,7 +1904,7 @@ function renderSales() {
     const next = s.schedule.find(x => !x.paid);
     const owesTxt = left > 0
       ? `<span class="owes">${esc(t('owesTag', { amount: money(left) }))}${next && next.due ? ', ' + esc(fmtDate(next.due)) : ''}</span>`
-      : esc(t('paidTag'));
+      : `<span class="paid">${esc(t('paidTag'))}</span>`;
     const canUndo = !s.undone && Date.now() - s.at < 24 * 3600 * 1000;
     return `<li>
       <div class="${s.undone ? 'undone' : ''}">
@@ -1867,6 +1936,7 @@ function daysBetween(aISO, bISO) { return Math.round((parseISO(bISO) - parseISO(
 function renderHome() {
   const body = document.getElementById('homeBody');
   if (!body) return;
+  ['todoHost', 'cobrarBody', 'stockBody'].forEach(id => document.getElementById(id).replaceChildren());
   claimPayment();
   document.querySelectorAll('[data-period]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.period === period)));
   const start = periodStart();
@@ -1912,10 +1982,10 @@ function renderHome() {
 
   body.innerHTML = `
     <div class="stats">
-      <div class="stat big"><div class="k">${esc(t('hEarned'))}</div><div class="v ${earned < 0 ? 'owe' : ''}">${money(earned)}</div>
+      <div class="stat big"><div class="k">${esc(t('hEarned'))}</div><div class="v money ${earned < 0 ? 'owe' : ''}">${money(earned)}</div>
         <div class="small">${esc(t('hEarnedSub', { sales: money(totalSales), costs: money(totalCosts) }))}</div></div>
-      <div class="stat"><div class="k">${esc(t('hSales'))}</div><div class="v">${money(totalSales)}</div><div class="small">${esc(t(sales.length === 1 ? 'hSalesSubOne' : 'hSalesSub', { n: sales.length }))}</div></div>
-      <div class="stat" ${showDebts ? '' : 'hidden'}><div class="k">${esc(t('hOwed'))}</div><div class="v ${owedTotal > 0 ? 'owe' : ''}">${money(owedTotal)}</div><div class="small">${esc(t(owers.length === 1 ? 'hOwedSubOne' : 'hOwedSub', { n: owers.length }))}</div></div>
+      <div class="stat"><div class="k">${esc(t('hSales'))}</div><div class="v money">${money(totalSales)}</div><div class="small">${esc(t(sales.length === 1 ? 'hSalesSubOne' : 'hSalesSub', { n: sales.length }))}</div></div>
+      <div class="stat" ${showDebts ? '' : 'hidden'}><div class="k">${esc(t('hOwed'))}</div><div class="v money ${owedTotal > 0 ? 'owe' : ''}">${money(owedTotal)}</div><div class="small">${esc(t(owers.length === 1 ? 'hOwedSubOne' : 'hOwedSub', { n: owers.length }))}</div></div>
     </div>
 
     ${assistantHTML(checks)}
@@ -1986,7 +2056,7 @@ function renderHome() {
   order.forEach(k => { const el = body.querySelector(`[data-panel="${k}"]`); if (el) body.appendChild(el); });
   const retry = body.querySelector('#asRetry');
   if (retry) retry.addEventListener('click', () => { aiTried.clear(); aiState = null; renderHome(); });
-  if (!document.getElementById('tab-home').hidden) maybeWordWithAI(checks);
+  if (document.getElementById('tab-connect').hidden) maybeWordWithAI(checks);
   bindPlans(body);
   renderFiles();
   if (!document.getElementById('tab-home').hidden) askPlanAI();
@@ -2032,6 +2102,30 @@ function renderHome() {
     saveData(); renderHome();
     toast(t('hAdded', { product: name }));
   });
+
+  syncComposer();
+
+  // Inicio: today's to-do and the big number. Cobrar: who owes. Stock: products and files. Ganancia: the rest.
+  const panel = k => body.querySelector(`[data-panel="${k}"]`);
+  const big = body.querySelector('.stat.big').cloneNode(true);
+  big.querySelector('.k').textContent = t(period === 'month' ? 'hEarnedMonth' : 'hEarnedWeek');
+  const todo = $('todoHost');
+  todo.append(panel('assistant'), big);
+  panel('who').hidden = false;
+  $('cobrarBody').append(panel('who'));
+  $('stockBody').append(panel('stock'), panel('files'));
+  todo.querySelectorAll('[data-todo]').forEach(c => c.addEventListener('change', () => {
+    const d = todoToday();
+    d.keys = c.checked ? [...new Set([...d.keys, c.dataset.todo])] : d.keys.filter(k => k !== c.dataset.todo);
+    data.todo = d; saveData();
+    c.closest('.todo').classList.toggle('done', c.checked);
+  }));
+}
+
+// Ticks on today's to-do, kept for the day.
+function todoToday() {
+  const day = toISO(todayDate());
+  return data.todo && data.todo.day === day ? data.todo : { day, keys: [] };
 }
 
 /* ------------------------------------------------------------------
@@ -2260,8 +2354,7 @@ document.getElementById('bizCancel').addEventListener('click', () => {
 });
 
 function applyPlaceholder() {
-  const s = bizOf().sector, bySector = t('inputPhBySector');
-  document.getElementById('saleText').placeholder = (s && bySector[s]) || t('inputPh');
+  document.getElementById('saleText').placeholder = t('composer');
 }
 
 /* ------------------------------------------------------------------
@@ -2447,7 +2540,7 @@ function renderConnect() {
         ${sheetRows ? `<h4 style="margin-top:10px">${esc(t('cnPreview', { n: sheetRows.length }))}</h4><ul class="rows">${sheetRows.map(r => {
             const total = round2(r.qty * r.unit), owed = r.paid === null ? 0 : round2(total - Math.min(r.paid, total));
             return `<li><div><div>${r.qty} × ${esc(r.label)}${r.productId ? '' : ` <span class="tag">${esc(t('cnNewProduct'))}</span>`}</div>
-              <div class="meta">${money(total)}${r.customer ? ' · ' + esc(r.customer) : ''}${r.date ? ' · ' + esc(fmtDate(r.date)) : ''}${owed > 0 ? ' · <span class="owes" style="color:var(--warn)">' + esc(t('cnRowOwes', { amount: money(owed) })) + '</span>' : ''}</div></div></li>`;
+              <div class="meta">${money(total)}${r.customer ? ' · ' + esc(r.customer) : ''}${r.date ? ' · ' + esc(fmtDate(r.date)) : ''}${owed > 0 ? ' · <span class="owes" style="color:var(--destructive)">' + esc(t('cnRowOwes', { amount: money(owed) })) + '</span>' : ''}</div></div></li>`;
           }).join('')}</ul>
           <button class="btn sm" id="sheetImport" style="margin-top:8px">${esc(sheetRows.length === 1 ? t('cnImportOne') : t('cnImportAll', { n: sheetRows.length }))}</button>` : ''}
       </div>`;
@@ -2653,12 +2746,18 @@ function renderFiles() {
   const kinds = t('fKinds');
   const list = files.uid === user.id ? files.list : [];
   box.innerHTML = `
+    <div class="files-head"><span class="files-count">${esc(t('fCount'))} <b class="num">${list.length}</b></span></div>
     <p class="meta" style="margin:0 0 10px">${esc(t('fSub'))}</p>
     <div class="files-add">
       <div class="field"><label for="f-kind">${esc(t('fKind'))}</label>
         <select id="f-kind">${FILE_BUCKETS.map(b => `<option value="${b}" ${b === fileKind ? 'selected' : ''}>${esc(kinds[b])}</option>`).join('')}</select></div>
       <input type="file" id="f-input" accept="${fileAccept(fileKind)}" hidden>
-      <button class="btn" id="f-pick" ${fileBusy ? 'disabled' : ''}>${esc(fileBusy ? t('fUploading') : t('fPick'))}</button>
+      <button class="drop ${fileBusy ? 'busy' : fileMsg && fileMsg.ok ? 'done' : ''}" id="f-pick" ${fileBusy ? 'disabled' : ''}>
+        <svg class="up" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V4M7 9l5-5 5 5M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"/></svg>
+        <strong>${esc(fileBusy ? t('fUploading') : t('fDrop'))}</strong>
+        <span class="or">${esc(t('fDropOr'))}</span>
+        <svg class="wallet" viewBox="0 0 120 84" aria-hidden="true"><rect class="w-back" x="14" y="16" width="92" height="30" rx="8"/><g class="w-doc"><rect x="42" y="0" width="36" height="46" rx="4"/><path d="M49 10h22M49 18h22M49 26h14"/></g><rect class="w-body" x="8" y="28" width="104" height="54" rx="12"/><rect class="w-flap" x="8" y="28" width="104" height="28" rx="12"/><rect class="w-clasp" x="90" y="46" width="22" height="16" rx="8"/><g class="w-ok"><circle cx="60" cy="54" r="15"/><path d="M53 54l5 5 9-10"/></g></svg>
+      </button>
       ${fileMsg ? `<div class="msg ${fileMsg.ok ? 'ok' : ''}" role="status">${esc(fileMsg.text)}</div>` : ''}
     </div>
     <ul class="rows">${list.length ? list.map((f, i) => `<li>
@@ -2670,7 +2769,15 @@ function renderFiles() {
 
   const input = box.querySelector('#f-input');
   box.querySelector('#f-kind').addEventListener('change', e => { fileKind = e.target.value; fileMsg = null; renderFiles(); });
-  box.querySelector('#f-pick').addEventListener('click', () => input.click());
+  const drop = box.querySelector('#f-pick');
+  drop.addEventListener('click', () => input.click());
+  drop.addEventListener('dragover', e => { e.preventDefault(); if (!fileBusy) drop.classList.add('over'); });
+  drop.addEventListener('dragleave', () => drop.classList.remove('over'));
+  drop.addEventListener('drop', e => {
+    e.preventDefault(); drop.classList.remove('over');
+    const f = e.dataTransfer.files[0];
+    if (f) uploadFile(f, fileKind);
+  });
   input.addEventListener('change', () => { if (input.files[0]) uploadFile(input.files[0], fileKind); });
   const retry = box.querySelector('#f-retry');
   if (retry) retry.addEventListener('click', loadFiles);
@@ -2718,12 +2825,13 @@ async function deleteFile(f) {
 /* ------------------------------------------------------------------
    Tabs
 ------------------------------------------------------------------ */
+const TABS = ['sell', 'cobrar', 'stock', 'home', 'connect'];
 function showTab(name) {
-  if (!['sell', 'home', 'connect'].includes(name)) name = 'sell';
-  ['sell', 'home', 'connect'].forEach(k => { document.getElementById('tab-' + k).hidden = k !== name; });
+  if (!TABS.includes(name)) name = 'sell';
+  TABS.forEach(k => { document.getElementById('tab-' + k).hidden = k !== name; });
   document.querySelectorAll('[data-tab]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === name)));
   prefs.tab = name; store(PREF_KEY, prefs);
-  if (name === 'home') renderHome();
+  if (name !== 'connect') renderHome();
   if (name === 'connect') renderConnect();
   window.scrollTo(0, 0);
 }
@@ -2762,6 +2870,9 @@ function applyLang() {
   document.getElementById('signOutBtn').hidden = !user;
   renderNewsBtn();
   renderWeather();
+  document.getElementById('greet').textContent = data.profile && data.profile.name ? t('greet', { name: data.profile.name }) : t('greetAnon');
+  document.getElementById('readBtn').setAttribute('aria-label', t('readBtn'));
+  syncComposer();
   document.getElementById('hello').textContent = inside && data.profile ? t('hello', { name: data.profile.name }) : '';
   if (document.getElementById('onboard').style.display === 'flex') renderAuth();
   renderCard();
@@ -3132,7 +3243,7 @@ function planPickHTML() {
       <div class="pl-eyebrow">${esc(t('plEyebrow'))}</div>
       <div class="pl-basis">${esc(t('plBasis'))}</div>
       <div class="pl-name">${esc(TIER_NAMES[sug.tier])}</div>
-      <div class="pl-price">${esc(priceText(sug.tier))}${sug.tier ? ` <small>${esc(t('plMonth'))}</small>` : ''}</div>
+      <div class="pl-price money">${esc(priceText(sug.tier))}${sug.tier ? ` <small>${esc(t('plMonth'))}</small>` : ''}</div>
       <p class="pl-why">${esc(sug.why)}</p>
       ${sug.tier === mine ? `<span class="pill">${esc(t('plYours'))}</span>`
         : sug.tier > 0 ? `<button class="btn" data-pay="${sug.tier}">${esc(t('plPayName', { name: TIER_NAMES[sug.tier] }))}</button>` : ''}
@@ -3140,7 +3251,7 @@ function planPickHTML() {
     </div>
     <div class="pl-grid">${Object.keys(TIERS).map(Number).map(n => `<div class="pl-col ${n === sug.tier ? 'sug' : ''}">
       <div class="nm">${esc(TIER_NAMES[n])}</div>
-      <div class="pr">${n ? '$' + TIERS[n].toFixed(2) : '0'}</div>
+      <div class="pr money">${n ? '$' + TIERS[n].toFixed(2) : '0'}</div>
       <div class="wh">${esc(t('plShort')[n])}</div>
       ${n === sug.tier && n !== mine ? `<div class="tag-sug">${esc(t('plSugTag'))}</div>` : ''}
       ${action(n)}
@@ -3171,7 +3282,7 @@ function bindPlans(root) {
 function renderPlans() {
   const step = document.getElementById('planStep');
   if (step.style.display === 'flex') { const host = document.getElementById('planStepBody'); host.innerHTML = planPickHTML(); bindPlans(host); }
-  if (!document.getElementById('tab-home').hidden) renderHome();
+  renderHome();
 }
 function openPlanStep() {
   const el = document.getElementById('planStep');
@@ -3206,13 +3317,100 @@ async function payTier(tier, btn) {
 }
 
 const AI_TIMEOUT_MS = 12000;
-async function aiCall(task, payload) {
+/* ------------------------------------------------------------------
+   Voice notes. The browser records up to 60 seconds, our server asks Gemini to write it
+   as text (task "voice"), and the text goes through the normal sale reader and confirm
+   card, so nothing is saved without her tap. The audio is never stored, here or on our server.
+   Free plan: 10 notes a month, counted when one is written down. For now the count lives
+   with the seller's data, like the plan itself (see design.md, Decisions).
+------------------------------------------------------------------ */
+const VOICE_FREE = 10, VOICE_MAX_S = 60, VOICE_TIMEOUT_MS = 18000;
+const VOICE_TYPES = ['audio/webm;codecs=opus', 'audio/mp4', 'audio/ogg;codecs=opus'];
+let voice = { rec: null, stream: null, chunks: [], start: 0, timer: null, cancel: false, busy: false };
+
+const voiceOK = () => location.protocol !== 'file:' && !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
+function voiceUse() {
+  const month = toISO(todayDate()).slice(0, 7);
+  return data.voice && data.voice.month === month ? data.voice : { month, count: 0 };
+}
+const voiceLeft = () => (data.plan && data.plan.tier > 0) ? Infinity : Math.max(0, VOICE_FREE - voiceUse().count);
+function voiceSay(text) { const m = document.getElementById('readMsg'); m.textContent = text; m.hidden = !text; }
+
+// Empty box: microphone. Text in the box: send arrow, like WhatsApp.
+function syncComposer() {
+  const $ = id => document.getElementById(id), ta = $('saleText'), on = !!voice.rec;
+  const mic = (voiceOK() && !ta.value.trim()) || on || voice.busy;
+  $('micBtn').hidden = !mic; $('readBtn').hidden = mic;
+  $('micCancel').hidden = !on;
+  $('micIcon').toggleAttribute('hidden', on); $('stopIcon').toggleAttribute('hidden', !on);
+  $('micBtn').disabled = voice.busy;
+  $('micBtn').setAttribute('aria-label', t(on ? 'voiceStop' : 'voiceStart'));
+  $('micBtn').closest('.box').classList.toggle('rec', on);
+  ta.disabled = on || voice.busy;
+  ta.placeholder = voice.busy ? t('voiceWorking') : on ? t('voiceRec', { time: voiceTime() }) : t('composer');
+}
+function voiceTime() { const s = Math.floor((Date.now() - voice.start) / 1000); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
+
+async function startVoice() {
+  if (voice.busy || voice.rec) return;
+  voiceSay('');
+  if (voiceLeft() <= 0) return voiceSay(t('voiceLimit', { n: VOICE_FREE }));
+  if (navigator.onLine === false) return voiceSay(t('voiceOffline'));
+  let stream;
+  try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); }
+  catch (e) { return voiceSay(t(e && e.name === 'NotAllowedError' ? 'voiceDenied' : 'voiceNoMic')); }
+  const mimeType = VOICE_TYPES.find(x => MediaRecorder.isTypeSupported(x));
+  const rec = new MediaRecorder(stream, Object.assign({ audioBitsPerSecond: 24000 }, mimeType ? { mimeType } : {}));
+  voice = { rec, stream, chunks: [], start: Date.now(), cancel: false, busy: false,
+    timer: setInterval(() => { if (Date.now() - voice.start >= VOICE_MAX_S * 1000) stopVoice(false); else syncComposer(); }, 500) };
+  rec.ondataavailable = e => { if (e.data.size) voice.chunks.push(e.data); };
+  rec.onstop = voiceDone;
+  rec.start();
+  syncComposer();
+}
+function stopVoice(cancel) {
+  if (!voice.rec) return;
+  voice.cancel = cancel;
+  clearInterval(voice.timer);
+  if (voice.rec.state !== 'inactive') voice.rec.stop();
+}
+async function voiceDone() {
+  const { rec, stream, chunks, start, cancel } = voice;
+  stream.getTracks().forEach(tr => tr.stop());   // the phone's microphone light goes off
+  voice = { rec: null, stream: null, chunks: [], start: 0, timer: null, cancel: false, busy: !cancel };
+  syncComposer();
+  if (cancel) return;
+  const blob = new Blob(chunks, { type: (rec.mimeType || 'audio/webm').split(';')[0] });
+  const finish = text => { voice.busy = false; syncComposer(); if (text) voiceSay(text); };
+  if (Date.now() - start < 800 || !blob.size) return finish(t('voiceEmpty'));
+  const audio = await new Promise(ok => {
+    const fr = new FileReader();
+    fr.onload = () => ok(String(fr.result).split(',')[1] || '');
+    fr.onerror = () => ok('');
+    fr.readAsDataURL(blob);
+  });
+  const res = await aiCall('voice', { audio, mime: blob.type }, VOICE_TIMEOUT_MS);
+  if (res.error) return finish(t(res.error === 'offline' ? 'voiceOffline' : 'voiceFail'));
+  if (!res.text) return finish(t('voiceEmpty'));
+  const used = voiceUse();
+  data.voice = { month: used.month, count: used.count + 1 };
+  saveData();
+  finish();
+  const ta = document.getElementById('saleText');
+  ta.value = res.text;
+  ta.dispatchEvent(new Event('input'));
+  await readSale();
+  const left = voiceLeft();
+  if (left <= 3) toast(left === 0 ? t('voiceLeftNone') : left === 1 ? t('voiceLeftOne') : t('voiceLeft', { n: left }));
+}
+
+async function aiCall(task, payload, timeout) {
   if (location.protocol === 'file:') return { error: 'offline' };
   try {
     const r = await fetch('/api/ai', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(Object.assign({ task, lang }, payload)),
-      signal: AbortSignal.timeout(AI_TIMEOUT_MS)
+      signal: AbortSignal.timeout(timeout || AI_TIMEOUT_MS)
     });
     const j = await r.json().catch(() => ({}));
     if (!r.ok) return { error: j.error || 'down' };
@@ -3272,11 +3470,11 @@ async function readSale() {
   reading = true;
   msg.hidden = true;
   const btn = document.getElementById('readBtn');
-  btn.disabled = true; btn.textContent = t('aiReading');
+  btn.disabled = true;
   const rules = parseSale(text, data.products, todayDate());
   const res = await aiCall('sale', { text, products: data.products.map(p => ({ id: p.id, name: p.name })) });
   const parsed = res.error ? null : saleFromAI(res.sale, text, rules);
-  btn.disabled = false; btn.textContent = t('readBtn');
+  btn.disabled = false;
   reading = false;
   if (!parsed) { msg.textContent = t('aiFail')[res.error] || t('aiFail').down; msg.hidden = false; }
   draft = newDraft(text, parsed || rules);
@@ -3356,17 +3554,21 @@ function assistantHTML(checks) {
     : worded ? t('asByAI') : '';
   return `<div class="panel home-section assistant" data-panel="assistant">
     <h2>${esc(t('asTitle'))}</h2>
-    <ul class="rows">${checks.length ? checks.map(c => `<li style="display:block">
-      <span class="tag">${esc(t('asKinds')[c.kind])}</span>
-      <div class="as-text">${esc(aiWording.get(c.draft) || c.draft)}</div>
-    </li>`).join('') : `<li class="empty">${esc(t('asNone'))}</li>`}</ul>
+    <ul class="rows">${checks.length ? checks.map(c => { const done = todoToday().keys.includes(c.draft); return `<li class="todo ${done ? 'done' : ''}" style="display:block">
+      <label><input type="checkbox" data-todo="${esc(c.draft)}" ${done ? 'checked' : ''}>
+      <span><span class="tag">${esc(t('asKinds')[c.kind])}</span>
+      <span class="as-text" style="display:block">${esc(aiWording.get(c.draft) || c.draft)}</span></span></label>
+    </li>`; }).join('') : `<li class="empty">${esc(t('asNone'))}</li>`}</ul>
     ${note ? `<p class="as-note">${esc(note)}${failed ? ` <button class="linkbtn" id="asRetry">${esc(t('asRetry'))}</button>` : ''}</p>` : ''}
   </div>`;
 }
 
 document.getElementById('readBtn').addEventListener('click', readSale);
+document.getElementById('saleText').addEventListener('input', e => { e.target.style.height = '40px'; e.target.style.height = Math.min(120, e.target.scrollHeight) + 'px'; syncComposer(); });
+document.getElementById('micBtn').addEventListener('click', () => { if (voice.rec) stopVoice(false); else startVoice(); });
+document.getElementById('micCancel').addEventListener('click', () => stopVoice(true));
 document.getElementById('saleText').addEventListener('keydown', e => {
-  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) readSale();
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); readSale(); }
 });
 document.querySelectorAll('[data-lang]').forEach(b => b.addEventListener('click', () => setLang(b.dataset.lang)));
 document.querySelectorAll('[data-pick]').forEach(b => b.addEventListener('click', () => setLang(b.dataset.pick)));

@@ -10,22 +10,21 @@
 <meta property="og:description" content="Qué datos guarda VendeAI, para qué, con quién los compartimos y cómo puedes verlos, corregirlos o borrarlos.">
 <meta property="og:image" content="https://vendeai-pi.vercel.app/og-image.png">
 <!-- Generated from politica-de-privacidad.md. Edit the .md file, then regenerate this page. -->
+<link rel="stylesheet" href="../tokens.css">
 <style>
-  :root { --bg:#f3ecdc; --text:#000000; --muted:#5c6266; --line:#ceccc5; --accent:#4c5a62; --soft:#ffffff; }
-  @media (prefers-color-scheme: dark) { :root { --bg:#101314; --text:#f3ecdc; --muted:#ceccc5; --line:#30373b; --accent:#a9b8c0; --soft:#1b1f22; } }
   * { box-sizing: border-box; }
-  body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; line-height:1.6; }
+  body { margin:0; background:var(--background); color:var(--foreground); line-height:1.6; }
   main { max-width:720px; margin:0 auto; padding:24px 16px 64px; }
   h1 { font-size:1.6rem; line-height:1.25; }
   h2 { font-size:1.1rem; margin-top:32px; }
-  a { color:var(--accent); }
-  blockquote { margin:16px 0; padding:8px 14px; background:var(--soft); border-left:3px solid var(--accent); color:var(--muted); font-size:.92rem; }
+  a { color:var(--primary); }
+  blockquote { margin:16px 0; padding:8px 14px; background:var(--card); border-left:3px solid var(--accent); color:var(--muted-foreground); font-size:.92rem; }
   blockquote p { margin:4px 0; }
   .table { overflow-x:auto; }
   table { border-collapse:collapse; width:100%; font-size:.92rem; margin:12px 0; }
-  th, td { text-align:left; border-bottom:1px solid var(--line); padding:8px 6px; vertical-align:top; }
-  th { color:var(--muted); font-weight:600; }
-  code { background:var(--soft); padding:1px 4px; border-radius:4px; font-size:.88em; }
+  th, td { text-align:left; border-bottom:1px solid var(--border); padding:8px 6px; vertical-align:top; }
+  th { color:var(--muted-foreground); font-weight:700; }
+  code { background:var(--card); padding:1px 4px; border-radius:var(--radius-sm); font-size:.88em; }
   .back { display:inline-block; margin-bottom:12px; font-size:.9rem; }
 </style>
 </head>
@@ -44,7 +43,7 @@
 <h2>3. Mensajes y notas de voz</h2>
 <ul><li>Cuando envías un mensaje o una nota de voz para anotar una venta, lo procesamos para llenar la tarjeta de confirmación.</li><li><strong>La nota de voz se borra apenas se convierte en texto.</strong> El texto del mensaje se borra cuando confirmas o descartas la venta. Solo queda guardada la venta confirmada.</li></ul>
 <h2>4. Con quién compartimos datos</h2>
-<div class="table"><table><thead><tr><th>Con quién</th><th>Qué</th><th>Por qué</th></tr></thead><tbody><tr><td>Google (Estados Unidos), inteligencia artificial Gemini</td><td>El texto del mensaje, tu lista de productos, los datos de los consejos y las respuestas sobre tu negocio, sin tu nombre, correo ni teléfono</td><td>Leer la venta, redactar los consejos y sugerirte un plan</td></tr><tr><td>Supabase (Estados Unidos), cuentas y base de datos</td><td>Tu correo, tu contraseña cifrada y los datos de tu cuenta</td><td>Que entres a tu cuenta y guardar tus datos de forma segura</td></tr><tr><td>Supabase (Estados Unidos), archivos</td><td>Los comprobantes, catálogos, fotos y papeles o planillas de stock que subes (JPG, PNG, PDF o Excel, hasta 5 MB)</td><td>Guardarlos en una carpeta privada que solo tú puedes abrir</td></tr><tr><td>Vercel (Estados Unidos), alojamiento</td><td>Las páginas que pides y la dirección IP de tu conexión</td><td>Mostrarte la app</td></tr><tr><td>Vercel (Estados Unidos), medición de visitas</td><td>La página que abres, de dónde llegaste, país y ciudad aproximados, tipo de dispositivo y navegador. Sin cookies, sin tu nombre ni tus ventas</td><td>Contar visitas en totales (ver la <a href="politica-de-cookies.html">Política de cookies</a>)</td></tr><tr><td>Resend (Estados Unidos), envío de emails</td><td>Tu nombre, tu correo, tu idioma y tu plan</td><td>Enviarte el email de bienvenida, los recibos de pago y, si lo pediste, novedades</td></tr><tr><td>Stripe (Estados Unidos) y otras empresas de pagos (Mercado Pago, OXXO, Yape, etc.)</td><td>Plan y monto. Tu tarjeta y tu correo de pago los escribes directamente en su página</td><td>Cobrar tu plan</td></tr><tr><td>Autoridades</td><td>Lo que la ley exija</td><td>Solo con una orden válida</td></tr></tbody></table></div>
+<div class="table"><table><thead><tr><th>Con quién</th><th>Qué</th><th>Por qué</th></tr></thead><tbody><tr><td>Google (Estados Unidos), inteligencia artificial Gemini</td><td>El texto del mensaje, el audio de tu nota de voz para pasarlo a texto, tu lista de productos, los datos de los consejos y las respuestas sobre tu negocio, sin tu nombre, correo ni teléfono</td><td>Leer la venta, escribir tu nota de voz como texto, redactar los consejos y sugerirte un plan</td></tr><tr><td>Supabase (Estados Unidos), cuentas y base de datos</td><td>Tu correo, tu contraseña cifrada y los datos de tu cuenta</td><td>Que entres a tu cuenta y guardar tus datos de forma segura</td></tr><tr><td>Supabase (Estados Unidos), archivos</td><td>Los comprobantes, catálogos, fotos y papeles o planillas de stock que subes (JPG, PNG, PDF o Excel, hasta 5 MB)</td><td>Guardarlos en una carpeta privada que solo tú puedes abrir</td></tr><tr><td>Vercel (Estados Unidos), alojamiento</td><td>Las páginas que pides y la dirección IP de tu conexión</td><td>Mostrarte la app</td></tr><tr><td>Vercel (Estados Unidos), medición de visitas</td><td>La página que abres, de dónde llegaste, país y ciudad aproximados, tipo de dispositivo y navegador. Sin cookies, sin tu nombre ni tus ventas</td><td>Contar visitas en totales (ver la <a href="politica-de-cookies.html">Política de cookies</a>)</td></tr><tr><td>Resend (Estados Unidos), envío de emails</td><td>Tu nombre, tu correo, tu idioma y tu plan</td><td>Enviarte el email de bienvenida, los recibos de pago y, si lo pediste, novedades</td></tr><tr><td>Stripe (Estados Unidos) y otras empresas de pagos (Mercado Pago, OXXO, Yape, etc.)</td><td>Plan y monto. Tu tarjeta y tu correo de pago los escribes directamente en su página</td><td>Cobrar tu plan</td></tr><tr><td>Autoridades</td><td>Lo que la ley exija</td><td>Solo con una orden válida</td></tr></tbody></table></div>
 <p>Algunos de estos proveedores pueden estar <strong>fuera de tu país</strong>. En ese caso exigimos por contrato que protejan tus datos al menos como lo exige la ley de tu país. <strong>No vendemos tus datos ni los usamos para publicidad.</strong></p>
 <h2>5. Cuánto tiempo los guardamos</h2>
 <ul><li><strong>Datos de tu cuenta y ventas:</strong> mientras tengas la cuenta. Si la borras, se eliminan en un máximo de 30 días.</li><li><strong>Archivos que subes:</strong> hasta que los borres en "Tus archivos", o hasta 30 días después de borrar tu cuenta.</li><li><strong>Registro de aceptación de términos y privacidad:</strong> hasta [5] años después de cerrar la cuenta, para poder demostrar el consentimiento ante una autoridad. [VERIFICAR el plazo de prescripción en cada país.]</li><li><strong>Datos de facturación:</strong> el tiempo que exija la ley tributaria de tu país.</li></ul>

@@ -1,15 +1,15 @@
 // VendeAI service worker: lets the installed app open without internet.
 // - Pages: newest version from the network; the saved copy if offline or slow (4 s).
-// - Fonts, icons, the Supabase library: saved copy first.
+// - Design tokens, fonts, icons, the Supabase library: saved copy first.
 // - /api/config: network first, last good copy when offline (it holds only public settings).
 // - Other /api/* (Gemini) and Supabase itself: never stored, always live.
 // Change VERSION on each release so phones drop the old copy.
-const VERSION = '0.7.1';
+const VERSION = '0.10.2';
 const CACHE = 'vendeai-' + VERSION;
 const SHELL = [
   './', 'manifest.webmanifest', 'vendor/supabase.js',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png',
-  '../fonts/bodoni-moda-latin-wght-normal.woff2', '../fonts/bodoni-moda-latin-wght-italic.woff2', '../fonts/manrope-latin-wght-normal.woff2'
+  '../tokens.css', '../fonts/baloo-2-latin-wght-normal.woff2', '../fonts/dm-sans-latin-wght-normal.woff2'
 ];
 
 self.addEventListener('install', event => {

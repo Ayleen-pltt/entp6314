@@ -49,9 +49,9 @@ export function layout(lang, title, paragraphs, button, link = APP_URL, foot = '
   return `<!DOCTYPE html><html lang="${lang}"><body style="margin:0;background:#F3ECDC;font-family:Arial,Helvetica,sans-serif;color:#111111">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F3ECDC;padding:24px 12px"><tr><td align="center">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px">
-<tr><td style="background:#111111;border-radius:16px 16px 0 0;padding:22px 28px;font-family:Georgia,'Times New Roman',serif;font-size:24px;color:#F3ECDC">Vende<i style="color:#C9B48F">AI</i></td></tr>
+<tr><td style="background:#FFFFFF;border-radius:16px 16px 0 0;border-bottom:1px solid #DDD3BF;padding:22px 28px;font-family:'Trebuchet MS',Arial,sans-serif;font-weight:bold;font-size:24px;color:#111111">Vende<span style="color:#4C5A62">AI</span></td></tr>
 <tr><td style="background:#FFFFFF;border-radius:0 0 16px 16px;padding:28px">
-<h1 style="font-family:Georgia,'Times New Roman',serif;font-size:24px;line-height:1.25;margin:0 0 16px">${esc(title)}</h1>
+<h1 style="font-family:'Trebuchet MS',Arial,sans-serif;font-size:24px;line-height:1.25;margin:0 0 16px">${esc(title)}</h1>
 ${paragraphs.map(p => `<p style="font-size:15px;line-height:1.55;color:#4C5A62;margin:0 0 14px">${p}</p>`).join('')}
 ${button ? `<p style="margin:22px 0 4px"><a href="${esc(link)}" style="display:inline-block;background:#111111;color:#F3ECDC;text-decoration:none;font-weight:bold;border-radius:999px;padding:12px 24px">${esc(button)}</a></p>` : ''}
 </td></tr>

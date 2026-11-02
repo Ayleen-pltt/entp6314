@@ -87,3 +87,12 @@ Si cambiamos estos términos, te avisamos en la app antes de que entren en vigor
 - Se aplica la ley de protección al consumidor del país donde vives, cuando te dé más protección.
 - Puedes reclamar primero con nosotros en [CORREO DE SOPORTE]. Respondemos en un máximo de [10] días hábiles.
 - También puedes acudir a la autoridad de consumo de tu país (ver la Política de reembolsos).
+
+## 13. Tipografías
+
+VendeAI usa estas dos tipografías, con licencia SIL Open Font License, versión 1.1:
+
+- **Baloo 2:** Copyright 2019 The Baloo 2 Project Authors (https://github.com/EkType/Baloo2)
+- **DM Sans:** Copyright 2014 The DM Sans Project Authors (https://github.com/googlefonts/dm-fonts)
+
+Puedes leer la licencia en https://openfontlicense.org

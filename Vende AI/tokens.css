@@ -1,0 +1,87 @@
+/* VendeAI design tokens: the single source of truth for color, type and shape.
+   Every page links this file. Change a value here, nowhere else. See design.md. */
+
+@font-face { font-family: "Baloo 2"; font-style: normal; font-weight: 400 800; font-display: swap; src: url(fonts/baloo-2-latin-wght-normal.woff2) format("woff2"); }
+@font-face { font-family: "DM Sans"; font-style: normal; font-weight: 100 1000; font-display: swap; src: url(fonts/dm-sans-latin-wght-normal.woff2) format("woff2"); }
+
+:root {
+  --background: #f3ecdc;
+  --foreground: #111111;
+  --card: #ffffff;
+  --card-foreground: #111111;
+  --popover: #ffffff;
+  --popover-foreground: #111111;
+  --primary: #111111;
+  --primary-foreground: #f3ecdc;
+  --secondary: #e6dac0;
+  --secondary-foreground: #111111;
+  --accent: #c9b48f;                     /* Arena: never text in light mode */
+  --accent-foreground: #111111;
+  --muted: #eae1cc;
+  --muted-foreground: #4c5a62;
+  --owed: #9a4f36;                       /* money owed, never --destructive */
+  --owed-foreground: #ffffff;
+  --paid: #5b7046;
+  --paid-foreground: #ffffff;
+  --icon-people: #5b3f8f;                /* Cobrar tab icon */
+  --destructive: #a12e2a;                /* real errors only */
+  --border: #ddd3bf;
+  --input: #ddd3bf;
+  --ring: #4c5a62;
+  --notebook-line: rgb(201 180 143 / 35%);
+
+  --font-heading: "Baloo 2", "Trebuchet MS", system-ui, sans-serif;
+  --font-body: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+
+  --radius: 12px;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+/* Dark mode follows the phone. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #111111;
+    --foreground: #f3ecdc;
+    --card: #1d1d1c;
+    --card-foreground: #f3ecdc;
+    --popover: #1d1d1c;
+    --popover-foreground: #f3ecdc;
+    --primary: #c9b48f;
+    --primary-foreground: #111111;
+    --secondary: #2b2925;
+    --secondary-foreground: #f3ecdc;
+    --accent: #c9b48f;
+    --accent-foreground: #111111;
+    --muted: #2b2925;
+    --muted-foreground: #9aa7ae;
+    --owed: #d9896a;
+    --owed-foreground: #111111;
+    --paid: #a9be8e;
+    --paid-foreground: #111111;
+    --icon-people: #c4b5fd;
+    --destructive: #e07a6f;
+    --border: #2f2d29;
+    --input: #2f2d29;
+    --ring: #c9b48f;
+    --notebook-line: rgb(201 180 143 / 20%);
+  }
+}
+
+body { font-family: var(--font-body); font-size: 16px; }
+h1, h2, h3 { font-family: var(--font-heading); }
+
+/* Notebook page: one ruled line every 28px. */
+.bg-notebook {
+  background-color: var(--background);
+  background-image: repeating-linear-gradient(to bottom, transparent 0 27px, var(--notebook-line) 27px 28px);
+}
+
+/* Money: heading font, heavy, numbers the same width so amounts line up. */
+.money { font-family: var(--font-heading); font-weight: 800; font-variant-numeric: tabular-nums; }
+
+/* Never color alone: a paid sale also shows a tick. */
+.paid { color: var(--paid); }
+.paid::before { content: "✓ "; }

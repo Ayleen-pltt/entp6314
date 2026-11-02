@@ -61,7 +61,7 @@ If the user can't make a new account right now, mark 3c and 3d as WAITING ON YOU
 On the live site, use `read_console_messages` with `onlyErrors: true` after each of these:
 - Loading `/` (the landing).
 - Loading `/app/`.
-- Switching to each tab: Anotar, Todo en un lugar, Conectar.
+- Switching to each tab: Inicio, Cobrar, Stock, Ganancia, and the Conectar link in the footer.
 - Reading one example sale. Tap an example, but don't save it on a real account unless the user agrees.
 
 Any error is a FAIL: quote the first line of the message and say on which page it appeared. Warnings are not failures; mention them only if there are many.

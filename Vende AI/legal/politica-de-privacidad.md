@@ -36,7 +36,7 @@ Los nombres, teléfonos y deudas de tus clientes los anotas tú. **Tú eres resp
 
 | Con quién | Qué | Por qué |
 |---|---|---|
-| Google (Estados Unidos), inteligencia artificial Gemini | El texto del mensaje, tu lista de productos, los datos de los consejos y las respuestas sobre tu negocio, sin tu nombre, correo ni teléfono | Leer la venta, redactar los consejos y sugerirte un plan |
+| Google (Estados Unidos), inteligencia artificial Gemini | El texto del mensaje, el audio de tu nota de voz para pasarlo a texto, tu lista de productos, los datos de los consejos y las respuestas sobre tu negocio, sin tu nombre, correo ni teléfono | Leer la venta, escribir tu nota de voz como texto, redactar los consejos y sugerirte un plan |
 | Supabase (Estados Unidos), cuentas y base de datos | Tu correo, tu contraseña cifrada y los datos de tu cuenta | Que entres a tu cuenta y guardar tus datos de forma segura |
 | Supabase (Estados Unidos), archivos | Los comprobantes, catálogos, fotos y papeles o planillas de stock que subes (JPG, PNG, PDF o Excel, hasta 5 MB) | Guardarlos en una carpeta privada que solo tú puedes abrir |
 | Vercel (Estados Unidos), alojamiento | Las páginas que pides y la dirección IP de tu conexión | Mostrarte la app |
