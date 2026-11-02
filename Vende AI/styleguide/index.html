@@ -158,22 +158,18 @@
     <li><div class="undone"><div class="main">.undone</div><div class="meta">Carla</div></div></li>
   </ul></div>
 
-  <div class="sg-demo"><h3>Para hoy</h3><div class="panel assistant"><ul class="rows">
-    <li class="todo"><label><input type="checkbox"><span><span class="tag">Cobrar</span><span class="as-text" style="display:block">To do</span></span></label></li>
-    <li class="todo done"><label><input type="checkbox" checked><span><span class="tag">Stock</span><span class="as-text" style="display:block">.todo.done</span></span></label></li>
-  </ul></div></div>
-
-  <div class="sg-demo"><h3>Chat box</h3>
-    <div class="composer" style="position:static;padding:0"><div class="box"><textarea rows="1" aria-label="Example">Pega o dicta una venta...</textarea><button class="send" aria-label="Send"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button></div></div>
-    <div class="composer" style="position:static;padding:10px 0 0"><div class="box rec"><textarea rows="1" aria-label="Recording example">.rec, recording</textarea><button class="linkbtn cancel">Cancelar</button><button class="send" aria-label="Stop"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="5" y="5" width="14" height="14" rx="3"/></svg></button></div></div>
+  <div class="sg-demo"><h3>Sale box (#saleText, .row-actions, .btn.mic)</h3>
+    <textarea aria-label="Example" placeholder='Ej.: "Vendí 2 labiales a María, pagó la mitad y el resto el viernes"'></textarea>
+    <div class="row-actions"><button class="btn">Leer venta</button><button class="btn ghost mic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg><span>Grabar nota de voz</span></button></div>
+    <textarea id="saleText" class="listening" aria-label="Recording example" placeholder="Te escucho… 0:05" style="margin-top:16px" disabled></textarea>
+    <div class="row-actions"><button class="btn" disabled>Leer venta</button><button class="btn ghost mic on"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="5" y="5" width="14" height="14" rx="3"/></svg><span>Detener y enviar</span></button><button class="linkbtn">Cancelar</button></div>
   </div>
 
-  <div class="sg-demo"><h3>Tabs</h3><div class="tabs" style="position:static"><div class="wrap">
-    <button role="tab" aria-selected="true"><span aria-hidden="true">🏠</span><span>Inicio</span></button>
-    <button role="tab" aria-selected="false"><span aria-hidden="true"><svg class="icon-people" viewBox="0 0 24 24" width="1em" height="1em"><circle cx="8" cy="8" r="4"/><circle cx="16.5" cy="8.5" r="3.5"/><path d="M1 20c0-4 3.1-7 7-7s7 3 7 7v1H1z"/><path d="M17 21v-1c0-2.4-.9-4.6-2.4-6.2.6-.2 1.2-.3 1.9-.3 3.6 0 6.5 2.9 6.5 6.5v1z"/></svg></span><span>Cobrar</span></button>
-    <button role="tab" aria-selected="false"><span aria-hidden="true">📦</span><span>Stock</span></button>
-    <button role="tab" aria-selected="false"><span aria-hidden="true">📊</span><span>Ganancia</span></button>
-  </div></div></div>
+  <div class="sg-demo"><h3>Tabs (in the header)</h3><nav class="tabs" style="display:flex;gap:4px;overflow-x:auto" role="tablist">
+    <button role="tab" aria-selected="true">Anotar</button>
+    <button role="tab" aria-selected="false">Todo en un lugar</button>
+    <button role="tab" aria-selected="false">Conectar</button>
+  </nav></div>
 
   <div class="sg-demo"><h3>Plans</h3>
     <div class="pl-sug"><div class="pl-eyebrow">.pl-eyebrow</div><div class="pl-basis">.pl-basis</div><div class="pl-name">Standard</div><div class="pl-price money">US$5.99 <small>al mes</small></div><p class="pl-why">.pl-why</p><button class="btn">Elegir</button><p class="pl-note">.pl-note</p></div>

@@ -39,7 +39,6 @@
   body.auth-wait > header, body.auth-wait > main, body.auth-wait > footer { visibility: hidden; }
   body {
     color: var(--foreground);
-    padding-bottom: 72px;
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
   }
@@ -129,7 +128,7 @@
   .empty { color: var(--muted-foreground); font-size: 1rem; }
 
   .toast {
-    position: fixed; left: 50%; bottom: 76px; transform: translateX(-50%); width: max-content;
+    position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); width: max-content;
     background: var(--foreground); color: var(--background); padding: 10px 16px; border-radius: var(--radius-md);
     font-size: 1rem; max-width: calc(100% - 32px); display: none; z-index: 20;
   }
@@ -169,45 +168,23 @@
     .bizbtn { padding: 4px 7px; font-size: 0.875rem; }
     .lang button { padding: 4px 6px; font-size: 0.875rem; }
   }
-  .hello { display: none; }   /* the greeting lives on Inicio now */
-  /* Four tabs at the bottom, always in reach of the thumb. */
-  .tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 4; background: var(--card); border-top: 1px solid var(--border); padding-bottom: env(safe-area-inset-bottom, 0); }
-  .tabs .wrap { display: grid; grid-template-columns: repeat(4, 1fr); padding: 0 8px; height: auto; gap: 0; }
+  .hello { font-weight: 400; color: var(--muted-foreground); font-size: 0.875rem; margin-left: 6px; }
+  header .tabs { display: flex; height: auto; justify-content: flex-start; gap: 4px; overflow-x: auto; }
   .tabs button {
-    display: flex; flex-direction: column; align-items: center; gap: 1px; min-height: 58px; justify-content: center;
-    background: none; border: 0; cursor: pointer; color: var(--muted-foreground); font-weight: 700; font-size: 0.75rem;
+    background: none; border: 0; border-bottom: 2px solid transparent; min-height: 40px;
+    padding: 10px 10px 9px; cursor: pointer; color: var(--muted-foreground); font-weight: 700; font-size: 0.75rem;
+    letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap;
   }
-  /* Inicio: greeting, today's to-do, the week's number, chat box. */
-  .greet { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-  .greet .ico { font-size: 2rem; line-height: 1; }
-  .greet h1 { margin: 0; }
-  .greet .sub { margin: 0; }
-  #todoHost { display: grid; gap: 12px; }
-  #todoHost .assistant { border-left: 1px solid var(--border); margin: 0; }
-  #todoHost .assistant h2 { font-family: var(--font-body); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-foreground); margin: 12px 0 2px; }
-  .todo label { display: flex; align-items: flex-start; gap: 12px; cursor: pointer; }
-  .todo input { width: 24px; height: 24px; flex: none; margin-top: 1px; accent-color: var(--primary); }
-  .todo .tag { margin-bottom: 4px; }
-  .todo.done .as-text { text-decoration: line-through; color: var(--muted-foreground); }
-  #tab-sell { padding-bottom: 76px; }
-  #cardHost .card { margin: 0 0 12px; }
-  #tab-sell:has(#cardHost .card) .composer { display: none; }   /* one thing at a time: the card has her full attention */
-  .composer { position: fixed; left: 0; right: 0; bottom: calc(59px + env(safe-area-inset-bottom, 0)); z-index: 3; padding: 8px 0; }
-  .composer .box { display: flex; align-items: flex-end; gap: 8px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 6px 6px 6px 16px; }
-  .composer textarea { flex: 1; min-width: 0; min-height: 40px; max-height: 120px; height: 40px; resize: none; border: 0; border-radius: 0; padding: 8px 0; background: none; outline: none; }
-  .composer .msg { background: var(--card); border-radius: var(--radius-lg); padding: 6px 12px; margin: 0 0 6px; }
-  .send { flex: none; width: 40px; height: 40px; border: 0; border-radius: 50%; background: var(--primary); color: var(--primary-foreground); cursor: pointer; display: flex; align-items: center; justify-content: center; }
-  .send:disabled { opacity: 0.45; cursor: not-allowed; }
-  .composer .box:focus-within { outline: 2px solid var(--ring); outline-offset: 1px; }
-  .composer .box.rec { outline: 2px solid var(--ring); animation: rec 1.4s ease-in-out infinite; }
-  @keyframes rec { 50% { outline-color: transparent; } }
-  @media (prefers-reduced-motion: reduce) { .composer .box.rec { animation: none; } }
-  .composer .cancel { flex: none; align-self: center; padding: 0 4px; }
+  .tabs button[aria-selected="true"] { color: var(--foreground); border-bottom-color: var(--accent); }
+  /* Voice note: a second button next to "Leer venta"; the box pulses while it listens. */
+  .btn.mic { display: inline-flex; align-items: center; gap: 8px; color: var(--foreground); }
+  .btn.mic.on { border-color: var(--ring); }
+  #saleText.listening { outline: 2px solid var(--ring); outline-offset: 1px; animation: listening 1.4s ease-in-out infinite; }
+  @keyframes listening { 50% { outline-color: transparent; } }
+  @media (prefers-reduced-motion: reduce) { #saleText.listening { animation: none; } }
   /* Who owes: plain notebook lines. */
-  #cobrarBody .rows li { border-bottom-color: var(--notebook-line); }
-  .tabs button span:first-child { font-size: 1.25rem; line-height: 1.2; }
-  .icon-people { fill: var(--icon-people); vertical-align: -0.125em; }   /* a drawn icon: the 👥 emoji is dark purple on some phones */
-  .tabs button[aria-selected="true"] { color: var(--foreground); font-weight: 700; }
+  [data-panel="who"] .rows li { border-bottom-color: var(--notebook-line); }
+  [data-panel="who"] .rows li:last-child { border-bottom: 0; }
 
   .home-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
   .seg { display: flex; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
@@ -457,6 +434,11 @@
     </div>
   </div>
   <div class="offline-bar" id="offlineBar" role="status" hidden data-t="offlineNote"></div>
+  <nav class="wrap tabs" role="tablist">
+    <button role="tab" data-tab="sell" data-t="tabSell"></button>
+    <button role="tab" data-tab="home" data-t="tabHome"></button>
+    <button role="tab" data-tab="connect" data-t="tabConnect"></button>
+  </nav>
 </header>
 
 <main class="wrap">
@@ -469,48 +451,30 @@
       <button class="btn" id="instBtn" data-t="instBtn"></button><button class="linkbtn" id="instLater" data-t="instLater"></button>
     </div>
   </div>
-  <div class="greet">
-    <span class="ico" aria-hidden="true">🏪</span>
-    <div><h1 id="greet"></h1><p class="sub" data-t="greetSub"></p></div>
-  </div>
+  <h1 data-t="newSaleTitle"></h1>
+  <p class="sub" data-t="newSaleSub"></p>
 
-  <div id="cardHost"></div>
-  <div id="todoHost"></div>
+  <textarea id="saleText" aria-label=""></textarea>
+  <div class="row-actions">
+    <button class="btn" id="readBtn" data-t="readBtn"></button>
+    <button class="btn ghost mic" id="micBtn" hidden>
+      <svg id="micIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+      <svg id="stopIcon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" hidden><rect x="5" y="5" width="14" height="14" rx="3"/></svg>
+      <span id="micLabel"></span>
+    </button>
+    <button class="linkbtn" id="micCancel" data-t="voiceCancel" hidden></button>
+  </div>
+  <div class="msg" id="readMsg" hidden></div>
 
   <div class="examples">
     <span data-t="examplesLabel"></span>
     <div id="exampleList"></div>
   </div>
 
+  <div id="cardHost"></div>
+
   <h2 data-t="recent"></h2>
   <ul class="sales" id="salesList"></ul>
-
-  <div class="composer">
-    <div class="wrap">
-      <div class="msg" id="readMsg" hidden></div>
-      <div class="box">
-        <textarea id="saleText" rows="1" aria-label=""></textarea>
-        <button class="linkbtn cancel" id="micCancel" data-t="voiceCancel" hidden></button>
-        <button class="send" id="micBtn" aria-label="" hidden>
-          <svg id="micIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
-          <svg id="stopIcon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" hidden><rect x="5" y="5" width="14" height="14" rx="3"/></svg>
-        </button>
-        <button class="send" id="readBtn" aria-label="">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
-        </button>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="tab-cobrar" role="tabpanel" hidden>
-  <h1 data-t="tabCobrar"></h1>
-  <div id="cobrarBody"></div>
-</section>
-
-<section id="tab-stock" role="tabpanel" hidden>
-  <h1 data-t="tabStock"></h1>
-  <div id="stockBody"></div>
 </section>
 
 <section id="tab-home" role="tabpanel" hidden>
@@ -545,20 +509,10 @@
   </div>
   <div class="wrap" style="margin-top:12px">
     <span id="demoDate"></span>
-    <button class="linkbtn" data-tab="connect" data-t="tabConnect"></button>
     <button class="linkbtn" id="resetBtn" data-t="reset"></button>
     <button class="linkbtn" id="newsBtn" hidden></button>
   </div>
 </footer>
-
-<nav class="tabs" role="tablist">
-  <div class="wrap">
-    <button role="tab" data-tab="sell"><span aria-hidden="true">🏠</span><span data-t="tabSell"></span></button>
-    <button role="tab" data-tab="cobrar"><span aria-hidden="true"><svg class="icon-people" viewBox="0 0 24 24" width="1em" height="1em"><circle cx="8" cy="8" r="4"/><circle cx="16.5" cy="8.5" r="3.5"/><path d="M1 20c0-4 3.1-7 7-7s7 3 7 7v1H1z"/><path d="M17 21v-1c0-2.4-.9-4.6-2.4-6.2.6-.2 1.2-.3 1.9-.3 3.6 0 6.5 2.9 6.5 6.5v1z"/></svg></span><span data-t="tabCobrar"></span></button>
-    <button role="tab" data-tab="stock"><span aria-hidden="true">📦</span><span data-t="tabStock"></span></button>
-    <button role="tab" data-tab="home"><span aria-hidden="true">📊</span><span data-t="tabHome"></span></button>
-  </div>
-</nav>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -578,6 +532,11 @@ const I18N = {
     newSaleSub: 'Escríbela como se la contarías a una amiga. Revisas y guardas con un toque.',
     inputPh: 'Ej.: "Vendí 2 labiales a María, pagó la mitad y el resto el viernes"',
     readBtn: 'Leer venta',
+    voiceStart: 'Grabar nota de voz', voiceStop: 'Detener y enviar', voiceCancel: 'Cancelar', voiceRec: 'Te escucho… {time}', voiceWorking: 'Pasando tu nota a texto…',
+    voiceLimit: 'Usaste tus {n} notas de voz de este mes. Puedes seguir escribiendo o pegando tus ventas, gratis siempre, o pasarte a un plan para dictar sin límite.',
+    voiceLeft: 'Te quedan {n} notas de voz este mes.', voiceLeftOne: 'Te queda 1 nota de voz este mes.', voiceLeftNone: 'Ya no te quedan notas de voz este mes.', voiceDenied: 'Para usar el micrófono, permite el acceso en tu navegador. También puedes escribir la venta.',
+    voiceNoMic: 'No encontramos un micrófono. Puedes escribir la venta.', voiceEmpty: 'No te escuché. Prueba otra vez, un poco más cerca del teléfono.',
+    voiceFail: 'No pudimos pasar tu nota a texto. Inténtalo otra vez o escribe la venta.', voiceOffline: 'Sin internet no puedo escuchar notas de voz. Escribe la venta y la leo igual.', tabChannels: 'Mi negocio',
     examplesLabel: 'Prueba con un ejemplo:',
     examples: [
       'Vendí 2 labiales rojos a María, pagó la mitad y el resto el viernes',
@@ -610,13 +569,7 @@ const I18N = {
     channels: { none: 'Sin indicar', whatsapp: 'WhatsApp', instagram: 'Instagram', facebook: 'Facebook', tiktok: 'TikTok', mercadolibre: 'Mercado Libre', persona: 'En persona', catalogo: 'Catálogo' },
     pay: { efectivo: 'Efectivo', transferencia: 'Transferencia', spei: 'Transferencia SPEI', mercadopago: 'Mercado Pago', pagoefectivo: 'PagoEfectivo', oxxo: 'OXXO', yape: 'Yape', plin: 'Plin', sip: 'SIP (Interbank / Oh!)', nequi: 'Nequi', daviplata: 'Daviplata', mach: 'MACH', pix: 'Pix', picpay: 'PicPay', otro: 'Otro' },
     payOtherLabel: '¿Cuál? Escribe el nombre', payOtherPh: 'Ej.: Izipay, BIM, Tunki',
-    tabSell: 'Inicio', tabHome: 'Ganancia', tabCobrar: 'Cobrar', tabStock: 'Stock',
-    greet: '¡Hola, {name}!', greetAnon: '¡Hola!', greetSub: 'Mira cómo vas hoy', hEarnedWeek: 'Ganaste esta semana', hEarnedMonth: 'Ganaste este mes', composer: 'Pega o dicta una venta…',
-    voiceStart: 'Grabar nota de voz', voiceStop: 'Detener y enviar', voiceCancel: 'Cancelar', voiceRec: 'Te escucho… {time}', voiceWorking: 'Pasando tu nota a texto…',
-    voiceLimit: 'Usaste tus {n} notas de voz de este mes. Puedes seguir escribiendo o pegando tus ventas, gratis siempre, o pasarte a un plan para dictar sin límite.',
-    voiceLeft: 'Te quedan {n} notas de voz este mes.', voiceLeftOne: 'Te queda 1 nota de voz este mes.', voiceLeftNone: 'Ya no te quedan notas de voz este mes.', voiceDenied: 'Para usar el micrófono, permite el acceso en tu navegador. También puedes escribir la venta.',
-    voiceNoMic: 'No encontramos un micrófono. Puedes escribir la venta.', voiceEmpty: 'No te escuché. Prueba otra vez, un poco más cerca del teléfono.',
-    voiceFail: 'No pudimos pasar tu nota a texto. Inténtalo otra vez o escribe la venta.', voiceOffline: 'Sin internet no puedo escuchar notas de voz. Escribe la venta y la leo igual.', tabChannels: 'Mi negocio',
+    tabSell: 'Anotar', tabHome: 'Todo en un lugar', tabChannels: 'Mi negocio',
     tabConnect: 'Conectar',
     cnTitle: 'Tus canales',
     cnSub: 'Conecta donde vendes y tus ventas llegan solas. Tú solo revisas y guardas.',
@@ -731,7 +684,7 @@ const I18N = {
       down: 'La IA no está disponible, así que usamos el lector básico. Revisa bien la tarjeta.',
       offline: 'Sin conexión con la IA, así que usamos el lector básico. Revisa bien la tarjeta.'
     },
-    asTitle: 'Para hoy',
+    asTitle: 'Tu asistente',
     asNone: 'Todo en orden: tus precios, tu stock y tus cobros están al día.',
     asBusy: 'Tu asistente está escribiendo…',
     asByAI: 'Redactado con IA. Los números los calcula la app.',
@@ -844,6 +797,11 @@ const I18N = {
     newSaleSub: 'Escreva como você contaria para uma amiga. Você confere e salva com um toque.',
     inputPh: 'Ex.: "Vendi 2 batons para a Maria, ela pagou metade e o resto na sexta"',
     readBtn: 'Ler venda',
+    voiceStart: 'Gravar nota de voz', voiceStop: 'Parar e enviar', voiceCancel: 'Cancelar', voiceRec: 'Estou ouvindo… {time}', voiceWorking: 'Passando sua nota para texto…',
+    voiceLimit: 'Você usou suas {n} notas de voz deste mês. Pode continuar escrevendo ou colando suas vendas, grátis sempre, ou mudar para um plano e ditar sem limite.',
+    voiceLeft: 'Restam {n} notas de voz este mês.', voiceLeftOne: 'Resta 1 nota de voz este mês.', voiceLeftNone: 'Não restam notas de voz este mês.', voiceDenied: 'Para usar o microfone, permita o acesso no navegador. Você também pode escrever a venda.',
+    voiceNoMic: 'Não encontramos um microfone. Você pode escrever a venda.', voiceEmpty: 'Não ouvi nada. Tente de novo, um pouco mais perto do telefone.',
+    voiceFail: 'Não conseguimos passar sua nota para texto. Tente de novo ou escreva a venda.', voiceOffline: 'Sem internet não consigo ouvir notas de voz. Escreva a venda e eu leio do mesmo jeito.', tabChannels: 'Meu negócio',
     examplesLabel: 'Teste com um exemplo:',
     examples: [
       'Vendi 2 batons vermelhos para a Maria, ela pagou metade e o resto na sexta',
@@ -876,13 +834,7 @@ const I18N = {
     channels: { none: 'Não informado', whatsapp: 'WhatsApp', instagram: 'Instagram', facebook: 'Facebook', tiktok: 'TikTok', mercadolibre: 'Mercado Livre', persona: 'Pessoalmente', catalogo: 'Catálogo' },
     pay: { efectivo: 'Dinheiro', transferencia: 'Transferência', spei: 'Transferência SPEI', mercadopago: 'Mercado Pago', pagoefectivo: 'PagoEfectivo', oxxo: 'OXXO', yape: 'Yape', plin: 'Plin', sip: 'SIP (Interbank / Oh!)', nequi: 'Nequi', daviplata: 'Daviplata', mach: 'MACH', pix: 'Pix', picpay: 'PicPay', otro: 'Outro' },
     payOtherLabel: 'Qual? Escreva o nome', payOtherPh: 'Ex.: Nubank, Inter, PagBank',
-    tabSell: 'Início', tabHome: 'Ganho', tabCobrar: 'Cobrar', tabStock: 'Estoque',
-    greet: 'Olá, {name}!', greetAnon: 'Olá!', greetSub: 'Veja como você está hoje', hEarnedWeek: 'Você ganhou esta semana', hEarnedMonth: 'Você ganhou este mês', composer: 'Cole ou dite uma venda…',
-    voiceStart: 'Gravar nota de voz', voiceStop: 'Parar e enviar', voiceCancel: 'Cancelar', voiceRec: 'Estou ouvindo… {time}', voiceWorking: 'Passando sua nota para texto…',
-    voiceLimit: 'Você usou suas {n} notas de voz deste mês. Pode continuar escrevendo ou colando suas vendas, grátis sempre, ou mudar para um plano e ditar sem limite.',
-    voiceLeft: 'Restam {n} notas de voz este mês.', voiceLeftOne: 'Resta 1 nota de voz este mês.', voiceLeftNone: 'Não restam notas de voz este mês.', voiceDenied: 'Para usar o microfone, permita o acesso no navegador. Você também pode escrever a venda.',
-    voiceNoMic: 'Não encontramos um microfone. Você pode escrever a venda.', voiceEmpty: 'Não ouvi nada. Tente de novo, um pouco mais perto do telefone.',
-    voiceFail: 'Não conseguimos passar sua nota para texto. Tente de novo ou escreva a venda.', voiceOffline: 'Sem internet não consigo ouvir notas de voz. Escreva a venda e eu leio do mesmo jeito.', tabChannels: 'Meu negócio',
+    tabSell: 'Anotar', tabHome: 'Tudo em um lugar', tabChannels: 'Meu negócio',
     tabConnect: 'Conectar',
     cnTitle: 'Seus canais',
     cnSub: 'Conecte onde você vende e as vendas chegam sozinhas. Você só confere e salva.',
@@ -997,7 +949,7 @@ const I18N = {
       down: 'A IA não está disponível, então usamos o leitor básico. Confira bem o cartão.',
       offline: 'Sem conexão com a IA, então usamos o leitor básico. Confira bem o cartão.'
     },
-    asTitle: 'Para hoje',
+    asTitle: 'Seu assistente',
     asNone: 'Tudo certo: seus preços, seu estoque e suas cobranças estão em dia.',
     asBusy: 'Seu assistente está escrevendo…',
     asByAI: 'Escrito com IA. Os números são calculados pelo app.',
@@ -1110,6 +1062,11 @@ const I18N = {
     newSaleSub: 'Write it the way you would tell a friend. Check it and save with one tap.',
     inputPh: 'E.g.: "I sold 2 lipsticks to María, she paid half and the rest on Friday"',
     readBtn: 'Read sale',
+    voiceStart: 'Record a voice note', voiceStop: 'Stop and send', voiceCancel: 'Cancel', voiceRec: 'Listening… {time}', voiceWorking: 'Turning your note into text…',
+    voiceLimit: 'You used your {n} voice notes this month. You can keep typing or pasting your sales, free always, or move to a plan to speak without a limit.',
+    voiceLeft: '{n} voice notes left this month.', voiceLeftOne: '1 voice note left this month.', voiceLeftNone: 'No voice notes left this month.', voiceDenied: 'To use the microphone, allow it in your browser. You can also type the sale.',
+    voiceNoMic: 'We couldn’t find a microphone. You can type the sale.', voiceEmpty: 'I didn’t hear you. Try again, a little closer to the phone.',
+    voiceFail: 'We couldn’t turn your note into text. Try again or type the sale.', voiceOffline: 'Without internet I can’t hear voice notes. Type the sale and I’ll still read it.', tabChannels: 'My business',
     examplesLabel: 'Try an example:',
     examples: [
       'I sold 2 red lipsticks to María, she paid half and the rest on Friday',
@@ -1142,13 +1099,7 @@ const I18N = {
     channels: { none: 'Not specified', whatsapp: 'WhatsApp', instagram: 'Instagram', facebook: 'Facebook', tiktok: 'TikTok', mercadolibre: 'Mercado Libre', persona: 'In person', catalogo: 'Catalog' },
     pay: { efectivo: 'Cash', transferencia: 'Bank transfer', spei: 'SPEI transfer', mercadopago: 'Mercado Pago', pagoefectivo: 'PagoEfectivo', oxxo: 'OXXO', yape: 'Yape', plin: 'Plin', sip: 'SIP (Interbank / Oh!)', nequi: 'Nequi', daviplata: 'Daviplata', mach: 'MACH', pix: 'Pix', picpay: 'PicPay', otro: 'Other' },
     payOtherLabel: 'Which one? Write the name', payOtherPh: 'E.g.: Izipay, BIM, Tunki',
-    tabSell: 'Home', tabHome: 'Profit', tabCobrar: 'Collect', tabStock: 'Stock',
-    greet: 'Hi, {name}!', greetAnon: 'Hi!', greetSub: 'See how you’re doing today', hEarnedWeek: 'You earned this week', hEarnedMonth: 'You earned this month', composer: 'Paste or say a sale…',
-    voiceStart: 'Record a voice note', voiceStop: 'Stop and send', voiceCancel: 'Cancel', voiceRec: 'Listening… {time}', voiceWorking: 'Turning your note into text…',
-    voiceLimit: 'You used your {n} voice notes this month. You can keep typing or pasting your sales, free always, or move to a plan to speak without a limit.',
-    voiceLeft: '{n} voice notes left this month.', voiceLeftOne: '1 voice note left this month.', voiceLeftNone: 'No voice notes left this month.', voiceDenied: 'To use the microphone, allow it in your browser. You can also type the sale.',
-    voiceNoMic: 'We couldn’t find a microphone. You can type the sale.', voiceEmpty: 'I didn’t hear you. Try again, a little closer to the phone.',
-    voiceFail: 'We couldn’t turn your note into text. Try again or type the sale.', voiceOffline: 'Without internet I can’t hear voice notes. Type the sale and I’ll still read it.', tabChannels: 'My business',
+    tabSell: 'Record', tabHome: 'All in one place', tabChannels: 'My business',
     tabConnect: 'Connect',
     cnTitle: 'Your channels',
     cnSub: 'Connect where you sell and your sales come in on their own. You just check and save.',
@@ -1263,7 +1214,7 @@ const I18N = {
       down: 'The AI is not available, so we used the basic reader. Check the card carefully.',
       offline: 'No connection to the AI, so we used the basic reader. Check the card carefully.'
     },
-    asTitle: 'For today',
+    asTitle: 'Your assistant',
     asNone: 'All good: your prices, stock and payments are up to date.',
     asBusy: 'Your assistant is writing…',
     asByAI: 'Written with AI. The app calculates every number.',
@@ -1396,7 +1347,7 @@ function seedData() {
   };
 }
 
-const APP_VERSION = '0.10.3';
+const APP_VERSION = '0.11.0';
 // Current version of each legal document. Changing a version asks the seller to accept again.
 const DOCS = {
   terminos: { version: '1.0', language: 'es', file: '../legal/terminos-y-condiciones.html' },
@@ -1940,7 +1891,6 @@ function daysBetween(aISO, bISO) { return Math.round((parseISO(bISO) - parseISO(
 function renderHome() {
   const body = document.getElementById('homeBody');
   if (!body) return;
-  ['todoHost', 'cobrarBody', 'stockBody'].forEach(id => document.getElementById(id).replaceChildren());
   claimPayment();
   document.querySelectorAll('[data-period]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.period === period)));
   const start = periodStart();
@@ -2060,7 +2010,7 @@ function renderHome() {
   order.forEach(k => { const el = body.querySelector(`[data-panel="${k}"]`); if (el) body.appendChild(el); });
   const retry = body.querySelector('#asRetry');
   if (retry) retry.addEventListener('click', () => { aiTried.clear(); aiState = null; renderHome(); });
-  if (document.getElementById('tab-connect').hidden) maybeWordWithAI(checks);
+  if (!document.getElementById('tab-home').hidden) maybeWordWithAI(checks);
   bindPlans(body);
   renderFiles();
   if (!document.getElementById('tab-home').hidden) askPlanAI();
@@ -2106,30 +2056,6 @@ function renderHome() {
     saveData(); renderHome();
     toast(t('hAdded', { product: name }));
   });
-
-  syncComposer();
-
-  // Inicio: today's to-do and the big number. Cobrar: who owes. Stock: products and files. Ganancia: the rest.
-  const panel = k => body.querySelector(`[data-panel="${k}"]`);
-  const big = body.querySelector('.stat.big').cloneNode(true);
-  big.querySelector('.k').textContent = t(period === 'month' ? 'hEarnedMonth' : 'hEarnedWeek');
-  const todo = $('todoHost');
-  todo.append(panel('assistant'), big);
-  panel('who').hidden = false;
-  $('cobrarBody').append(panel('who'));
-  $('stockBody').append(panel('stock'), panel('files'));
-  todo.querySelectorAll('[data-todo]').forEach(c => c.addEventListener('change', () => {
-    const d = todoToday();
-    d.keys = c.checked ? [...new Set([...d.keys, c.dataset.todo])] : d.keys.filter(k => k !== c.dataset.todo);
-    data.todo = d; saveData();
-    c.closest('.todo').classList.toggle('done', c.checked);
-  }));
-}
-
-// Ticks on today's to-do, kept for the day.
-function todoToday() {
-  const day = toISO(todayDate());
-  return data.todo && data.todo.day === day ? data.todo : { day, keys: [] };
 }
 
 /* ------------------------------------------------------------------
@@ -2358,7 +2284,8 @@ document.getElementById('bizCancel').addEventListener('click', () => {
 });
 
 function applyPlaceholder() {
-  document.getElementById('saleText').placeholder = t('composer');
+  const s = bizOf().sector, bySector = t('inputPhBySector');
+  document.getElementById('saleText').placeholder = (s && bySector[s]) || t('inputPh');
 }
 
 /* ------------------------------------------------------------------
@@ -2544,7 +2471,7 @@ function renderConnect() {
         ${sheetRows ? `<h4 style="margin-top:10px">${esc(t('cnPreview', { n: sheetRows.length }))}</h4><ul class="rows">${sheetRows.map(r => {
             const total = round2(r.qty * r.unit), owed = r.paid === null ? 0 : round2(total - Math.min(r.paid, total));
             return `<li><div><div>${r.qty} × ${esc(r.label)}${r.productId ? '' : ` <span class="tag">${esc(t('cnNewProduct'))}</span>`}</div>
-              <div class="meta">${money(total)}${r.customer ? ' · ' + esc(r.customer) : ''}${r.date ? ' · ' + esc(fmtDate(r.date)) : ''}${owed > 0 ? ' · <span class="owes" style="color:var(--destructive)">' + esc(t('cnRowOwes', { amount: money(owed) })) + '</span>' : ''}</div></div></li>`;
+              <div class="meta">${money(total)}${r.customer ? ' · ' + esc(r.customer) : ''}${r.date ? ' · ' + esc(fmtDate(r.date)) : ''}${owed > 0 ? ' · <span class="owes">' + esc(t('cnRowOwes', { amount: money(owed) })) + '</span>' : ''}</div></div></li>`;
           }).join('')}</ul>
           <button class="btn sm" id="sheetImport" style="margin-top:8px">${esc(sheetRows.length === 1 ? t('cnImportOne') : t('cnImportAll', { n: sheetRows.length }))}</button>` : ''}
       </div>`;
@@ -2829,13 +2756,12 @@ async function deleteFile(f) {
 /* ------------------------------------------------------------------
    Tabs
 ------------------------------------------------------------------ */
-const TABS = ['sell', 'cobrar', 'stock', 'home', 'connect'];
 function showTab(name) {
-  if (!TABS.includes(name)) name = 'sell';
-  TABS.forEach(k => { document.getElementById('tab-' + k).hidden = k !== name; });
+  if (!['sell', 'home', 'connect'].includes(name)) name = 'sell';
+  ['sell', 'home', 'connect'].forEach(k => { document.getElementById('tab-' + k).hidden = k !== name; });
   document.querySelectorAll('[data-tab]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === name)));
   prefs.tab = name; store(PREF_KEY, prefs);
-  if (name !== 'connect') renderHome();
+  if (name === 'home') renderHome();
   if (name === 'connect') renderConnect();
   window.scrollTo(0, 0);
 }
@@ -2860,6 +2786,7 @@ function applyLang() {
   const ta = document.getElementById('saleText');
   ta.setAttribute('aria-label', t('newSaleTitle'));
   applyPlaceholder();
+  syncComposer();
   if (document.getElementById('bizStep').style.display === 'flex') renderBizStep();
   if (document.getElementById('planStep').style.display === 'flex') renderPlans();
   document.querySelectorAll('[data-lang]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
@@ -2874,9 +2801,6 @@ function applyLang() {
   document.getElementById('signOutBtn').hidden = !user;
   renderNewsBtn();
   renderWeather();
-  document.getElementById('greet').textContent = data.profile && data.profile.name ? t('greet', { name: data.profile.name }) : t('greetAnon');
-  document.getElementById('readBtn').setAttribute('aria-label', t('readBtn'));
-  syncComposer();
   document.getElementById('hello').textContent = inside && data.profile ? t('hello', { name: data.profile.name }) : '';
   if (document.getElementById('onboard').style.display === 'flex') renderAuth();
   renderCard();
@@ -3286,7 +3210,7 @@ function bindPlans(root) {
 function renderPlans() {
   const step = document.getElementById('planStep');
   if (step.style.display === 'flex') { const host = document.getElementById('planStepBody'); host.innerHTML = planPickHTML(); bindPlans(host); }
-  renderHome();
+  if (!document.getElementById('tab-home').hidden) renderHome();
 }
 function openPlanStep() {
   const el = document.getElementById('planStep');
@@ -3330,9 +3254,9 @@ const AI_TIMEOUT_MS = 12000;
 ------------------------------------------------------------------ */
 const VOICE_FREE = 10, VOICE_MAX_S = 60, VOICE_TIMEOUT_MS = 18000;
 const VOICE_TYPES = ['audio/webm;codecs=opus', 'audio/mp4', 'audio/ogg;codecs=opus'];
-let voice = { rec: null, stream: null, chunks: [], start: 0, timer: null, cancel: false, busy: false };
+var voice = { rec: null, stream: null, chunks: [], start: 0, timer: null, cancel: false, busy: false };
 
-const voiceOK = () => location.protocol !== 'file:' && !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
+function voiceOK() { return location.protocol !== 'file:' && !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder); }
 function voiceUse() {
   const month = toISO(todayDate()).slice(0, 7);
   return data.voice && data.voice.month === month ? data.voice : { month, count: 0 };
@@ -3340,18 +3264,21 @@ function voiceUse() {
 const voiceLeft = () => (data.plan && data.plan.tier > 0) ? Infinity : Math.max(0, VOICE_FREE - voiceUse().count);
 function voiceSay(text) { const m = document.getElementById('readMsg'); m.textContent = text; m.hidden = !text; }
 
-// Empty box: microphone. Text in the box: send arrow, like WhatsApp.
+// "Leer venta" stays; the microphone sits next to it when the phone can record.
 function syncComposer() {
   const $ = id => document.getElementById(id), ta = $('saleText'), on = !!voice.rec;
-  const mic = (voiceOK() && !ta.value.trim()) || on || voice.busy;
-  $('micBtn').hidden = !mic; $('readBtn').hidden = mic;
+  $('micBtn').hidden = !voiceOK();
   $('micCancel').hidden = !on;
   $('micIcon').toggleAttribute('hidden', on); $('stopIcon').toggleAttribute('hidden', !on);
   $('micBtn').disabled = voice.busy;
-  $('micBtn').setAttribute('aria-label', t(on ? 'voiceStop' : 'voiceStart'));
-  $('micBtn').closest('.box').classList.toggle('rec', on);
+  $('micBtn').classList.toggle('on', on);
+  $('micLabel').textContent = t(on ? 'voiceStop' : 'voiceStart');
+  if (!reading) $('readBtn').disabled = on || voice.busy;
   ta.disabled = on || voice.busy;
-  ta.placeholder = voice.busy ? t('voiceWorking') : on ? t('voiceRec', { time: voiceTime() }) : t('composer');
+  ta.classList.toggle('listening', on);
+  if (voice.busy) ta.placeholder = t('voiceWorking');
+  else if (on) ta.placeholder = t('voiceRec', { time: voiceTime() });
+  else applyPlaceholder();
 }
 function voiceTime() { const s = Math.floor((Date.now() - voice.start) / 1000); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
 
@@ -3474,12 +3401,13 @@ async function readSale() {
   reading = true;
   msg.hidden = true;
   const btn = document.getElementById('readBtn');
-  btn.disabled = true;
+  btn.disabled = true; btn.textContent = t('aiReading');
   const rules = parseSale(text, data.products, todayDate());
   const res = await aiCall('sale', { text, products: data.products.map(p => ({ id: p.id, name: p.name })) });
   const parsed = res.error ? null : saleFromAI(res.sale, text, rules);
-  btn.disabled = false;
+  btn.disabled = false; btn.textContent = t('readBtn');
   reading = false;
+  syncComposer();
   if (!parsed) { msg.textContent = t('aiFail')[res.error] || t('aiFail').down; msg.hidden = false; }
   draft = newDraft(text, parsed || rules);
   draft.byAI = !!parsed;
@@ -3558,21 +3486,19 @@ function assistantHTML(checks) {
     : worded ? t('asByAI') : '';
   return `<div class="panel home-section assistant" data-panel="assistant">
     <h2>${esc(t('asTitle'))}</h2>
-    <ul class="rows">${checks.length ? checks.map(c => { const done = todoToday().keys.includes(c.draft); return `<li class="todo ${done ? 'done' : ''}" style="display:block">
-      <label><input type="checkbox" data-todo="${esc(c.draft)}" ${done ? 'checked' : ''}>
-      <span><span class="tag">${esc(t('asKinds')[c.kind])}</span>
-      <span class="as-text" style="display:block">${esc(aiWording.get(c.draft) || c.draft)}</span></span></label>
-    </li>`; }).join('') : `<li class="empty">${esc(t('asNone'))}</li>`}</ul>
+    <ul class="rows">${checks.length ? checks.map(c => `<li style="display:block">
+      <span class="tag">${esc(t('asKinds')[c.kind])}</span>
+      <div class="as-text">${esc(aiWording.get(c.draft) || c.draft)}</div>
+    </li>`).join('') : `<li class="empty">${esc(t('asNone'))}</li>`}</ul>
     ${note ? `<p class="as-note">${esc(note)}${failed ? ` <button class="linkbtn" id="asRetry">${esc(t('asRetry'))}</button>` : ''}</p>` : ''}
   </div>`;
 }
 
 document.getElementById('readBtn').addEventListener('click', readSale);
-document.getElementById('saleText').addEventListener('input', e => { e.target.style.height = '40px'; e.target.style.height = Math.min(120, e.target.scrollHeight) + 'px'; syncComposer(); });
 document.getElementById('micBtn').addEventListener('click', () => { if (voice.rec) stopVoice(false); else startVoice(); });
 document.getElementById('micCancel').addEventListener('click', () => stopVoice(true));
 document.getElementById('saleText').addEventListener('keydown', e => {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); readSale(); }
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) readSale();
 });
 document.querySelectorAll('[data-lang]').forEach(b => b.addEventListener('click', () => setLang(b.dataset.lang)));
 document.querySelectorAll('[data-pick]').forEach(b => b.addEventListener('click', () => setLang(b.dataset.pick)));

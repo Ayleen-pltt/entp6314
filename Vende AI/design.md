@@ -242,11 +242,11 @@ For Mariana, a catalog reseller who sells to friends, family, and coworkers on W
 ## What this means for the design
 
 Check every screen against Mariana:
-- **Recording a sale is always free and always in reach.** The chat box is on Inicio, the first screen. Never put a lock, a price or a "Pro" badge near it. Only voice notes have a monthly limit, and typing or pasting always stays free.
-- **No forms first.** One chat box where she pastes, types or says the sale. Fields only appear on the confirm card, already filled, for her to check.
+- **Recording a sale is always free and always in reach.** The sale box is on Anotar, the first tab. Never put a lock, a price or a "Pro" badge near it. Only voice notes have a monthly limit, and typing or pasting always stays free.
+- **No forms first.** One box where she pastes, types or says the sale. Fields only appear on the confirm card, already filled, for her to check.
 - **Nothing is saved without her tap.** The confirm card always shows what will be saved, and has one clear button.
 - **Her words, not an accountant's.** "Quién te debe", "Lo que tienes", "Lo que ganaste": never SKU, COGS, inventory or margin (the table in `prd.md`).
-- **The answers she wants are on top.** Who owes her, what to restock and whether she really earned money are on Inicio, in "Para hoy" and "Ganaste esta semana", with the detail one tab away in Cobrar, Stock and Ganancia.
+- **The answers she wants are on top.** Who owes her, what to restock and whether she really earned money are together on "Todo en un lugar": the big number, "Tu asistente" and "Quién te debe" come first, stock and files further down.
 - **Sizes, colors, installments and wholesale prices** are part of the normal screens, not hidden settings.
 - **Weak signal is normal.** She is never logged out because the internet dropped. When the AI or the weather can't load, one calm line says so and everything else keeps working.
 - **The assistant suggests; she decides.** Reminders are written for her to send from her own WhatsApp. VendeAI never writes to her customers by itself, and never pretends to be a person.
@@ -255,7 +255,7 @@ Check every screen against Mariana:
 
 From the interviews:
 - **Lead with the result, not with "AI".** Nobody asked for AI. Screens and the landing page talk about what she gets ("sabe quién te debe", "anota en segundos"). AI is how it works behind the scenes, not the headline.
-- **Collecting comes first.** Cobrar is its own tab, and whoever needs a reminder today shows up first in "Para hoy".
+- **Collecting comes first.** "Quién te debe" sits right under the numbers, and the assistant's "Cobrar" tips come first.
 - **Profit made visible.** Every sale shows what she really earned after costs, in plain words, so a low or negative margin is noticed, not hidden in a report.
 - **Meet them where they are: Excel.** All of them use Excel today. Uploading their stock sheet ("Tus archivos" → Stock) is a bridge, not a dead end. Importing it into "Lo que tienes" is a natural next step.
 - **Every number must be right and explainable.** One wrong stock or profit figure loses her (affinity map, theme 6). Show where a number comes from ("Vendiste $X y te costó $Y") and log every change so she can check it.
@@ -316,6 +316,8 @@ The home screen, from top to bottom:
 - **Chat box near the bottom:** "Pega o dicta una venta…" with a round microphone button.
 - **Bottom tabs:** Inicio, Cobrar, Stock, Ganancia, each with a small icon.
 
+**What the app took from the mockup:** the look (Marfil, notebook lines, Baloo 2 and DM Sans, the big number, terracotta for money owed). Not the layout: the app keeps its three tabs in the header (Anotar, Todo en un lugar, Conectar), the structure sellers already know.
+
 ## Personality
 
 Warm, friendly and trustworthy, like a neat notebook kept by someone who has everything under control. The seller should feel organized and capable, never judged. Plenty of space, few things on screen at once, one clear action per screen.
@@ -360,7 +362,7 @@ These are not in the palettes but the app still needs them:
 | `--muted` | `#EAE1CC` | `#2B2925` | Quiet surfaces |
 | `--muted-foreground` | `#4C5A62` | `#9AA7AE` | Hints and small labels |
 | `--paid` | `#5B7046` | `#A9BE8E` | Paid in full, always with ✓ |
-| `--icon-people` | `#5B3F8F` | `#C4B5FD` | The Cobrar tab icon |
+| `--icon-people` | `#5B3F8F` | `#C4B5FD` | A people icon. Not used in the app right now |
 | `--destructive` | `#A12E2A` | `#E07A6F` | Real errors and losses. Never money owed |
 | `--border`, `--input` | `#DDD3BF` | `#2F2D29` | Lines and form fields |
 | `--ring` | `#4C5A62` | `#C9B48F` | Focus outline |
@@ -416,19 +418,18 @@ The app uses only the type scale: 12 labels, 14 small print, 16 body, 20 h2 and 
 - **Phone first.** Content column max 560px, 16px side padding. No sideways scrolling, ever: check at 360px wide.
 - **Background:** notebook lines on every page (`.bg-notebook`), 28px apart, in light and dark.
 - **Header:** sticky, 56px high, same color as the page. Left: logo with the weather under it (they never shrink). Right: "Mi negocio", "Salir", ES/PT/EN (smaller under 440px).
-- **Four tabs at the bottom,** always visible, each with an icon and a word:
+- **Three tabs in the header,** under the logo, small caps words with an Arena line under the open one:
 
 | Tab | What's on it |
 |---|---|
-| 🏠 **Inicio** | Greeting, "Para hoy" checklist, "Ganaste esta semana", examples, recent sales, chat box |
-| 👥 **Cobrar** | "Quién te debe", in notebook lines |
-| 📦 **Stock** | "Lo que tienes" and "Tus archivos" |
-| 📊 **Ganancia** | "Cómo te va": numbers, best sellers, where she sells, her plan |
+| **Anotar** | Install card, "Anotar una venta", the sale box with "Leer venta" and the voice button, examples, the confirm card, recent sales |
+| **Todo en un lugar** | "Cómo te va" (week or month): the big number, sales, who owes; "Tu asistente"; "Quién te debe" in notebook lines; "Lo que tienes"; "Tus archivos"; best sellers and where she sells |
+| **Conectar** | Her sales channels and what VendeAI can read from each |
 
-"Conectar" is a link in the footer. The app always opens on Inicio the first time.
+The app always opens on Anotar.
 
-- **Chat box:** fixed just above the tabs on Inicio. It hides while the confirm card is open, so she does one thing at a time.
-- **Shapes:** gently round, from `--radius` (12px): `--radius-sm` 8px, `--radius-md` 10px, `--radius-lg` 12px, `--radius-xl` 16px. Buttons use lg; cards, panels and the chat box use xl; chips and pills are fully round. No shadows.
+- **Sale box:** a full-width box in the page, not fixed. "Leer venta" is the main button; "Grabar nota de voz" sits next to it when the phone can record.
+- **Shapes:** gently round, from `--radius` (12px): `--radius-sm` 8px, `--radius-md` 10px, `--radius-lg` 12px, `--radius-xl` 16px. Buttons use lg; cards and panels use xl; chips and pills are fully round. No shadows.
 
 ## Pieces
 
@@ -438,14 +439,13 @@ The app uses only the type scale: 12 labels, 14 small print, 16 body, 20 h2 and 
 | **Second button** (`.btn.ghost`) | No fill, thin border, gray text |
 | **Text link button** (`.linkbtn`) | No border, small (Abrir, Borrar, Reintentar) |
 | **Card / panel** | `--card`, 1px `--border` border, `--radius-xl` corners |
-| **"Para hoy"** | Card with one tick box per task. Ticks last for the day |
 | **Big number** (`.stat.big`) | Card with an uppercase label and a 48px `.money` number (32px for long amounts): the number that matters most |
-| **Chat box** (`.composer`) | Round white box. Empty: round microphone. With text: round send arrow, like WhatsApp. Enter sends. While recording: the box pulses, shows the time, and the button becomes stop |
+| **Sale box** (`#saleText` + `.row-actions`) | White box, `--radius-lg`. "Leer venta" (`.btn`) and "Grabar nota de voz" (`.btn.ghost.mic`). Ctrl+Enter reads. While recording: the box pulses, shows the time, the voice button becomes "Detener y enviar" and "Cancelar" appears |
 | **Chips** | Round, thin border; selected = `--primary` fill |
 | **Pill** | Small round `--secondary` tag: "Se está acabando", "Agotado" |
 | **Example buttons** | Dashed border, full width, tap to try |
 | **Wallet drop zone** (`.drop`) | Dashed box with an Arena wallet across its bottom edge. The file drops into the wallet while uploading; it shuts with a `--paid` ✓ when saved. Tap or drag. A pill above counts saved files |
-| **Toast** | Strip above the tabs for 3.5 s: "Listo: archivo guardado." |
+| **Toast** | Strip at the bottom of the screen for 3.5 s: "Listo: archivo guardado." |
 | **Overlay** (sign-in, "Tu negocio", plans) | Full screen, one column, one main button |
 | **Plan suggestion** (`.pl-sug`) | Card with an Arena border and the plan name in Baloo 2 2rem |
 
@@ -462,7 +462,7 @@ Same brand in a simpler form, light only, because email apps do not load our fon
 ## Accessibility
 
 - Text contrast at least 4.5:1 (that's why Arena is never body text on ivory).
-- Everything works with a tap target of at least 40px high and with the keyboard; focus shows a 2px outline (the chat box outlines the whole box).
+- Everything works with a tap target of at least 40px high and with the keyboard; focus shows a 2px outline.
 - Warnings never rely on color alone: they also have words ("Se está acabando", "3 días de atraso").
 - Status updates (toasts, upload messages, weather) use `role="status"` so screen readers announce them.
 
