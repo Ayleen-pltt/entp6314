@@ -1347,7 +1347,7 @@ function seedData() {
   };
 }
 
-const APP_VERSION = '0.11.1';
+const APP_VERSION = '0.12.0';
 // Current version of each legal document. Changing a version asks the seller to accept again.
 const DOCS = {
   terminos: { version: '1.0', language: 'es', file: '../legal/terminos-y-condiciones.html' },
@@ -2919,6 +2919,23 @@ async function setNews(on) {
   }
   renderNewsBtn();
 }
+// The plan Stripe confirmed (api/stripe-webhook.js saves it in app_metadata.plan, which only our server
+// can write). It wins over the phone's copy unless the phone's payment is newer (the webhook can lag a few seconds).
+function planFromAccount(u) {
+  const p = u && u.app_metadata && u.app_metadata.plan;
+  if (!p || !(p.tier in TIERS) || !dataKey) return false;
+  const mine = data.plan || { tier: 0 };
+  if (mine.tier === p.tier || (mine.paidAt && mine.paidAt > p.at)) return false;
+  data.plan = { tier: p.tier, status: p.status, at: p.at, fromStripe: true };
+  logChange('plan_from_account', { tier: p.tier, status: p.status });
+  saveData();
+  return true;
+}
+// The session's copy of the account can be old; ask Supabase once for the latest plan.
+function refreshPlan() {
+  if (!sb || !user) return;
+  sb.auth.getUser().then(r => { if (r && r.data && r.data.user) { user = r.data.user; if (planFromAccount(user)) { syncPlan(); renderHome(); } } }).catch(() => { /* next opening tries again */ });
+}
 function syncPlan() {
   const tier = (data.plan && data.plan.tier) || 0;
   if (sb && user && (user.user_metadata || {}).plan !== tier) sb.auth.updateUser({ data: { plan: tier } }).catch(() => { /* next sign-in tries again */ });
@@ -2947,7 +2964,7 @@ function onSession(event, session) {
   if ((u && u.id) !== (user && user.id)) {
     user = u;
     draft = null; sheetRows = null; connAsking = null; aiWording.clear(); aiTried.clear(); aiState = null;
-    if (u) { openUserData(u); syncConsents(); askWelcome(session); syncPlan(); }
+    if (u) { openUserData(u); syncConsents(); askWelcome(session); planFromAccount(u); syncPlan(); refreshPlan(); }
     else { dataKey = null; data = seedData(); }
     applyLang();
     showTab(prefs.tab || 'sell');
@@ -3233,8 +3250,12 @@ async function payTier(tier, btn) {
   toast(t('plOpening'));
   logChange('plan_checkout_started', { tier });
   try {
+    // With the seller's session, the payment is tied to her account (the webhook saves the plan there).
+    const session = sb && user ? (await sb.auth.getSession().catch(() => ({ data: {} }))).data.session : null;
+    const headers = { 'Content-Type': 'application/json' };
+    if (session && session.access_token) headers.Authorization = 'Bearer ' + session.access_token;
     const r = await fetch('/api/checkout', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers,
       body: JSON.stringify({ tier, lang }), signal: AbortSignal.timeout(15000)
     });
     const j = await r.json().catch(() => ({}));

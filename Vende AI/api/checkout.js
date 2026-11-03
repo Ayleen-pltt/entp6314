@@ -2,7 +2,9 @@
 // Runs on the server only. It reads STRIPE_SECRET_KEY from the server's environment
 // and talks to Stripe; the browser only ever gets back a Stripe page address.
 //
-//   POST { tier, lang }   -> creates a Checkout Session and returns { url } (the Stripe-hosted page)
+//   POST { tier, lang }   -> creates a Checkout Session and returns { url } (the Stripe-hosted page).
+//                            With the seller's Supabase token, the session carries their user id,
+//                            so /api/stripe-webhook can save the plan on their account.
 //   GET  ?session_id=...  -> asks Stripe whether that session was paid; returns { paid, tier }.
 //                            The first time it sees a paid session, it also emails the receipt
 //                            (Resend, see _email.js) and marks the session receipt_sent in Stripe.
@@ -64,6 +66,19 @@ async function stripe(sk, method, path, form) {
   return body;
 }
 
+// The signed-in seller's id from their Supabase session token, or null (demo mode, signed out, Supabase down).
+async function accountId(request) {
+  const url = (process.env.SUPABASE_URL || '').trim().replace(/\/+$/, '').replace(/\/rest\/v1$/, '');
+  const key = (process.env.SUPABASE_PUBLISHABLE_KEY || '').trim();
+  const token = (request.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
+  if (!url || !key || !token) return null;
+  try {
+    const res = await fetch(url + '/auth/v1/user', { headers: { apikey: key, Authorization: 'Bearer ' + token }, signal: AbortSignal.timeout(5000) });
+    const user = res.ok ? await res.json() : null;
+    return user && user.id && !user.is_anonymous ? user.id : null;
+  } catch { return null; }
+}
+
 export async function POST(request) {
   const sk = testKey();
   if (!sk) return json(503, { error: 'not_ready' });
@@ -74,8 +89,12 @@ export async function POST(request) {
   if (!tier) return json(400, { error: 'bad_tier' });
   const lang = LOCALES[input.lang] ? input.lang : 'es';
   const origin = new URL(request.url).origin;
+  // Whose payment this is, checked with Supabase, so the webhook can save the plan on that account.
+  const userId = await accountId(request);
+  const who = userId ? { client_reference_id: userId, 'metadata[user_id]': userId, 'subscription_data[metadata][user_id]': userId } : {};
   try {
     const session = await stripe(sk, 'POST', 'checkout/sessions', {
+      ...who,
       mode: 'subscription',
       'line_items[0][quantity]': '1',
       'line_items[0][price_data][currency]': 'usd',
