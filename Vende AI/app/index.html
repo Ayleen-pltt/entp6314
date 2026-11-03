@@ -509,6 +509,7 @@
   </div>
   <div class="wrap" style="margin-top:12px">
     <span id="demoDate"></span>
+    <span id="syncNote" role="status" hidden></span>
     <button class="linkbtn" id="resetBtn" data-t="reset"></button>
     <button class="linkbtn" id="newsBtn" hidden></button>
   </div>
@@ -742,7 +743,8 @@ const I18N = {
     paidTag: 'pagó todo',
     noCustomer: 'Sin nombre',
     reset: 'Reiniciar datos de prueba',
-    resetConfirm: '¿Borrar tus ventas, productos y respuestas de “Tu negocio” en este teléfono y volver a los productos de prueba? Tu cuenta no se borra.',
+    resetConfirm: '¿Borrar tus ventas, productos y respuestas de “Tu negocio” y volver a los productos de prueba? Se borran también de la copia en tu cuenta. Tu cuenta sigue abierta.',
+    syncOk: 'Tus ventas están guardadas en tu cuenta.', syncWait: 'Guardando en tu cuenta…', syncOff: 'Sin señal: tus ventas quedan en este teléfono y se suben al volver.', syncErr: 'No pudimos subir tus ventas. Están a salvo en este teléfono; lo volvemos a intentar.',
     demoDate: 'Hoy: {date}',
     obTitles: { signup: 'Crea tu cuenta', signin: 'Entra a tu cuenta', reset: '¿Olvidaste tu contraseña?', sent: 'Revisa tu correo', newpass: 'Elige una contraseña nueva', reaccept: 'Actualizamos nuestros documentos', demo: 'Prueba VendeAI' },
     obSubs: { signup: 'Solo te pedimos lo necesario. Nada más.', signin: 'Con tu correo y tu contraseña.', reset: 'Escribe tu correo y te mandamos un enlace para elegir una nueva.', newpass: 'Mínimo 8 caracteres.', reaccept: 'Léelos y acéptalos para seguir usando VendeAI.', demo: 'Modo de prueba: todavía no hay cuentas. Tus datos se guardan solo en este teléfono.' },
@@ -1007,7 +1009,8 @@ const I18N = {
     paidTag: 'pagou tudo',
     noCustomer: 'Sem nome',
     reset: 'Reiniciar dados de teste',
-    resetConfirm: 'Apagar suas vendas, produtos e respostas de “Seu negócio” neste celular e voltar aos produtos de teste? Sua conta não é apagada.',
+    resetConfirm: 'Apagar suas vendas, produtos e respostas de “Seu negócio” e voltar aos produtos de teste? Elas também são apagadas da cópia na sua conta. Sua conta continua aberta.',
+    syncOk: 'Suas vendas estão salvas na sua conta.', syncWait: 'Salvando na sua conta…', syncOff: 'Sem sinal: suas vendas ficam neste celular e sobem quando voltar.', syncErr: 'Não conseguimos enviar suas vendas. Elas estão seguras neste celular; vamos tentar de novo.',
     demoDate: 'Hoje: {date}',
     obTitles: { signup: 'Crie sua conta', signin: 'Entre na sua conta', reset: 'Esqueceu sua senha?', sent: 'Veja seu e-mail', newpass: 'Escolha uma senha nova', reaccept: 'Atualizamos nossos documentos', demo: 'Experimente o VendeAI' },
     obSubs: { signup: 'Só pedimos o necessário. Nada mais.', signin: 'Com seu e-mail e sua senha.', reset: 'Escreva seu e-mail e mandamos um link para escolher uma nova.', newpass: 'Mínimo de 8 caracteres.', reaccept: 'Leia e aceite para continuar usando o VendeAI.', demo: 'Modo de teste: ainda não há contas. Seus dados ficam só neste celular.' },
@@ -1272,7 +1275,8 @@ const I18N = {
     paidTag: 'paid in full',
     noCustomer: 'No name',
     reset: 'Reset test data',
-    resetConfirm: 'Delete your sales, products and “Your business” answers on this phone and go back to the test products? Your account is not deleted.',
+    resetConfirm: 'Delete your sales, products and “Your business” answers and go back to the test products? They are also deleted from the copy in your account. Your account stays open.',
+    syncOk: 'Your sales are saved to your account.', syncWait: 'Saving to your account…', syncOff: 'No signal: your sales stay on this phone and upload when you’re back online.', syncErr: 'We couldn’t upload your sales. They’re safe on this phone; we’ll try again.',
     demoDate: 'Today: {date}',
     obTitles: { signup: 'Create your account', signin: 'Log in', reset: 'Forgot your password?', sent: 'Check your email', newpass: 'Choose a new password', reaccept: 'We updated our documents', demo: 'Try VendeAI' },
     obSubs: { signup: 'We only ask for what we need. Nothing more.', signin: 'With your email and password.', reset: 'Enter your email and we’ll send you a link to choose a new one.', newpass: 'At least 8 characters.', reaccept: 'Read and accept them to keep using VendeAI.', demo: 'Test mode: accounts aren’t open yet. Your data stays only on this phone.' },
@@ -1347,7 +1351,7 @@ function seedData() {
   };
 }
 
-const APP_VERSION = '0.12.0';
+const APP_VERSION = '0.13.0';
 // Current version of each legal document. Changing a version asks the seller to accept again.
 const DOCS = {
   terminos: { version: '1.0', language: 'es', file: '../legal/terminos-y-condiciones.html' },
@@ -1378,7 +1382,7 @@ let prefs = load(PREF_KEY, {});
 let lang = prefs.lang || null;
 let draft = null;
 
-function saveData() { if (dataKey) store(dataKey, data); }
+function saveData() { if (dataKey) { store(dataKey, data); syncSoon(); } }
 
 /* ------------------------------------------------------------------
    Dates and money
@@ -2796,6 +2800,7 @@ function applyLang() {
     readSale();
   }));
   document.getElementById('demoDate').textContent = t('demoDate', { date: fmtDate(toISO(todayDate())) });
+  showSync();
   const inside = user || (!sb && dataKey);   // signed in, or using demo mode
   document.getElementById('bizOpen').hidden = !(inside && data.profile && data.profile.business && data.profile.business.answeredAt);
   document.getElementById('signOutBtn').hidden = !user;
@@ -2964,7 +2969,7 @@ function onSession(event, session) {
   if ((u && u.id) !== (user && user.id)) {
     user = u;
     draft = null; sheetRows = null; connAsking = null; aiWording.clear(); aiTried.clear(); aiState = null;
-    if (u) { openUserData(u); syncConsents(); askWelcome(session); planFromAccount(u); syncPlan(); refreshPlan(); }
+    if (u) { sync.off = false; sync.state = 'idle'; openUserData(u); syncConsents(); askWelcome(session); planFromAccount(u); syncPlan(); refreshPlan(); syncNow(); }
     else { dataKey = null; data = seedData(); }
     applyLang();
     showTab(prefs.tab || 'sell');
@@ -3096,8 +3101,136 @@ document.getElementById('ob-switch').addEventListener('click', e => {
 document.getElementById('ob-forgot').addEventListener('click', () => { obMode = 'reset'; obOk = ''; obError(null); renderAuth(); });
 document.getElementById('signOutBtn').addEventListener('click', async () => {
   obMode = 'signin'; obOk = '';
+  await Promise.race([syncNow(), new Promise(r => setTimeout(r, 4000))]);   // upload what is pending, without making her wait long
   await sb.auth.signOut();
 });
+
+/* ------------------------------------------------------------------
+   Account copy: phone first, then sync (table seller_data, see
+   supabase/migrations/0004_seller_data.sql). Every change is saved on the
+   phone at once and uploaded a moment later when there is signal. Each upload
+   names the revision it started from, so a second phone never overwrites
+   newer work: if the account copy moved on, the two copies are merged.
+   Signed out and demo mode never sync.
+------------------------------------------------------------------ */
+const SYNC_KEY = 'vendeai_sync';           // per account: { rev, n, done } on this phone
+const SYNC_DELAY_MS = 1500, SYNC_RETRY_MS = 30000, SYNC_LOG_KEEP = 2000;
+var sync = { busy: false, timer: null, again: 0, state: 'idle', off: false };   // var: saveData can run before this line
+
+function syncOn() { return !!(sb && user && dataKey && dataKey === DATA_KEY + ':' + user.id && !sync.off); }
+function syncInfo() { return load(SYNC_KEY + ':' + user.id, { rev: 0, n: 0, done: 0 }); }
+function setSyncInfo(x) { store(SYNC_KEY + ':' + user.id, x); }
+// rev 0 = this phone never synced: its notebook is always merged, never thrown away.
+const syncDirty = st => st.rev === 0 || st.n !== st.done;
+
+function syncSoon() {
+  if (!syncOn()) return;
+  const st = syncInfo(); st.n++; setSyncInfo(st);
+  clearTimeout(sync.timer);
+  sync.timer = setTimeout(syncNow, SYNC_DELAY_MS);
+  showSync();
+}
+async function syncNow() {
+  clearTimeout(sync.timer); sync.timer = null;
+  if (!syncOn()) return showSync();
+  if (sync.busy) { sync.again = 1; return; }
+  if (navigator.onLine === false) { sync.state = 'offline'; return showSync(); }
+  sync.busy = true; showSync();
+  const id = user.id;
+  try {
+    for (let round = 0; round < 3; round++) {   // a race with another phone settles in one more round
+      sync.again = 0;
+      await syncRound(id);
+      if (!sync.again || !user || user.id !== id) break;
+    }
+    sync.state = 'ok';
+  } catch (e) {
+    const missing = e && (e.code === 'PGRST205' || e.code === '42P01');   // 0004_seller_data.sql not run yet
+    sync.state = missing ? 'idle' : 'error';
+    if (missing) sync.off = true;
+    else sync.timer = setTimeout(syncNow, SYNC_RETRY_MS);
+  }
+  sync.busy = false;
+  showSync();
+}
+async function syncRound(id) {
+  const st = syncInfo();
+  const { data: row, error } = await sb.from('seller_data').select('data, rev').eq('seller_id', id).maybeSingle();
+  if (error) throw error;
+  if (!user || user.id !== id) return;          // signed out meanwhile
+  if (!row) return pushCopy(id, 0, st.n);
+  if (!syncDirty(st)) {
+    if (row.rev !== st.rev) useCopy(row.data);  // another phone saved: take its copy
+    setSyncInfo(Object.assign(st, { rev: row.rev }));
+    return;
+  }
+  if (row.rev !== st.rev) useCopy(mergeCopies(row.data, data));
+  return pushCopy(id, row.rev, st.n);
+}
+async function pushCopy(id, base, n) {
+  const copy = Object.assign({}, data, { log: (data.log || []).slice(-SYNC_LOG_KEEP) });
+  const q = base === 0
+    ? sb.from('seller_data').insert({ seller_id: id, data: copy, rev: 1 })
+    : sb.from('seller_data').update({ data: copy, rev: base + 1, updated_at: new Date().toISOString() }).eq('seller_id', id).eq('rev', base);
+  const { data: rows, error } = await q.select('rev');
+  if (error && error.code !== '23505') throw error;
+  if (error || !rows || !rows.length) { sync.again = 1; return; }   // another phone saved first: merge next round
+  const st = syncInfo();
+  setSyncInfo({ rev: rows[0].rev, n: st.n, done: n });   // changes made during the upload stay pending
+}
+// Puts a notebook from the account on screen without counting it as a new change.
+function useCopy(d) {
+  data = Object.assign(seedData(), d);
+  store(dataKey, data);
+  applyLang(); renderSales(); renderHome();
+}
+
+// Merge rule: the account copy is the base. From this phone it adds what the account doesn't
+// have (sales, products, customers, changes) and keeps the furthest state of a shared sale
+// (undone, or more installments received). Stock is then corrected for those sales, so it
+// matches what really left the shelf.
+function mergeCopies(acc, mine) {
+  const out = Object.assign(seedData(), JSON.parse(JSON.stringify(acc)));
+  const has = list => new Set((list || []).map(x => x.id));
+  const accProducts = has(out.products);
+  ['products', 'customers'].forEach(k => { const ids = has(out[k]); (mine[k] || []).forEach(x => { if (!ids.has(x.id)) out[k].push(x); }); });
+  const shelf = (pid, d) => { if (!accProducts.has(pid)) return; const p = out.products.find(x => x.id === pid); if (p) p.stock += d; };
+  const progress = x => (x.undone ? 1000 : 0) + (x.schedule || []).filter(i => i.paid).length;
+  (mine.sales || []).forEach(x => {
+    const i = out.sales.findIndex(o => o.id === x.id);
+    if (i < 0) { out.sales.push(x); if (!x.undone) shelf(x.productId, -x.qty); return; }
+    const o = out.sales[i];
+    if (progress(x) > progress(o)) { out.sales[i] = x; if (x.undone && !o.undone) shelf(x.productId, x.qty); }
+  });
+  out.sales.sort((a, b) => a.at - b.at);
+  const key = e => e.at + '|' + e.type + '|' + JSON.stringify(e.detail || {});
+  const seen = new Set(out.log.map(key));
+  (mine.log || []).forEach(e => { if (!seen.has(key(e))) out.log.push(e); });
+  out.log.sort((a, b) => (a.at < b.at ? -1 : a.at > b.at ? 1 : 0));
+  const cKey = c => c.document + '|' + c.document_version;   // same rule as addLocalConsent
+  const cSeen = new Set(out.consents.map(cKey));
+  (mine.consents || []).forEach(c => { if (!cSeen.has(cKey(c))) out.consents.push(c); });
+  Object.keys(mine.connections || {}).forEach(k => { if (!out.connections[k]) out.connections[k] = mine.connections[k]; });
+  if (mine.voice && (!out.voice || (mine.voice.month === out.voice.month ? mine.voice.count > out.voice.count : mine.voice.month > out.voice.month))) out.voice = mine.voice;
+  if (mine.plan && (!out.plan || (mine.plan.paidAt || mine.plan.at || '') > (out.plan.paidAt || out.plan.at || ''))) out.plan = mine.plan;
+  out.productsAreStarters = !!(out.productsAreStarters && mine.productsAreStarters);
+  return out;
+}
+
+function showSync() {
+  const el = document.getElementById('syncNote');
+  if (!el) return;
+  if (!syncOn()) { el.hidden = true; return; }
+  const st = syncInfo();
+  const state = sync.busy || sync.timer ? (navigator.onLine === false ? 'offline' : 'wait')
+    : navigator.onLine === false ? 'offline' : sync.state === 'error' ? 'error' : syncDirty(st) ? 'wait' : 'ok';
+  el.hidden = false;
+  el.textContent = t({ ok: 'syncOk', wait: 'syncWait', offline: 'syncOff', error: 'syncErr' }[state]);
+}
+window.addEventListener('online', () => syncNow());
+window.addEventListener('offline', showSync);
+// Coming back to the app picks up what another phone saved.
+document.addEventListener('visibilitychange', () => { if (!document.hidden) syncNow(); });
 
 /* ------------------------------------------------------------------
    AI (Google Gemini) through our own server at /api/ai.
