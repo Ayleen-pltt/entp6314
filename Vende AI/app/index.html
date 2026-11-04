@@ -604,7 +604,7 @@ const I18N = {
     bizStepTitle: 'Tu negocio',
     bizStepSub: 'Menos de un minuto, solo toques. Así la app se adapta a cómo vendes.',
     bizDone: 'Listo', bizSkip: 'Ahora no', bizSave: 'Guardar cambios', bizCancel: 'Cancelar',
-    bizNeedSector: 'Elige qué vendes para continuar.',
+    bizNeedSector: 'Elige al menos una cosa que vendes para continuar.',
     examplesBySector: {
       ropa: ['Vendí 2 polos a Lucía por Instagram, pagó completo', 'Vestido negro a Carmen, 80, me paga en 2 cuotas'],
       accesorios: ['Vendí 3 aretes a Rosa, pagó la mitad y el resto el viernes', 'Le vendí un collar a Sofía por WhatsApp, pagó completo'],
@@ -613,7 +613,7 @@ const I18N = {
       salud: ['Vendí un colágeno a Pedro, pagó la mitad', 'Vendí 2 vitaminas a Elena por Facebook, pagó completo']
     },
     bizEditLater: 'Puedes cambiarlo cuando quieras con el botón "Mi negocio", arriba.',
-    bizSector: '¿Qué vendes?',
+    bizSector: '¿Qué vendes?', bizSectorHint: 'Elige todo lo que vendes. El primero que marques es el principal.',
     sectors: { belleza: 'Maquillaje y belleza', ropa: 'Ropa y calzado', accesorios: 'Accesorios y joyería', comida: 'Comida y postres', hogar: 'Hogar y cocina', salud: 'Salud y bienestar', otro: 'Otro' },
     bizCredit: 'Vendo fiado o en cuotas', bizWholesale: 'También vendo por mayor',
     bizNeeds: '¿Qué te cuesta más?',
@@ -871,7 +871,7 @@ const I18N = {
     bizStepTitle: 'Seu negócio',
     bizStepSub: 'Menos de um minuto, só toques. Assim o app se adapta ao seu jeito de vender.',
     bizDone: 'Pronto', bizSkip: 'Agora não', bizSave: 'Salvar mudanças', bizCancel: 'Cancelar',
-    bizNeedSector: 'Escolha o que você vende para continuar.',
+    bizNeedSector: 'Escolha pelo menos uma coisa que você vende para continuar.',
     examplesBySector: {
       ropa: ['Vendi 2 camisetas para a Lúcia pelo Instagram, pagou tudo', 'Vestido preto para a Carmen, 80, ela me paga em 2 vezes'],
       accesorios: ['Vendi 3 brincos para a Rosa, ela pagou metade e o resto na sexta', 'Vendi um colar para a Sofia pelo WhatsApp, pagou tudo'],
@@ -880,7 +880,7 @@ const I18N = {
       salud: ['Vendi um colágeno para o Pedro, pagou metade', 'Vendi 2 vitaminas para a Elena pelo Facebook, pagou tudo']
     },
     bizEditLater: 'Você pode mudar quando quiser no botão "Meu negócio", lá em cima.',
-    bizSector: 'O que você vende?',
+    bizSector: 'O que você vende?', bizSectorHint: 'Escolha tudo o que você vende. O primeiro que marcar é o principal.',
     sectors: { belleza: 'Maquiagem e beleza', ropa: 'Roupas e calçados', accesorios: 'Acessórios e bijuterias', comida: 'Comida e doces', hogar: 'Casa e cozinha', salud: 'Saúde e bem-estar', otro: 'Outro' },
     bizCredit: 'Vendo fiado ou parcelado', bizWholesale: 'Também vendo no atacado',
     bizNeeds: 'O que é mais difícil para você?',
@@ -1138,7 +1138,7 @@ const I18N = {
     bizStepTitle: 'Your business',
     bizStepSub: 'Under a minute, just taps. This way the app fits how you sell.',
     bizDone: 'Done', bizSkip: 'Not now', bizSave: 'Save changes', bizCancel: 'Cancel',
-    bizNeedSector: 'Choose what you sell to continue.',
+    bizNeedSector: 'Pick at least one thing you sell to continue.',
     examplesBySector: {
       ropa: ['I sold 2 shirts to Lucía on Instagram, she paid in full', 'Black dress to Carmen, 80, she pays me in 2 installments'],
       accesorios: ['I sold 3 earrings to Rosa, she paid half and the rest on Friday', 'Sold a necklace to Sofía on WhatsApp, she paid in full'],
@@ -1147,7 +1147,7 @@ const I18N = {
       salud: ['I sold a collagen to Pedro, he paid half', 'Sold 2 vitamins to Elena on Facebook, she paid in full']
     },
     bizEditLater: 'You can change it anytime with the "My business" button at the top.',
-    bizSector: 'What do you sell?',
+    bizSector: 'What do you sell?', bizSectorHint: 'Pick everything you sell. The first one you pick is the main one.',
     sectors: { belleza: 'Makeup and beauty', ropa: 'Clothes and shoes', accesorios: 'Accessories and jewelry', comida: 'Food and desserts', hogar: 'Home and kitchen', salud: 'Health and wellness', otro: 'Other' },
     bizCredit: 'I sell on credit or in installments', bizWholesale: 'I also sell wholesale',
     bizNeeds: 'What is hardest for you?',
@@ -1355,7 +1355,7 @@ function seedData() {
   };
 }
 
-const APP_VERSION = '0.13.1';
+const APP_VERSION = '0.13.2';
 // Current version of each legal document. Changing a version asks the seller to accept again.
 const DOCS = {
   terminos: { version: '1.0', language: 'es', file: '../legal/terminos-y-condiciones.html' },
@@ -2115,6 +2115,14 @@ function recommendHTML() {
   </div>`;
 }
 function bizOf() { const b = data.profile && data.profile.business; return b && !b.skipped ? b : {}; }
+// What she sells: as many as she picks. sectors[0] is the main one (sale box example);
+// `sector` mirrors it so older copies of the data keep working.
+function bizSectors(b) { b = b || bizOf(); return b.sectors ? b.sectors : b.sector ? [b.sector] : []; }
+function sectorNames(b) {
+  b = b || bizOf();
+  return bizSectors(b).map(k => k === 'otro' ? (b.sectorOther || t('sectors').otro) : t('sectors')[k]).filter(Boolean).join(', ');
+}
+function setSectors(b, list) { b.sectors = list; b.sector = list[0] || null; }
 
 function businessFormHTML() {
   const prof = data.profile || {}, b = bizOf();
@@ -2124,8 +2132,9 @@ function businessFormHTML() {
       <span class="dot"></span><span><span class="name">${esc(label)}</span>${status ? `<br><span class="st">${esc(on ? t('chOn') : t('chOff'))}</span>` : ''}</span></button>`;
   return `<div class="biz">
     <h2>${esc(t('bizSector'))}</h2>
-    <div class="toggles">${SECTORS.map(k => tg('sector', k, t('sectors')[k], b.sector === k)).join('')}</div>
-    ${b.sector === 'otro' ? `<div class="field" style="margin-top:10px">
+    <p class="hint">${esc(t('bizSectorHint'))}</p>
+    <div class="toggles">${SECTORS.map(k => tg('sector', k, t('sectors')[k], bizSectors(b).includes(k))).join('')}</div>
+    ${bizSectors(b).includes('otro') ? `<div class="field" style="margin-top:10px">
       <label>${esc(t('sectorOtherLabel'))}<input class="sector-other" maxlength="60" placeholder="${esc(t('sectorOtherPh'))}" value="${esc(b.sectorOther || '')}" style="margin-top:4px"></label>
       <div class="sector-guess hint" hidden></div>
     </div>` : ''}
@@ -2155,7 +2164,8 @@ function bindBusiness(container, rerender) {
       if (g) {
         guessBox.innerHTML = `${esc(t('sectorGuess', { sector: t('sectors')[g] }))} <button type="button" class="linkbtn">${esc(t('sectorUse'))}</button>`;
         guessBox.querySelector('button').addEventListener('click', () => {
-          data.profile.business = Object.assign({}, bizOf(), { sector: g });
+          const nb = data.profile.business = Object.assign({}, bizOf());
+          if (!bizSectors(nb).includes(g)) setSectors(nb, bizSectors(nb).concat(g));
           logChange('business_changed', { kind: 'sector', key: g, from: 'guess' });
           saveData(); rerender(); applyPlaceholder();
         });
@@ -2178,7 +2188,7 @@ function bindBusiness(container, rerender) {
     if (!prof) return;
     const b = prof.business = Object.assign({}, bizOf());
     const kind = btn.dataset.kind, key = btn.dataset.key;
-    if (kind === 'sector') b.sector = b.sector === key ? null : key;
+    if (kind === 'sector') { const l = bizSectors(b).slice(), i = l.indexOf(key); if (i >= 0) l.splice(i, 1); else l.push(key); setSectors(b, l); }
     else if (kind === 'flag') b[key] = !b[key];
     else if (kind === 'need') {
       const n = b.needs = (b.needs || []).slice();
@@ -2237,14 +2247,20 @@ const SECTOR_STARTERS = {
 function applyStarters() {
   // Only replace products the seller hasn't touched yet.
   if (!data.productsAreStarters || data.sales.length) return;
-  const set = SECTOR_STARTERS[bizOf().sector];
-  data.products = set
+  // One sector: its three starters. Several: the first two of each, up to six.
+  const sets = bizSectors().map(k => SECTOR_STARTERS[k]).filter(Boolean);
+  const set = sets.length === 1 ? sets[0] : sets.flatMap(x => x.slice(0, 2)).slice(0, 6);
+  data.products = set.length
     ? set.map((p, i) => ({ id: 'p' + (i + 1), name: p[lang] || p.es, aliases: p.aliases, stock: p.stock, cost: p.cost, retail: p.retail, wholesale: p.wholesale }))
     : seedData().products;
 }
 function examplesFor() {
-  const s = bizOf().sector, bySector = t('examplesBySector');
-  return (data.productsAreStarters && s && bySector[s]) || t('examples');
+  // Examples from each thing she sells, taking turns, three in all.
+  const bySector = t('examplesBySector'), lists = bizSectors().map(k => bySector[k]).filter(Boolean);
+  if (!data.productsAreStarters || !lists.length) return t('examples');
+  const out = [];
+  for (let i = 0; out.length < 3 && i < 3; i++) lists.forEach(l => { if (l[i] && out.length < 3) out.push(l[i]); });
+  return out;
 }
 
 let bizMode = 'first', bizSnapshot = null;
@@ -2272,9 +2288,9 @@ function openBizEditor() {
 }
 document.getElementById('bizOpen').addEventListener('click', openBizEditor);
 document.getElementById('bizDone').addEventListener('click', () => {
-  if (!bizOf().sector) { document.getElementById('bizNeedSector').hidden = false; return; }
+  if (!bizSectors().length) { document.getElementById('bizNeedSector').hidden = false; return; }
   data.profile.business = Object.assign({}, bizOf(), { answeredAt: bizOf().answeredAt || new Date().toISOString() });
-  logChange(bizMode === 'edit' ? 'business_edited' : 'business_answered', { sector: data.profile.business.sector });
+  logChange(bizMode === 'edit' ? 'business_edited' : 'business_answered', { sectors: bizSectors(data.profile.business) });
   applyStarters();
   saveData();
   document.getElementById('bizStep').style.display = 'none';
@@ -3283,7 +3299,7 @@ const planTried = new Set(), planRetried = new Set();
 let planBusy = false;
 function bizKey() {
   const p = data.profile || {}, b = bizOf();
-  return JSON.stringify([b.sector, b.sectorOther, !!b.credit, !!b.wholesale, b.needs || [], p.sellChannels || [], p.payMethods || [], lang]);
+  return JSON.stringify([bizSectors(b), b.sectorOther, !!b.credit, !!b.wholesale, b.needs || [], p.sellChannels || [], p.payMethods || [], lang]);
 }
 function suggestion() {
   const a = data.planAI;
@@ -3305,7 +3321,7 @@ function askPlanAI() {
   const names = (list, dict) => (list || []).map(k => dict[k] || k);
   aiCall('plan', {
     business: {
-      sector: b.sector === 'otro' ? (b.sectorOther || t('sectors').otro) : t('sectors')[b.sector] || '',
+      sector: sectorNames(b),
       sells_on: names(p.sellChannels, t('channels')), gets_paid_with: names(p.payMethods, t('pay')),
       sells_on_credit_or_installments: !!b.credit, also_sells_wholesale: !!b.wholesale,
       hardest_for_them: names(b.needs, t('needs')),
@@ -3626,7 +3642,7 @@ function maybeWordWithAI(checks) {
   todo.forEach(c => aiTried.add(c.draft));
   aiState = 'busy';
   aiCall('advice', {
-    sector: bizOf().sector ? t('sectors')[bizOf().sector] : '',
+    sector: sectorNames(),
     items: todo.map(c => ({ id: c.id, kind: c.kind, facts: c.facts, draft: c.draft }))
   }).then(res => {
     if (res.error) aiState = res.error;
