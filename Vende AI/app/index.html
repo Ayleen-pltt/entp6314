@@ -762,6 +762,7 @@ const I18N = {
     obHaveAccount: '¿Ya tienes cuenta?', obNoAccount: '¿Primera vez aquí?', obBack: 'Volver a entrar',
     obSentConfirm: 'Te enviamos un correo a {email}. Ábrelo y toca el enlace para activar tu cuenta. Si no llega, mira en spam.',
     obSentReset: 'Si hay una cuenta con {email}, te enviamos un enlace para cambiar tu contraseña.',
+    obExists: '{email} ya tiene una cuenta. Entra con tu contraseña. Si no la recuerdas, toca «¿Olvidaste tu contraseña?».',
     obWait: 'Un momento…',
     obPassSaved: 'Listo, tu contraseña nueva quedó guardada.',
     obErr: {
@@ -1034,6 +1035,7 @@ const I18N = {
     obHaveAccount: 'Já tem conta?', obNoAccount: 'Primeira vez aqui?', obBack: 'Voltar para entrar',
     obSentConfirm: 'Enviamos um e-mail para {email}. Abra e toque no link para ativar sua conta. Se não chegar, veja no spam.',
     obSentReset: 'Se existir uma conta com {email}, enviamos um link para trocar sua senha.',
+    obExists: '{email} já tem uma conta. Entre com sua senha. Se não lembrar, toque em «Esqueceu sua senha?».',
     obWait: 'Um momento…',
     obPassSaved: 'Pronto, sua senha nova foi salva.',
     obErr: {
@@ -1306,6 +1308,7 @@ const I18N = {
     obHaveAccount: 'Already have an account?', obNoAccount: 'First time here?', obBack: 'Back to log in',
     obSentConfirm: 'We sent an email to {email}. Open it and tap the link to activate your account. If it doesn’t arrive, check spam.',
     obSentReset: 'If there is an account for {email}, we sent a link to change your password.',
+    obExists: '{email} already has an account. Log in with your password. If you don’t remember it, tap “Forgot your password?”.',
     obWait: 'One moment…',
     obPassSaved: 'Done, your new password is saved.',
     obErr: {
@@ -1370,7 +1373,7 @@ function seedData() {
   };
 }
 
-const APP_VERSION = '0.13.7';
+const APP_VERSION = '0.13.8';
 // Current version of each legal document. Changing a version asks the seller to accept again.
 const DOCS = {
   terminos: { version: '1.0', language: 'es', file: '../legal/terminos-y-condiciones.html' },
@@ -3220,7 +3223,11 @@ async function submitAuth(e) {
             app_version: APP_VERSION, user_agent: navigator.userAgent.slice(0, 300) })) }
       } });
       error = res.error;
-      if (!error && !res.data.session) { obMode = 'sent'; obOk = t('obSentConfirm', { email }); }
+      // Supabase answers an already-registered email as if it were new and sends nothing
+      // (so nobody can probe which emails have accounts). Its sign: a user with no identities.
+      const taken = !error && res.data.user && Array.isArray(res.data.user.identities) && !res.data.user.identities.length;
+      if (taken) { obMode = 'signin'; obOk = t('obExists', { email }); }
+      else if (!error && !res.data.session) { obMode = 'sent'; obOk = t('obSentConfirm', { email }); }
     } else if (obMode === 'signin') {
       error = (await sb.auth.signInWithPassword({ email, password: pass })).error;
     } else if (obMode === 'reset') {
