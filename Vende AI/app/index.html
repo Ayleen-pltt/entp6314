@@ -1355,7 +1355,7 @@ function seedData() {
   };
 }
 
-const APP_VERSION = '0.13.3';
+const APP_VERSION = '0.13.4';
 // Current version of each legal document. Changing a version asks the seller to accept again.
 const DOCS = {
   terminos: { version: '1.0', language: 'es', file: '../legal/terminos-y-condiciones.html' },
@@ -1369,8 +1369,8 @@ const COUNTRIES = [
   { code: 'CL', es: 'Chile', pt: 'Chile', en: 'Chile', currency: '$', pay: ['efectivo', 'transferencia', 'mach', 'mercadopago', 'otro'] },
   { code: 'BR', es: 'Brasil', pt: 'Brasil', en: 'Brazil', currency: 'R$ ', pay: ['efectivo', 'pix', 'mercadopago', 'picpay', 'otro'] }
 ];
-// Mercado Libre is not offered here: sellers mix it up with Mercado Pago (how you get paid). The label stays for older sales.
-const SELL_CHANNELS = ['whatsapp', 'instagram', 'facebook', 'tiktok', 'persona', 'catalogo'];
+// Mercado Libre is where she sells; Mercado Pago (how she gets paid) is in the payment list.
+const SELL_CHANNELS = ['whatsapp', 'instagram', 'facebook', 'tiktok', 'mercadolibre', 'persona', 'catalogo'];
 function load(key, fallback) {
   try {
     const raw = localStorage.getItem(key);
