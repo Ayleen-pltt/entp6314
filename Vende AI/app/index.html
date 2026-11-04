@@ -591,11 +591,14 @@ const I18N = {
     cnOrdersTitle: 'Pedidos nuevos', cnOrderRow: '{qty} × {product} · {buyer}', cnPaid: 'pagado',
     cnImportAll: 'Pasar {n} a VendeAI', cnImportOne: 'Pasar 1 a VendeAI',
     cnImported: 'Listo: pasamos {n} ventas y tu stock ya está al día.',
-    cnSheetHelp: 'En Excel: Archivo → Guardar como → CSV. Una venta por fila. Columnas: fecha, producto, cantidad, precio, cliente, pagado (si lo dejas vacío, se cuenta como pagado completo).',
+    cnSheetHelp: 'Sube tu archivo de Excel o Google Sheets (.xlsx o .csv). Una venta por fila. Columnas: fecha, producto, cantidad, precio, cliente, pagado (si lo dejas vacío, se cuenta como pagado completo).',
     cnPickFile: 'Elegir archivo', cnTemplate: 'Descargar plantilla', cnUseSample: 'Probar con un ejemplo',
     cnCsvHead: ['fecha', 'producto', 'cantidad', 'precio', 'cliente', 'pagado'],
     cnPreview: '{n} ventas en tu archivo', cnNewProduct: 'producto nuevo', cnRowOwes: 'debe {amount}',
-    cnBadFile: 'No pudimos leer el archivo. Revisa que tenga las columnas producto, cantidad y precio, y que esté guardado como CSV.',
+    cnBadFile: 'No pudimos abrir el archivo. Sube un archivo .xlsx o .csv.',
+    cnOldXls: 'Este archivo es de un Excel antiguo (.xls). Ábrelo y guárdalo como .xlsx o .csv.',
+    cnMissingCols: 'Faltan estas columnas: {cols}. La primera fila debe tener los nombres de las columnas.',
+    cnNoRows: 'Encontramos las columnas, pero ninguna fila tiene producto, cantidad y precio. Revisa que la cantidad y el precio sean números.',
     cnVia: 'desde {name}',
     cnMsgs: [
       { chat: 'Hola! me separas {q} {p}? te pago la mitad ahora y el resto el viernes 🙏', sale: 'Vendí {q} {p} a {from}, pagó la mitad y el resto el viernes' },
@@ -859,11 +862,14 @@ const I18N = {
     cnOrdersTitle: 'Pedidos novos', cnOrderRow: '{qty} × {product} · {buyer}', cnPaid: 'pago',
     cnImportAll: 'Passar {n} para o VendeAI', cnImportOne: 'Passar 1 para o VendeAI',
     cnImported: 'Pronto: passamos {n} vendas e seu estoque já está em dia.',
-    cnSheetHelp: 'No Excel: Arquivo → Salvar como → CSV. Uma venda por linha. Colunas: data, produto, quantidade, preço, cliente, pago (se deixar vazio, conta como pago).',
+    cnSheetHelp: 'Envie seu arquivo do Excel ou Google Sheets (.xlsx ou .csv). Uma venda por linha. Colunas: data, produto, quantidade, preço, cliente, pago (se deixar vazio, conta como pago).',
     cnPickFile: 'Escolher arquivo', cnTemplate: 'Baixar modelo', cnUseSample: 'Testar com um exemplo',
     cnCsvHead: ['data', 'produto', 'quantidade', 'preco', 'cliente', 'pago'],
     cnPreview: '{n} vendas no seu arquivo', cnNewProduct: 'produto novo', cnRowOwes: 'deve {amount}',
-    cnBadFile: 'Não conseguimos ler o arquivo. Confira se tem as colunas produto, quantidade e preço, e se está salvo como CSV.',
+    cnBadFile: 'Não conseguimos abrir o arquivo. Envie um arquivo .xlsx ou .csv.',
+    cnOldXls: 'Este arquivo é de um Excel antigo (.xls). Abra e salve como .xlsx ou .csv.',
+    cnMissingCols: 'Faltam estas colunas: {cols}. A primeira linha deve ter os nomes das colunas.',
+    cnNoRows: 'Encontramos as colunas, mas nenhuma linha tem produto, quantidade e preço. Confira se quantidade e preço são números.',
     cnVia: 'via {name}',
     cnMsgs: [
       { chat: 'Oi! separa {q} {p} pra mim? pago metade agora e o resto na sexta 🙏', sale: 'Vendi {q} {p} para a {from}, ela pagou metade e o resto na sexta' },
@@ -1127,11 +1133,14 @@ const I18N = {
     cnOrdersTitle: 'New orders', cnOrderRow: '{qty} × {product} · {buyer}', cnPaid: 'paid',
     cnImportAll: 'Move {n} to VendeAI', cnImportOne: 'Move 1 to VendeAI',
     cnImported: 'Done: we moved {n} sales and your stock is up to date.',
-    cnSheetHelp: 'In Excel: File → Save as → CSV. One sale per row. Columns: date, product, quantity, price, customer, paid (leave it empty and it counts as paid in full).',
+    cnSheetHelp: 'Upload your Excel or Google Sheets file (.xlsx or .csv). One sale per row. Columns: date, product, quantity, price, customer, paid (leave it empty and it counts as paid in full).',
     cnPickFile: 'Choose file', cnTemplate: 'Download template', cnUseSample: 'Try an example',
     cnCsvHead: ['date', 'product', 'quantity', 'price', 'customer', 'paid'],
     cnPreview: '{n} sales in your file', cnNewProduct: 'new product', cnRowOwes: 'owes {amount}',
-    cnBadFile: 'We couldn’t read the file. Check that it has product, quantity and price columns and is saved as CSV.',
+    cnBadFile: 'We couldn’t open the file. Upload an .xlsx or .csv file.',
+    cnOldXls: 'This file is from an old Excel (.xls). Open it and save it as .xlsx or .csv.',
+    cnMissingCols: 'These columns are missing: {cols}. The first row should have the column names.',
+    cnNoRows: 'We found the columns, but no row has a product, quantity and price. Check that quantity and price are numbers.',
     cnVia: 'from {name}',
     cnMsgs: [
       { chat: 'Hi! can you save me {q} {p}? I’ll pay half now and the rest on Friday 🙏', sale: 'I sold {q} {p} to {from}, she paid half and the rest on Friday' },
@@ -1358,7 +1367,7 @@ function seedData() {
   };
 }
 
-const APP_VERSION = '0.13.5';
+const APP_VERSION = '0.13.6';
 // Current version of each legal document. Changing a version asks the seller to accept again.
 const DOCS = {
   terminos: { version: '1.0', language: 'es', file: '../legal/terminos-y-condiciones.html' },
@@ -2346,7 +2355,8 @@ const CONNECTORS = [
   { key: 'mercadolibre', kind: 'orders', mono: 'Ml', buyers: ['Jimena R.', 'Andrés P.', 'Camila T.'] },
   { key: 'sheet', kind: 'sheet', mono: 'Xl' }
 ];
-let connAsking = null, sheetRows = null, sheetError = false;
+let connAsking = null, sheetRows = null, sheetError = null;
+function setSheet(r) { sheetRows = r.rows || null; sheetError = r.rows ? null : r; renderConnect(); }
 
 function connName(key) { return key === 'sheet' ? t('cnSheetName') : t('channels')[key] || key; }
 function fill(str, vars) { for (const k in vars) str = str.split('{' + k + '}').join(vars[k]); return str; }
@@ -2401,12 +2411,12 @@ function addImportedSale(r, source) {
 }
 
 // ----- Excel / Google Sheets saved as CSV -----
-function parseCSV(text) {
-  const lines = text.replace(/^\uFEFF/, '').split(/\r?\n/).filter(l => l.trim());
-  if (lines.length < 2) return null;
-  const counts = [';', ',', '\t'].map(d => [d, lines[0].split(d).length]);
-  const delim = counts.sort((a, b) => b[1] - a[1])[0][0];
-  const split = line => {
+// Every reader returns { rows } or { error: 'file' | 'xls' | 'rows' | 'cols', missing }.
+function csvRows(text) {
+  const lines = text.replace(/^\uFEFF/, '').split(/\r?\n/).filter(l => l.trim() && !/^sep=.$/i.test(l.trim()));
+  const counts = [';', ',', '\t'].map(d => [d, lines.slice(0, 5).reduce((n, l) => n + l.split(d).length, 0)]);
+  const delim = counts.sort((x, y) => y[1] - x[1])[0][0];
+  return lines.map(line => {
     const out = []; let cur = '', q = false;
     for (let i = 0; i < line.length; i++) {
       const ch = line[i];
@@ -2415,17 +2425,111 @@ function parseCSV(text) {
       else cur += ch;
     }
     out.push(cur);
-    return out.map(x => x.trim());
+    return out;
+  });
+}
+function parseCSV(text) { return parseTable(csvRows(text)); }
+
+// .xlsx is a zip of XML files. The browser can unzip it, so no library is needed.
+async function unzip(buf) {
+  const v = new DataView(buf), u8 = new Uint8Array(buf), files = {}, dec = new TextDecoder();
+  let e = u8.length - 22;
+  while (e >= 0 && v.getUint32(e, true) !== 0x06054b50) e--;
+  if (e < 0) return null;
+  let p = v.getUint32(e + 16, true);
+  for (let i = 0, n = v.getUint16(e + 10, true); i < n && v.getUint32(p, true) === 0x02014b50; i++) {
+    const nl = v.getUint16(p + 28, true);
+    files[dec.decode(u8.subarray(p + 46, p + 46 + nl)).replace(/\\/g, '/')] = { method: v.getUint16(p + 10, true), size: v.getUint32(p + 20, true), off: v.getUint32(p + 42, true) };
+    p += 46 + nl + v.getUint16(p + 30, true) + v.getUint16(p + 32, true);
+  }
+  return async name => {
+    const z = files[name];
+    if (!z) return null;
+    const start = z.off + 30 + v.getUint16(z.off + 26, true) + v.getUint16(z.off + 28, true);
+    const raw = u8.subarray(start, start + z.size);
+    if (z.method === 0) return dec.decode(raw);
+    return new Response(new Blob([raw]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).text();
   };
-  const KEYS = { date: ['fecha', 'date', 'data', 'dia'], product: ['producto', 'product', 'produto', 'articulo', 'item'],
-    qty: ['cantidad', 'cant', 'qty', 'quantity', 'quantidade', 'qtd'], price: ['precio', 'price', 'preco', 'valor'],
+}
+async function xlsxRows(buf) {
+  const get = await unzip(buf);
+  if (!get) return null;
+  const xml = x => x && new DOMParser().parseFromString(x, 'application/xml');
+  const tags = (el, n) => [...el.getElementsByTagNameNS('*', n)];
+  // The first sheet, as the workbook lists it.
+  const wb = xml(await get('xl/workbook.xml')), rels = xml(await get('xl/_rels/workbook.xml.rels'));
+  let path = 'xl/worksheets/sheet1.xml';
+  const first = wb && tags(wb, 'sheet')[0];
+  if (first && rels) {
+    const id = first.getAttribute('r:id') || first.getAttributeNS('http://schemas.openxmlformats.org/officeDocument/2006/relationships', 'id');
+    const rel = tags(rels, 'Relationship').find(r => r.getAttribute('Id') === id);
+    if (rel) { const to = rel.getAttribute('Target'); path = to.startsWith('/') ? to.slice(1) : 'xl/' + to; }
+  }
+  const sheet = xml(await get(path));
+  if (!sheet) return null;
+  const ss = xml(await get('xl/sharedStrings.xml'));
+  const strings = ss ? tags(ss, 'si').map(si => tags(si, 't').map(x => x.textContent).join('')) : [];
+  return tags(sheet, 'row').map(r => {
+    const out = [];
+    for (const c of tags(r, 'c')) {
+      const letters = (c.getAttribute('r') || '').replace(/\d+/g, '');
+      let idx = out.length;
+      if (letters) { idx = 0; for (const ch of letters) idx = idx * 26 + ch.charCodeAt(0) - 64; idx--; }
+      const type = c.getAttribute('t'), vEl = tags(c, 'v')[0];
+      let val = vEl ? vEl.textContent : '';
+      if (type === 's') val = strings[+val] || '';
+      else if (type === 'inlineStr') val = tags(c, 't').map(x => x.textContent).join('');
+      while (out.length < idx) out.push('');
+      out[idx] = val;
+    }
+    return out;
+  });
+}
+async function readSheetFile(file) {
+  try {
+    const buf = await file.arrayBuffer(), b = new Uint8Array(buf);
+    if (b[0] === 0x50 && b[1] === 0x4B) { const rows = await xlsxRows(buf); return rows ? parseTable(rows) : { error: 'file' }; }
+    if (b[0] === 0xD0 && b[1] === 0xCF) return { error: 'xls' };
+    // Excel on Windows saves CSV in the old Windows encoding, not UTF-8.
+    let text;
+    try { text = new TextDecoder('utf-8', { fatal: true }).decode(b); } catch (e) { text = new TextDecoder('windows-1252').decode(b); }
+    return parseCSV(text);
+  } catch (e) { return { error: 'file' }; }
+}
+function sheetMsg(e) {
+  return e.error === 'cols' ? t('cnMissingCols', { cols: e.missing.join(', ') })
+    : e.error === 'rows' ? t('cnNoRows') : e.error === 'xls' ? t('cnOldXls') : t('cnBadFile');
+}
+
+function parseTable(all) {
+  const rows = all.map(r => r.map(x => String(x ?? '').trim())).filter(r => r.some(Boolean));
+  const KEYS = { date: ['fecha', 'date', 'data', 'dia'], product: ['producto', 'product', 'produto', 'articulo', 'item', 'descripcion'],
+    qty: ['cantidad', 'cant', 'qty', 'quantity', 'quantidade', 'qtd', 'qtde', 'piezas', 'pzas', 'units'], price: ['precio', 'price', 'preco', 'valor'],
+    total: ['total', 'importe', 'monto'],
     customer: ['cliente', 'customer', 'client', 'comprador', 'buyer'], paid: ['pagado', 'paid', 'pago', 'pagou', 'abono'] };
-  const head = split(lines[0]).map(h => norm(h));
-  const col = {};
-  for (const [k, words] of Object.entries(KEYS)) col[k] = head.findIndex(h => words.some(w => h.startsWith(w)));
-  if (col.product < 0 || col.qty < 0 || col.price < 0) return null;
+  // A header matches when one of its words starts with a key word ("Precio unitario", "Cant.").
+  const has = (h, words) => h.split(/[^a-z0-9]+/).some(w => w && words.some(k => w.startsWith(k)));
+  const find = head => {
+    const col = {}, used = new Set();
+    for (const [k, words] of Object.entries(KEYS)) {
+      col[k] = head.findIndex((h, i) => !used.has(i) && has(h, words)
+        && !(k === 'price' && has(h, KEYS.total)) && !(k === 'paid' && has(h, ['forma', 'metodo', 'medio', 'tipo', 'method'])));
+      if (col[k] >= 0) used.add(col[k]);
+    }
+    return col;
+  };
+  const ok = c => c.product >= 0 && c.qty >= 0 && (c.price >= 0 || c.total >= 0);
+  // The column names can be under a title row, so look at the first rows.
+  let at = rows.slice(0, 10).findIndex(r => ok(find(r.map(norm))));
+  if (at < 0) {
+    if (!rows.length) return { error: 'file' };
+    const c = find(rows[0].map(norm)), names = t('cnCsvHead');
+    return { error: 'cols', missing: [c.product < 0 && names[1], c.qty < 0 && names[2], c.price < 0 && c.total < 0 && names[3]].filter(Boolean) };
+  }
+  const col = find(rows[at].map(norm));
   const num = v => {
-    let x = String(v || '').replace(/[^\d.,-]/g, '');
+    // "S/. 25.00", "R$ 1.234,50", "$1,234.50"
+    let x = (String(v || '').match(/-?\d[\d.,]*/) || [''])[0].replace(/[.,]$/, '');
     if (!x) return null;
     if (x.includes(',') && x.includes('.')) x = x.lastIndexOf(',') > x.lastIndexOf('.') ? x.replace(/\./g, '').replace(',', '.') : x.replace(/,/g, '');
     else x = x.replace(',', '.');
@@ -2433,27 +2537,29 @@ function parseCSV(text) {
   };
   const date = v => {
     const s = String(v || '').trim();
-    let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+    // Excel stores dates as a day count from 1899-12-30.
+    if (/^\d{5}(\.\d+)?$/.test(s)) return toISO(new Date(1899, 11, 30 + Math.floor(+s)));
+    let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
     if (m) return toISO(new Date(+m[1], +m[2] - 1, +m[3]));
     m = s.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})$/);
     if (m) return toISO(new Date(m[3].length === 2 ? 2000 + +m[3] : +m[3], +m[2] - 1, +m[1]));
     return null;
   };
-  const rows = [];
-  for (const line of lines.slice(1)) {
-    const c = split(line);
-    const name = c[col.product], qty = Math.floor(num(c[col.qty]) || 0), unit = num(c[col.price]);
+  const out = [];
+  for (const c of rows.slice(at + 1)) {
+    const name = c[col.product], qty = Math.floor(num(c[col.qty]) || 0);
+    const unit = col.price >= 0 ? num(c[col.price]) : qty > 0 && num(c[col.total]) ? num(c[col.total]) / qty : null;
     if (!name || !(qty > 0) || !(unit > 0)) continue;
     const n = norm(name).trim();
     const p = data.products.find(x => norm(x.name) === n) ||
       data.products.find(x => (x.aliases || []).some(a => n.split(/\s+/).some(w => w.startsWith(a))));
-    rows.push({
+    out.push({
       productId: p ? p.id : null, newName: p ? null : name, label: p ? p.name : name, qty, unit: round2(unit),
       customer: col.customer >= 0 ? c[col.customer] || '' : '', paid: col.paid >= 0 ? num(c[col.paid]) : null,
       date: col.date >= 0 ? date(c[col.date]) : null
     });
   }
-  return rows.length ? rows : null;
+  return out.length ? { rows: out } : { error: 'rows' };
 }
 function sampleCSV() {
   const p = data.products, h = t('cnCsvHead').join(';'), d0 = toISO(todayDate()), d1 = toISO(addDays(todayDate(), -1));
@@ -2506,11 +2612,11 @@ function renderConnect() {
     } else if (c.kind === 'sheet') {
       inner = `<div class="conn-body"><p class="hint" style="margin:0 0 8px">${esc(t('cnSheetHelp'))}</p>
         <div class="file-row">
-          <label class="btn sm">${esc(t('cnPickFile'))}<input type="file" id="sheetFile" accept=".csv,.txt,text/csv" hidden></label>
+          <label class="btn sm">${esc(t('cnPickFile'))}<input type="file" id="sheetFile" accept=".xlsx,.csv,.txt,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden></label>
           <button class="btn ghost sm" id="sheetSample">${esc(t('cnUseSample'))}</button>
           <button class="btn ghost sm" id="sheetTemplate">${esc(t('cnTemplate'))}</button>
         </div>
-        ${sheetError ? `<p class="warn">${esc(t('cnBadFile'))}</p>` : ''}
+        ${sheetError ? `<p class="warn">${esc(sheetMsg(sheetError))}</p>` : ''}
         ${sheetRows ? `<h4 style="margin-top:10px">${esc(t('cnPreview', { n: sheetRows.length }))}</h4><ul class="rows">${sheetRows.map(r => {
             const total = round2(r.qty * r.unit), owed = r.paid === null ? 0 : round2(total - Math.min(r.paid, total));
             return `<li><div><div>${r.qty} × ${esc(r.label)}${r.productId ? '' : ` <span class="tag">${esc(t('cnNewProduct'))}</span>`}</div>
@@ -2570,11 +2676,10 @@ function renderConnect() {
   if ($('sheetFile')) $('sheetFile').addEventListener('change', e => {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => { sheetRows = parseCSV(String(reader.result)); sheetError = !sheetRows; renderConnect(); };
-    reader.readAsText(file);
+    readSheetFile(file).then(setSheet);
+    e.target.value = '';
   });
-  if ($('sheetSample')) $('sheetSample').addEventListener('click', () => { sheetRows = parseCSV(sampleCSV()); sheetError = !sheetRows; renderConnect(); });
+  if ($('sheetSample')) $('sheetSample').addEventListener('click', () => setSheet(parseCSV(sampleCSV())));
   if ($('sheetTemplate')) $('sheetTemplate').addEventListener('click', downloadTemplate);
   if ($('sheetImport')) $('sheetImport').addEventListener('click', () => {
     const n = sheetRows.length;
