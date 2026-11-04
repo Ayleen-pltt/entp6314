@@ -568,8 +568,9 @@ const I18N = {
     newCustomer: 'Clienta nueva. Teléfono (opcional, para recordarle por WhatsApp)',
     phonePh: 'Ej.: 55 1234 5678',
     channel: 'Dónde vendiste',
-    channels: { none: 'Sin indicar', whatsapp: 'WhatsApp', instagram: 'Instagram', facebook: 'Facebook', tiktok: 'TikTok', mercadolibre: 'Mercado Libre', persona: 'En persona', catalogo: 'Catálogo' },
+    channels: { none: 'Sin indicar', whatsapp: 'WhatsApp', instagram: 'Instagram', facebook: 'Facebook', tiktok: 'TikTok', mercadolibre: 'Mercado Libre', otromkt: 'Otro marketplace', persona: 'En persona', catalogo: 'Catálogo' },
     pay: { efectivo: 'Efectivo', transferencia: 'Transferencia', spei: 'Transferencia SPEI', mercadopago: 'Mercado Pago', pagoefectivo: 'PagoEfectivo', oxxo: 'OXXO', yape: 'Yape', plin: 'Plin', sip: 'SIP', nequi: 'Nequi', daviplata: 'Daviplata', mach: 'MACH', pix: 'Pix', picpay: 'PicPay', otro: 'Otro' },
+    sellOtherLabel: '¿Cuál marketplace? Escribe el nombre', sellOtherPh: 'Ej.: {list}',
     payOtherLabel: '¿Cuál? Escribe el nombre', payOtherPh: 'Ej.: Izipay, BIM, Tunki',
     tabSell: 'Anotar', tabHome: 'Todo en un lugar', tabChannels: 'Mi negocio',
     tabConnect: 'Conectar',
@@ -835,8 +836,9 @@ const I18N = {
     newCustomer: 'Cliente nova. Telefone (opcional, para lembrar pelo WhatsApp)',
     phonePh: 'Ex.: 11 91234 5678',
     channel: 'Onde você vendeu',
-    channels: { none: 'Não informado', whatsapp: 'WhatsApp', instagram: 'Instagram', facebook: 'Facebook', tiktok: 'TikTok', mercadolibre: 'Mercado Livre', persona: 'Pessoalmente', catalogo: 'Catálogo' },
+    channels: { none: 'Não informado', whatsapp: 'WhatsApp', instagram: 'Instagram', facebook: 'Facebook', tiktok: 'TikTok', mercadolibre: 'Mercado Livre', otromkt: 'Outro marketplace', persona: 'Pessoalmente', catalogo: 'Catálogo' },
     pay: { efectivo: 'Dinheiro', transferencia: 'Transferência', spei: 'Transferência SPEI', mercadopago: 'Mercado Pago', pagoefectivo: 'PagoEfectivo', oxxo: 'OXXO', yape: 'Yape', plin: 'Plin', sip: 'SIP', nequi: 'Nequi', daviplata: 'Daviplata', mach: 'MACH', pix: 'Pix', picpay: 'PicPay', otro: 'Outro' },
+    sellOtherLabel: 'Qual marketplace? Escreva o nome', sellOtherPh: 'Ex.: {list}',
     payOtherLabel: 'Qual? Escreva o nome', payOtherPh: 'Ex.: Nubank, Inter, PagBank',
     tabSell: 'Anotar', tabHome: 'Tudo em um lugar', tabChannels: 'Meu negócio',
     tabConnect: 'Conectar',
@@ -1102,8 +1104,9 @@ const I18N = {
     newCustomer: 'New customer. Phone (optional, to remind them on WhatsApp)',
     phonePh: 'E.g.: 987 654 321',
     channel: 'Where you sold',
-    channels: { none: 'Not specified', whatsapp: 'WhatsApp', instagram: 'Instagram', facebook: 'Facebook', tiktok: 'TikTok', mercadolibre: 'Mercado Libre', persona: 'In person', catalogo: 'Catalog' },
+    channels: { none: 'Not specified', whatsapp: 'WhatsApp', instagram: 'Instagram', facebook: 'Facebook', tiktok: 'TikTok', mercadolibre: 'Mercado Libre', otromkt: 'Other marketplace', persona: 'In person', catalogo: 'Catalog' },
     pay: { efectivo: 'Cash', transferencia: 'Bank transfer', spei: 'SPEI transfer', mercadopago: 'Mercado Pago', pagoefectivo: 'PagoEfectivo', oxxo: 'OXXO', yape: 'Yape', plin: 'Plin', sip: 'SIP', nequi: 'Nequi', daviplata: 'Daviplata', mach: 'MACH', pix: 'Pix', picpay: 'PicPay', otro: 'Other' },
+    sellOtherLabel: 'Which marketplace? Write the name', sellOtherPh: 'E.g.: {list}',
     payOtherLabel: 'Which one? Write the name', payOtherPh: 'E.g.: Izipay, BIM, Tunki',
     tabSell: 'Record', tabHome: 'All in one place', tabChannels: 'My business',
     tabConnect: 'Connect',
@@ -1355,7 +1358,7 @@ function seedData() {
   };
 }
 
-const APP_VERSION = '0.13.4';
+const APP_VERSION = '0.13.5';
 // Current version of each legal document. Changing a version asks the seller to accept again.
 const DOCS = {
   terminos: { version: '1.0', language: 'es', file: '../legal/terminos-y-condiciones.html' },
@@ -1370,7 +1373,11 @@ const COUNTRIES = [
   { code: 'BR', es: 'Brasil', pt: 'Brasil', en: 'Brazil', currency: 'R$ ', pay: ['efectivo', 'pix', 'mercadopago', 'picpay', 'otro'] }
 ];
 // Mercado Libre is where she sells; Mercado Pago (how she gets paid) is in the payment list.
-const SELL_CHANNELS = ['whatsapp', 'instagram', 'facebook', 'tiktok', 'mercadolibre', 'persona', 'catalogo'];
+const SELL_CHANNELS = ['whatsapp', 'instagram', 'facebook', 'tiktok', 'mercadolibre', 'otromkt', 'persona', 'catalogo'];
+// Examples for "Other marketplace", by country.
+const MARKETPLACES = { MX: 'Amazon, Liverpool, Coppel', CO: 'Falabella, Éxito, Linio', PE: 'Saga Falabella, Ripley, Plaza Vea', AR: 'Tiendanube, Frávega, Garbarino', CL: 'Falabella, Ripley, Paris', BR: 'Shopee, Amazon, Magalu' };
+// A channel's name on screen; "Other marketplace" shows the name she wrote.
+function chName(k) { return k === 'otromkt' && data.profile && data.profile.sellOther ? data.profile.sellOther : t('channels')[k] || k; }
 function load(key, fallback) {
   try {
     const raw = localStorage.getItem(key);
@@ -1617,7 +1624,7 @@ function renderCard() {
   const opts = data.products.map(p =>
     `<option value="${p.id}" ${p.id === d.productId ? 'selected' : ''}>${esc(p.name)} (${esc(t('left', { n: p.stock }))})</option>`).join('');
   const mine = data.profile && data.profile.sellChannels && data.profile.sellChannels.length ? data.profile.sellChannels : SELL_CHANNELS;
-  const chOpts = Object.entries(t('channels')).filter(([k]) => k === 'none' || k === d.channel || mine.includes(k)).map(([k, v]) => `<option value="${k}" ${k === d.channel ? 'selected' : ''}>${esc(v)}</option>`).join('');
+  const chOpts = Object.entries(t('channels')).filter(([k]) => k === 'none' || k === d.channel || mine.includes(k)).map(([k]) => `<option value="${k}" ${k === d.channel ? 'selected' : ''}>${esc(chName(k))}</option>`).join('');
   const chip = (mode, label) => `<button type="button" data-paid="${mode}" aria-pressed="${d.paidMode === mode}">${esc(label)}</button>`;
 
   host.innerHTML = `
@@ -1873,7 +1880,7 @@ function renderSales() {
     return `<li>
       <div class="${s.undone ? 'undone' : ''}">
         <div class="main">${s.qty} × ${esc(p ? p.name : '?')} · <span class="num">${money(s.total)}</span></div>
-        <div class="meta">${esc(cu ? cu.name : t('noCustomer'))}${s.channel ? ' · ' + esc(t('channels')[s.channel]) : ''}${s.source && s.source !== s.channel ? ' · ' + esc(t('cnVia', { name: connName(s.source) })) : ''} · ${owesTxt}</div>
+        <div class="meta">${esc(cu ? cu.name : t('noCustomer'))}${s.channel ? ' · ' + esc(chName(s.channel)) : ''}${s.source && s.source !== s.channel ? ' · ' + esc(t('cnVia', { name: connName(s.source) })) : ''} · ${owesTxt}</div>
       </div>
       ${s.undone ? `<span class="meta">${esc(t('undoneTag'))}</span>` : canUndo ? `<button class="linkbtn" data-undo="${s.id}">${esc(t('undo'))}</button>` : ''}
     </li>`;
@@ -2000,7 +2007,7 @@ function renderHome() {
     <div class="panel home-section" data-panel="channels">
       <h2>${esc(t('hChannels'))}</h2>
       <ul class="rows">${chans.length ? chans.map(([ch, v]) => `<li style="display:block">
-        <div style="display:flex;justify-content:space-between"><span>${esc(t('channels')[ch] || ch)}</span><span class="num">${money(v)}</span></div>
+        <div style="display:flex;justify-content:space-between"><span>${esc(chName(ch))}</span><span class="num">${money(v)}</span></div>
         <div class="bar"><span style="width:${Math.max(4, Math.round(v / chMax * 100))}%"></span></div>
       </li>`).join('') : `<li class="empty">${esc(t('hNoSalesPeriod'))}</li>`}</ul>
     </div>
@@ -2141,6 +2148,9 @@ function businessFormHTML() {
     </div>` : ''}
     <h2>${esc(t('chSellTitle'))}</h2>
     <div class="toggles">${SELL_CHANNELS.map(k => tg('sell', k, t('channels')[k], sel.includes(k), true)).join('')}</div>
+    ${sel.includes('otromkt') ? `<div class="field" style="margin-top:10px">
+      <label>${esc(t('sellOtherLabel'))}<input class="sell-other" maxlength="40" placeholder="${esc(t('sellOtherPh', { list: MARKETPLACES[country.code] || MARKETPLACES.PE }))}" value="${esc(prof.sellOther || '')}" style="margin-top:4px"></label>
+    </div>` : ''}
     <div class="toggles flags">${tg('flag', 'credit', t('bizCredit'), !!b.credit)}${tg('flag', 'wholesale', t('bizWholesale'), !!b.wholesale)}</div>
     <h2>${esc(t('chPayTitle'))}</h2>
     <p class="hint">${esc(t('chPayCountry', { country: country[lang] || country.es }))}</p>
@@ -2178,6 +2188,11 @@ function bindBusiness(container, rerender) {
       saveData(); showGuess();
     });
     showGuess();
+  }
+  const sellOther = container.querySelector('.sell-other');
+  if (sellOther) {
+    sellOther.addEventListener('input', () => { if (data.profile) { data.profile.sellOther = sellOther.value.trim(); saveData(); } });
+    sellOther.addEventListener('change', () => logChange('business_changed', { kind: 'sell', key: 'otromkt', value: sellOther.value.trim() }));
   }
   const other = container.querySelector('.pay-other');
   if (other) {
@@ -2282,7 +2297,7 @@ function renderBizStep() {
 }
 function openBizEditor() {
   bizMode = 'edit';
-  bizSnapshot = JSON.stringify({ business: data.profile.business, sell: data.profile.sellChannels, pay: data.profile.payMethods, payOther: data.profile.payOther });
+  bizSnapshot = JSON.stringify({ business: data.profile.business, sell: data.profile.sellChannels, pay: data.profile.payMethods, payOther: data.profile.payOther, sellOther: data.profile.sellOther });
   renderBizStep();
   const el = document.getElementById('bizStep');
   el.style.display = 'flex'; el.scrollTop = 0;
@@ -2303,7 +2318,7 @@ document.getElementById('bizDone').addEventListener('click', () => {
 document.getElementById('bizCancel').addEventListener('click', () => {
   if (bizSnapshot) {
     const s = JSON.parse(bizSnapshot);
-    Object.assign(data.profile, { business: s.business, sellChannels: s.sell, payMethods: s.pay, payOther: s.payOther });
+    Object.assign(data.profile, { business: s.business, sellChannels: s.sell, payMethods: s.pay, payOther: s.payOther, sellOther: s.sellOther });
     saveData();
   }
   document.getElementById('bizStep').style.display = 'none';
@@ -3323,7 +3338,7 @@ function askPlanAI() {
   aiCall('plan', {
     business: {
       sector: sectorNames(b),
-      sells_on: names(p.sellChannels, t('channels')), gets_paid_with: names(p.payMethods, t('pay')),
+      sells_on: (p.sellChannels || []).map(chName), gets_paid_with: names(p.payMethods, t('pay')),
       sells_on_credit_or_installments: !!b.credit, also_sells_wholesale: !!b.wholesale,
       hardest_for_them: names(b.needs, t('needs')),
       sales_recorded: data.sales.filter(x => !x.undone).length, products: data.products.length
@@ -3536,7 +3551,7 @@ async function aiCall(task, payload, timeout) {
 // message itself; a product only if it is on the seller's list; a name only if it was written.
 const CHANNEL_WORDS = {
   whatsapp: ['whats', 'wpp', 'wsp', 'zap'], instagram: ['insta'], facebook: ['face', 'fb', 'marketplace'], tiktok: ['tik'],
-  mercadolibre: ['mercado', 'meli'], persona: ['persona', 'pessoal', 'presencial', 'person'], catalogo: ['catalog']
+  mercadolibre: ['mercado', 'meli'], otromkt: [], persona: ['persona', 'pessoal', 'presencial', 'person'], catalogo: ['catalog']
 };
 const DAY_INDEX = { sunday: 0, monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5, saturday: 6 };
 function numbersIn(text) { return (String(text).match(/\d+(?:[.,]\d{1,2})?/g) || []).map(x => parseFloat(x.replace(',', '.'))); }
