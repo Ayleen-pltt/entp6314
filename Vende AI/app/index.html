@@ -569,7 +569,7 @@ const I18N = {
     phonePh: 'Ej.: 55 1234 5678',
     channel: 'Dónde vendiste',
     channels: { none: 'Sin indicar', whatsapp: 'WhatsApp', instagram: 'Instagram', facebook: 'Facebook', tiktok: 'TikTok', mercadolibre: 'Mercado Libre', persona: 'En persona', catalogo: 'Catálogo' },
-    pay: { efectivo: 'Efectivo', transferencia: 'Transferencia', spei: 'Transferencia SPEI', mercadopago: 'Mercado Pago', pagoefectivo: 'PagoEfectivo', oxxo: 'OXXO', yape: 'Yape', plin: 'Plin', sip: 'SIP (Interbank / Oh!)', nequi: 'Nequi', daviplata: 'Daviplata', mach: 'MACH', pix: 'Pix', picpay: 'PicPay', otro: 'Otro' },
+    pay: { efectivo: 'Efectivo', transferencia: 'Transferencia', spei: 'Transferencia SPEI', mercadopago: 'Mercado Pago', pagoefectivo: 'PagoEfectivo', oxxo: 'OXXO', yape: 'Yape', plin: 'Plin', sip: 'SIP', nequi: 'Nequi', daviplata: 'Daviplata', mach: 'MACH', pix: 'Pix', picpay: 'PicPay', otro: 'Otro' },
     payOtherLabel: '¿Cuál? Escribe el nombre', payOtherPh: 'Ej.: Izipay, BIM, Tunki',
     tabSell: 'Anotar', tabHome: 'Todo en un lugar', tabChannels: 'Mi negocio',
     tabConnect: 'Conectar',
@@ -836,7 +836,7 @@ const I18N = {
     phonePh: 'Ex.: 11 91234 5678',
     channel: 'Onde você vendeu',
     channels: { none: 'Não informado', whatsapp: 'WhatsApp', instagram: 'Instagram', facebook: 'Facebook', tiktok: 'TikTok', mercadolibre: 'Mercado Livre', persona: 'Pessoalmente', catalogo: 'Catálogo' },
-    pay: { efectivo: 'Dinheiro', transferencia: 'Transferência', spei: 'Transferência SPEI', mercadopago: 'Mercado Pago', pagoefectivo: 'PagoEfectivo', oxxo: 'OXXO', yape: 'Yape', plin: 'Plin', sip: 'SIP (Interbank / Oh!)', nequi: 'Nequi', daviplata: 'Daviplata', mach: 'MACH', pix: 'Pix', picpay: 'PicPay', otro: 'Outro' },
+    pay: { efectivo: 'Dinheiro', transferencia: 'Transferência', spei: 'Transferência SPEI', mercadopago: 'Mercado Pago', pagoefectivo: 'PagoEfectivo', oxxo: 'OXXO', yape: 'Yape', plin: 'Plin', sip: 'SIP', nequi: 'Nequi', daviplata: 'Daviplata', mach: 'MACH', pix: 'Pix', picpay: 'PicPay', otro: 'Outro' },
     payOtherLabel: 'Qual? Escreva o nome', payOtherPh: 'Ex.: Nubank, Inter, PagBank',
     tabSell: 'Anotar', tabHome: 'Tudo em um lugar', tabChannels: 'Meu negócio',
     tabConnect: 'Conectar',
@@ -1103,7 +1103,7 @@ const I18N = {
     phonePh: 'E.g.: 987 654 321',
     channel: 'Where you sold',
     channels: { none: 'Not specified', whatsapp: 'WhatsApp', instagram: 'Instagram', facebook: 'Facebook', tiktok: 'TikTok', mercadolibre: 'Mercado Libre', persona: 'In person', catalogo: 'Catalog' },
-    pay: { efectivo: 'Cash', transferencia: 'Bank transfer', spei: 'SPEI transfer', mercadopago: 'Mercado Pago', pagoefectivo: 'PagoEfectivo', oxxo: 'OXXO', yape: 'Yape', plin: 'Plin', sip: 'SIP (Interbank / Oh!)', nequi: 'Nequi', daviplata: 'Daviplata', mach: 'MACH', pix: 'Pix', picpay: 'PicPay', otro: 'Other' },
+    pay: { efectivo: 'Cash', transferencia: 'Bank transfer', spei: 'SPEI transfer', mercadopago: 'Mercado Pago', pagoefectivo: 'PagoEfectivo', oxxo: 'OXXO', yape: 'Yape', plin: 'Plin', sip: 'SIP', nequi: 'Nequi', daviplata: 'Daviplata', mach: 'MACH', pix: 'Pix', picpay: 'PicPay', otro: 'Other' },
     payOtherLabel: 'Which one? Write the name', payOtherPh: 'E.g.: Izipay, BIM, Tunki',
     tabSell: 'Record', tabHome: 'All in one place', tabChannels: 'My business',
     tabConnect: 'Connect',
@@ -1355,7 +1355,7 @@ function seedData() {
   };
 }
 
-const APP_VERSION = '0.13.2';
+const APP_VERSION = '0.13.3';
 // Current version of each legal document. Changing a version asks the seller to accept again.
 const DOCS = {
   terminos: { version: '1.0', language: 'es', file: '../legal/terminos-y-condiciones.html' },
@@ -1369,7 +1369,8 @@ const COUNTRIES = [
   { code: 'CL', es: 'Chile', pt: 'Chile', en: 'Chile', currency: '$', pay: ['efectivo', 'transferencia', 'mach', 'mercadopago', 'otro'] },
   { code: 'BR', es: 'Brasil', pt: 'Brasil', en: 'Brazil', currency: 'R$ ', pay: ['efectivo', 'pix', 'mercadopago', 'picpay', 'otro'] }
 ];
-const SELL_CHANNELS = ['whatsapp', 'instagram', 'facebook', 'tiktok', 'mercadolibre', 'persona', 'catalogo'];
+// Mercado Libre is not offered here: sellers mix it up with Mercado Pago (how you get paid). The label stays for older sales.
+const SELL_CHANNELS = ['whatsapp', 'instagram', 'facebook', 'tiktok', 'persona', 'catalogo'];
 function load(key, fallback) {
   try {
     const raw = localStorage.getItem(key);
