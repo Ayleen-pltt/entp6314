@@ -408,6 +408,7 @@
     <div class="logo">Vende<span>AI</span></div>
     <h2 id="biz-title" data-t="bizStepTitle"></h2>
     <p class="ob-sub" data-t="bizStepSub"></p>
+    <p class="hint" id="bizWho" hidden><span id="bizWhoText"></span> <button class="linkbtn" id="bizSignOut" type="button" data-t="bizNotMe"></button></p>
     <div id="bizStepForm"></div>
     <p class="soon" data-t="chSoon"></p>
     <div class="ob-error" id="bizNeedSector" hidden data-t="bizNeedSector"></div>
@@ -771,6 +772,7 @@ const I18N = {
       generic: 'Algo salió mal. Vuelve a probar en un momento.'
     },
     signOut: 'Salir',
+    bizWho: 'Entraste como {email}.', bizNotMe: '¿No eres tú? Salir',
     instTitle: 'Usa VendeAI como app',
     instBody: 'Instálala en tu teléfono: se abre con un toque, en pantalla completa, y funciona aunque no tengas internet.',
     instBodyIOS: 'En iPhone: toca el botón Compartir de Safari y luego “Agregar a inicio”.',
@@ -1037,6 +1039,7 @@ const I18N = {
       generic: 'Algo deu errado. Tente de novo em um momento.'
     },
     signOut: 'Sair',
+    bizWho: 'Você entrou como {email}.', bizNotMe: 'Não é você? Sair',
     instTitle: 'Use o VendeAI como app',
     instBody: 'Instale no seu celular: abre com um toque, em tela cheia, e funciona mesmo sem internet.',
     instBodyIOS: 'No iPhone: toque no botão Compartilhar do Safari e depois em “Adicionar à Tela de Início”.',
@@ -1302,7 +1305,8 @@ const I18N = {
       offline: 'No connection. Check your internet and try again.',
       generic: 'Something went wrong. Try again in a moment.'
     },
-    signOut: 'Sign out',
+    signOut: 'Log out',
+    bizWho: 'Logged in as {email}.', bizNotMe: 'Not you? Log out',
     instTitle: 'Use VendeAI as an app',
     instBody: 'Install it on your phone: it opens with one tap, full screen, and works even without internet.',
     instBodyIOS: 'On iPhone: tap Safari’s Share button, then “Add to Home Screen”.',
@@ -1351,7 +1355,7 @@ function seedData() {
   };
 }
 
-const APP_VERSION = '0.13.0';
+const APP_VERSION = '0.13.1';
 // Current version of each legal document. Changing a version asks the seller to accept again.
 const DOCS = {
   terminos: { version: '1.0', language: 'es', file: '../legal/terminos-y-condiciones.html' },
@@ -2251,6 +2255,9 @@ function renderBizStep() {
   const edit = bizMode === 'edit';
   document.getElementById('biz-title').textContent = edit ? t('chTitle') : t('bizStepTitle');
   document.querySelector('#bizStep .ob-sub').textContent = edit ? t('chSub') : t('bizStepSub');
+  // First time: say whose account this is, so someone on a shared phone can switch.
+  document.getElementById('bizWho').hidden = edit || !user;
+  if (user) document.getElementById('bizWhoText').textContent = t('bizWho', { email: user.email });
   document.getElementById('bizDone').textContent = edit ? t('bizSave') : t('bizDone');
   document.getElementById('bizCancel').hidden = !edit;
   document.getElementById('bizFoot').hidden = edit;
@@ -3099,6 +3106,7 @@ document.getElementById('ob-switch').addEventListener('click', e => {
   obMode = e.currentTarget.dataset.to; obOk = ''; obError(null); renderAuth();
 });
 document.getElementById('ob-forgot').addEventListener('click', () => { obMode = 'reset'; obOk = ''; obError(null); renderAuth(); });
+document.getElementById('bizSignOut').addEventListener('click', () => document.getElementById('signOutBtn').click());
 document.getElementById('signOutBtn').addEventListener('click', async () => {
   obMode = 'signin'; obOk = '';
   await Promise.race([syncNow(), new Promise(r => setTimeout(r, 4000))]);   // upload what is pending, without making her wait long
