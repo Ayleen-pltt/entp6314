@@ -1,23 +1,20 @@
 -- 0003: file uploads (Supabase Storage). Run once in the SQL Editor, after 0002.
 --
--- Three private buckets, created in the dashboard: comprobantes (payment proof),
--- catalogos (catalogs and product photos) and stock (supplier lists, invoices, stock sheets).
+-- Three private buckets: comprobantes (payment proof), catalogos (catalogs and product photos)
+-- and stock (supplier lists, invoices, stock sheets). This file creates them if they are missing.
 -- Every file is saved as <bucket>/<user id>/<time>-<name>, so the first folder is its owner.
 --
--- 1. The buckets stay private, and Storage itself refuses anything that is not JPG, PNG or PDF
+-- 1. The buckets are private, and Storage itself refuses anything that is not JPG, PNG or PDF
 --    (plus Excel .xlsx/.xls in "stock"), or is over 5 MB, even if someone skips the app's own check.
-update storage.buckets
-   set public = false,
-       file_size_limit = 5242880,
-       allowed_mime_types = array['image/jpeg', 'image/png', 'application/pdf']
- where id in ('comprobantes', 'catalogos');
-
-update storage.buckets
-   set public = false,
-       file_size_limit = 5242880,
-       allowed_mime_types = array['image/jpeg', 'image/png', 'application/pdf',
-         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel']
- where id = 'stock';
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types) values
+  ('comprobantes', 'comprobantes', false, 5242880, array['image/jpeg', 'image/png', 'application/pdf']),
+  ('catalogos', 'catalogos', false, 5242880, array['image/jpeg', 'image/png', 'application/pdf']),
+  ('stock', 'stock', false, 5242880, array['image/jpeg', 'image/png', 'application/pdf',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'])
+on conflict (id) do update
+  set public = excluded.public,
+      file_size_limit = excluded.file_size_limit,
+      allowed_mime_types = excluded.allowed_mime_types;
 
 -- 2. A signed-in seller (not a guest) can only list, open, add, replace and delete files
 --    inside their own folder. Nobody else, and nothing with the public key.

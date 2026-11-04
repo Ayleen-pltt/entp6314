@@ -676,6 +676,7 @@ const I18N = {
     fBadType: 'Ese archivo no se puede subir. Solo fotos JPG o PNG, o PDF.',
     fBadTypeStock: 'Ese archivo no se puede subir. Solo Excel (.xlsx o .xls), fotos JPG o PNG, o PDF.',
     fFailed: 'No se pudo subir. Revisa tu conexión e inténtalo otra vez.',
+    fNotReady: 'Guardar archivos todavía no está listo. Ya estamos en eso; inténtalo más tarde.',
     fNone: 'Todavía no subiste archivos.', fLoading: 'Cargando tus archivos…',
     fLoadErr: 'No pudimos mostrar tus archivos. Revisa tu conexión.', fRetry: 'Reintentar',
     fOpen: 'Abrir', fDelete: 'Borrar', fDelAsk: '¿Borrar "{name}"? No se puede deshacer.',
@@ -947,6 +948,7 @@ const I18N = {
     fBadType: 'Esse arquivo não pode ser enviado. Só fotos JPG ou PNG, ou PDF.',
     fBadTypeStock: 'Esse arquivo não pode ser enviado. Só Excel (.xlsx ou .xls), fotos JPG ou PNG, ou PDF.',
     fFailed: 'Não foi possível enviar. Confira sua conexão e tente de novo.',
+    fNotReady: 'Guardar arquivos ainda não está pronto. Já estamos cuidando disso; tente mais tarde.',
     fNone: 'Você ainda não enviou arquivos.', fLoading: 'Carregando seus arquivos…',
     fLoadErr: 'Não conseguimos mostrar seus arquivos. Confira sua conexão.', fRetry: 'Tentar de novo',
     fOpen: 'Abrir', fDelete: 'Apagar', fDelAsk: 'Apagar "{name}"? Não dá para desfazer.',
@@ -1218,6 +1220,7 @@ const I18N = {
     fBadType: 'That file can’t be uploaded. Only JPG or PNG photos, or PDF.',
     fBadTypeStock: 'That file can’t be uploaded. Only Excel (.xlsx or .xls), JPG or PNG photos, or PDF.',
     fFailed: 'The upload didn’t work. Check your connection and try again.',
+    fNotReady: 'Saving files isn’t ready yet. We’re on it; try again later.',
     fNone: 'You haven’t uploaded any files yet.', fLoading: 'Loading your files…',
     fLoadErr: 'We couldn’t show your files. Check your connection.', fRetry: 'Try again',
     fOpen: 'Open', fDelete: 'Delete', fDelAsk: 'Delete "{name}"? This can’t be undone.',
@@ -1367,7 +1370,7 @@ function seedData() {
   };
 }
 
-const APP_VERSION = '0.13.6';
+const APP_VERSION = '0.13.7';
 // Current version of each legal document. Changing a version asks the seller to accept again.
 const DOCS = {
   terminos: { version: '1.0', language: 'es', file: '../legal/terminos-y-condiciones.html' },
@@ -2876,7 +2879,9 @@ async function uploadFile(file, bucket) {
   fileBusy = false;
   if (res.error) {
     const big = /size|413/i.test(String(res.error.message || '') + (res.error.statusCode || ''));
-    fileMsg = { text: big ? t('fTooBig', { size: fileSize(file.size) }) : t('fFailed') };
+    // Bucket missing (setup not run) or refused by the rules: not her connection's fault.
+    const setup = /bucket not found|row-level security|unauthorized|403/i.test(String(res.error.message || '') + (res.error.statusCode || ''));
+    fileMsg = { text: big ? t('fTooBig', { size: fileSize(file.size) }) : setup ? t('fNotReady') : t('fFailed') };
     return renderFiles();
   }
   fileMsg = { text: t('fSaved'), ok: true };
