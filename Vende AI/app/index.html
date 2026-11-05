@@ -185,6 +185,8 @@
   /* Who owes: plain notebook lines. */
   [data-panel="who"] .rows li { border-bottom-color: var(--notebook-line); }
   [data-panel="who"] .rows li:last-child { border-bottom: 0; }
+  .who-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+  .btn.wa { white-space: nowrap; }
 
   .home-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
   .seg { display: flex; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
@@ -659,6 +661,9 @@ const I18N = {
     hOwed: 'Te deben', hOwedSub: '{n} clientas', hOwedSubOne: '1 clienta',
     hWho: 'Quién te debe', hNobody: 'Nadie te debe.',
     hNext: 'Próximo pago: {amount}, {date}', hLate: '{n} días de atraso',
+    hRemind: 'Recordar por WhatsApp', hRemindLocked: 'Los recordatorios por WhatsApp vienen con el plan {plan}.',
+    remindMsg: 'Hola {name}, ¿cómo estás? Te recuerdo que tienes pendiente {amount}. Cuando puedas, me avisas. ¡Gracias! {seller}',
+    remindMsgDate: 'Hola {name}, ¿cómo estás? Te recuerdo que tienes pendiente {amount}, con fecha de pago el {date}. Cuando puedas, me avisas. ¡Gracias! {seller}',
     hReceived: 'Recibí {amount}', hReceivedToast: 'Anotado: {name} te pagó {amount}.',
     hStock: 'Lo que tienes', hLow: 'Se está acabando', hOut: 'Agotado',
     hStockSaved: '{product}: {from} → {to}',
@@ -932,6 +937,9 @@ const I18N = {
     hOwed: 'Te devem', hOwedSub: '{n} clientes', hOwedSubOne: '1 cliente',
     hWho: 'Quem te deve', hNobody: 'Ninguém te deve.',
     hNext: 'Próximo pagamento: {amount}, {date}', hLate: '{n} dias de atraso',
+    hRemind: 'Lembrar no WhatsApp', hRemindLocked: 'Os lembretes no WhatsApp vêm com o plano {plan}.',
+    remindMsg: 'Oi {name}, tudo bem? Passando para lembrar que ficou pendente {amount}. Quando puder, me avisa. Agradeço! {seller}',
+    remindMsgDate: 'Oi {name}, tudo bem? Passando para lembrar que ficou pendente {amount}, com vencimento em {date}. Quando puder, me avisa. Agradeço! {seller}',
     hReceived: 'Recebi {amount}', hReceivedToast: 'Anotado: {name} te pagou {amount}.',
     hStock: 'O que você tem', hLow: 'Está acabando', hOut: 'Esgotado',
     hStockSaved: '{product}: {from} → {to}',
@@ -1205,6 +1213,9 @@ const I18N = {
     hOwed: 'You\'re owed', hOwedSub: '{n} customers', hOwedSubOne: '1 customer',
     hWho: 'Who owes you', hNobody: 'Nobody owes you.',
     hNext: 'Next payment: {amount}, {date}', hLate: '{n} days late',
+    hRemind: 'Remind on WhatsApp', hRemindLocked: 'WhatsApp reminders come with the {plan} plan.',
+    remindMsg: 'Hi {name}, hope you’re well! Just a reminder that {amount} is still pending. Let me know when you can. Thanks! {seller}',
+    remindMsgDate: 'Hi {name}, hope you’re well! Just a reminder that {amount} is still pending, due on {date}. Let me know when you can. Thanks! {seller}',
     hReceived: 'Got {amount}', hReceivedToast: 'Noted: {name} paid you {amount}.',
     hStock: 'What you have', hLow: 'Running low', hOut: 'Sold out',
     hStockSaved: '{product}: {from} → {to}',
@@ -1374,7 +1385,7 @@ function seedData() {
   };
 }
 
-const APP_VERSION = '0.13.8';
+const APP_VERSION = '0.13.9';
 // Current version of each legal document. Changing a version asks the seller to accept again.
 const DOCS = {
   terminos: { version: '1.0', language: 'es', file: '../legal/terminos-y-condiciones.html' },
@@ -1983,7 +1994,10 @@ function renderHome() {
         return `<li>
           <div><div><strong>${esc(o.name)}</strong> · <span class="num owes">${esc(t('owesTag', { amount: money(o.total) }))}</span></div>
             <div class="meta ${late ? 'late' : ''}">${esc(t('hNext', { amount: money(o.next.amount), date: fmtDate(o.next.due) }))}${late ? ' · ' + esc(t('hLate', { n: late })) : ''}</div></div>
-          <button class="linkbtn" data-receive="${o.next.sale.id}:${o.next.idx}">${esc(t('hReceived', { amount: money(o.next.amount) }))}</button>
+          <div class="who-actions">
+            ${o.cid !== 'none' ? `<button class="btn ghost sm wa" data-remind="${o.cid}">${esc(t('hRemind'))}</button>` : ''}
+            <button class="linkbtn" data-receive="${o.next.sale.id}:${o.next.idx}">${esc(t('hReceived', { amount: money(o.next.amount) }))}</button>
+          </div>
         </li>`;
       }).join('') : `<li class="empty">${esc(t('hNobody'))}</li>`}</ul>
     </div>
@@ -2047,6 +2061,10 @@ function renderHome() {
   renderFiles();
   if (!document.getElementById('tab-home').hidden) askPlanAI();
 
+  body.querySelectorAll('[data-remind]').forEach(b => b.addEventListener('click', () => {
+    const o = owers.find(x => x.cid === b.dataset.remind);
+    if (o) remindOnWhatsApp(o);
+  }));
   body.querySelectorAll('[data-receive]').forEach(b => b.addEventListener('click', () => {
     const [sid, idx] = b.dataset.receive.split(':');
     const s = data.sales.find(x => x.id === sid);
@@ -3402,6 +3420,39 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden) sync
 ------------------------------------------------------------------ */
 const TIERS = { 0: 0, 1: 5.99, 2: 9.99, 3: 19.99 };
 const TIER_NAMES = { 0: 'Freedom', 1: 'Standard', 2: 'Medium', 3: 'Business' };
+
+// ----- WhatsApp reminder (Collect module) -----
+// Country calling codes and the length of a local mobile number.
+const DIAL = { MX: ['52', 10], CO: ['57', 10], PE: ['51', 9], AR: ['54', 10], CL: ['56', 9], BR: ['55', 11] };
+function waNumber(phone, country) {
+  const raw = String(phone || '').trim();
+  let d = raw.replace(/\D/g, '');
+  if (!d) return '';
+  if (raw.startsWith('+')) return d;
+  if (d.startsWith('00')) return d.slice(2);
+  const [code, len] = DIAL[country] || DIAL.PE;
+  d = d.replace(/^0+/, '');
+  if (d.startsWith(code) && d.length > len) return d;
+  if (country === 'AR') return code + '9' + d.replace(/^15/, '');   // WhatsApp needs 54 9 + area + number
+  return code + d;
+}
+function remindOnWhatsApp(o) {
+  const tier = (data.plan && data.plan.tier) || 0;
+  if (tier < MOD_TIER.cobrar) {
+    toast(t('hRemindLocked', { plan: TIER_NAMES[MOD_TIER.cobrar] }));
+    const p = document.querySelector('[data-panel="plans"]');
+    if (p) p.scrollIntoView({ behavior: 'smooth' });
+    return;
+  }
+  const cu = data.customers.find(c => c.id === o.cid);
+  const seller = (data.profile && data.profile.name) || '';
+  const text = t(o.next.due ? 'remindMsgDate' : 'remindMsg', { name: o.name.split(' ')[0], amount: money(o.total), date: fmtDate(o.next.due), seller }).trim();
+  const num = waNumber(cu && cu.phone, data.profile && data.profile.country);
+  // No phone saved: WhatsApp opens and she picks the contact.
+  window.open('https://wa.me/' + num + '?text=' + encodeURIComponent(text), '_blank', 'noopener');
+  logChange('reminder_sent', { customerId: o.cid, amount: o.total, channel: 'whatsapp' });
+  saveData();
+}
 const MOD_TIER = { precios: 1, cobrar: 2, vender: 3 };
 const PAY_KEY = 'vendeai_pago';
 const priceText = n => n ? 'US$ ' + TIERS[n].toFixed(2) : t('plFreePrice');
